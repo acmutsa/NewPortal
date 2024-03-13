@@ -58,6 +58,7 @@ export const events = pgTable("events", {
 	checkinEnd: timestamp("checkin_end").notNull(),
 	location: text("location").notNull(),
 	isUserCheckinable: boolean("is_user_checkinable").notNull().default(true),
+	isHidden: boolean("is_hidden").notNull().default(false),
 });
 
 export const checkins = pgTable("checkins", {
