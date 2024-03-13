@@ -12,3 +12,7 @@ export default {
 		},
 	},
 } as const;
+
+// These are routes that users can access without having to sign in
+
+export const publicRoutes = ["/"];
