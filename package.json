@@ -5,7 +5,12 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "migrations:generate": "pnpm --filter=db migrations:generate",
+    "migrations:apply": "pnpm --filter=db migrations:apply",
+    "migrations:drop": "pnpm --filter=db migrations:drop",
+    "studio": "pnpm --filter=db studio",
+    "db-push": "pnpm --filter=db db-push"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
@@ -13,6 +18,6 @@
   },
   "packageManager": "pnpm@8.9.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }
