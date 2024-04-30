@@ -11,42 +11,53 @@ import {
 	primaryKey,
 	pgTable,
 	PgArray,
+	serial,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
-// export const userData = pgTable("user_data", {
-// 	race: text("race").array(),
-// });
-
-export const accounts = pgTable("accounts", {
-	clerkID: text("clerk_id").primaryKey(),
-});
+/* USERS */
 
 export const users = pgTable("users", {
-	memberID: text("member_id").primaryKey(),
+	userID: serial("user_id").primaryKey(),
+	clerkID: text("clerk_id").unique(),
 	firstName: text("first_name").notNull(),
 	lastName: text("last_name").notNull(),
 	email: text("email").notNull().unique(),
-	interestedEventTypes: text("interested_event_types").array().notNull(),
 	role: text("role").notNull().default("member"),
 });
 
+export const usersRelations = relations(users, ({ one, many }) => ({
+	data: one(data, { fields: [users.userID], references: [data.userID] }),
+	checkins: many(checkins),
+}));
+
 export const data = pgTable("data", {
+	userID: integer("user_id").primaryKey(),
 	major: text("major").notNull(),
 	universityID: text("short_id").notNull().unique(),
 	classification: text("classification").notNull(),
-	graduation: timestamp("graduation").notNull(),
-	birthday: timestamp("birthday").notNull(),
+	graduationMonth: integer("graduation_month").notNull(),
+	graduationYear: integer("graduation_year").notNull(),
+	birthday: timestamp("birthday"),
 	gender: text("gender").array().notNull(),
 	ethnicity: text("ethnicity").array().notNull(),
-	resume: text("resume").notNull(),
-	shirtType: text("shirt_size").notNull(),
+	resume: text("resume"),
+	shirtType: text("shirt_type").notNull(),
+	shirtSize: text("shirt_size").notNull(),
+	interestedEventTypes: text("interested_event_types").array().notNull(),
 });
+
+/* EVENTS */
 
 export const eventCategories = pgTable("event_categories", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull().unique(),
 	color: text("color").notNull(),
 });
+
+export const eventCategoriesRelations = relations(eventCategories, ({ many }) => ({
+	eventsToCategories: many(eventsToCategories),
+}));
 
 export const events = pgTable("events", {
 	id: text("id").primaryKey(),
@@ -61,9 +72,53 @@ export const events = pgTable("events", {
 	isHidden: boolean("is_hidden").notNull().default(false),
 });
 
-export const checkins = pgTable("checkins", {
-	eventID: text("event_id").notNull(),
-	memberID: text("member_id").notNull(),
-	time: timestamp("time").defaultNow().notNull(),
-	feedback: text("feedback"),
+export const eventsRelations = relations(events, ({ one, many }) => ({
+	eventsToCategories: many(eventsToCategories),
+	checkins: many(checkins),
+}));
+
+export const eventsToCategories = pgTable("events_to_categories", {
+	eventID: text("event_id")
+		.notNull()
+		.references(() => events.id),
+	categoryID: text("category_id")
+		.notNull()
+		.references(() => eventCategories.id),
 });
+
+export const eventsToCategoriesRelations = relations(eventsToCategories, ({ one }) => ({
+	category: one(eventCategories, {
+		fields: [eventsToCategories.categoryID],
+		references: [eventCategories.id],
+	}),
+	event: one(events, {
+		fields: [eventsToCategories.eventID],
+		references: [events.id],
+	}),
+}));
+
+export const checkins = pgTable(
+	"checkins",
+	{
+		eventID: text("event_id").notNull(),
+		userID: text("user_id").notNull(),
+		time: timestamp("time").defaultNow().notNull(),
+		feedback: text("feedback"),
+	},
+	(table) => {
+		return {
+			id: primaryKey({ columns: [table.eventID, table.userID] }),
+		};
+	}
+);
+
+export const checkinRelations = relations(checkins, ({ one }) => ({
+	author: one(users, {
+		fields: [checkins.userID],
+		references: [users.userID],
+	}),
+	event: one(events, {
+		fields: [checkins.eventID],
+		references: [events.id],
+	}),
+}));

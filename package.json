@@ -11,7 +11,7 @@
     "migrations:drop": "pnpm --filter=db migrations:drop",
     "studio": "pnpm --filter=db studio",
     "db-push": "pnpm --filter=db db-push",
-    "move": "pnpm --filter=move move"
+    "move": "pnpm --filter=mover move"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
