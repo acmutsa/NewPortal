@@ -1,17 +1,20 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { publicRoutes } from "config";
 
-export default authMiddleware({
-	// Routes that can be accessed while signed out
-	publicRoutes: publicRoutes,
-	// Routes that can always be accessed, and have
-	// no authentication information
-	// ignoredRoutes: ["/no-auth-in-this-route"],
-});
+const isProtectedRoute = createRouteMatcher(["/dash(.*)", "/admin(.*)"]);
+
+export default clerkMiddleware(
+	(auth, req) => {
+		if (isProtectedRoute(req)) {
+			auth().protect();
+		}
+	},
+	{ afterSignUpUrl: "/register" }
+);
 
 export const config = {
 	// Protects all routes, including api/trpc.
 	// See https://clerk.com/docs/references/nextjs/auth-middleware
 	// for more information about configuring your Middleware
-	matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+	matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };
