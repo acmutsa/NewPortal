@@ -18,7 +18,9 @@ import { relations } from "drizzle-orm";
 /* USERS */
 
 export const users = pgTable("users", {
-	userID: serial("user_id").primaryKey(),
+	userID: serial("user_id")
+		.primaryKey()
+		.references(() => data.userID),
 	clerkID: text("clerk_id").unique(),
 	firstName: text("first_name").notNull(),
 	lastName: text("last_name").notNull(),
@@ -34,7 +36,6 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 export const data = pgTable("data", {
 	userID: integer("user_id").primaryKey(),
 	major: text("major").notNull(),
-	universityID: text("short_id").notNull().unique(),
 	classification: text("classification").notNull(),
 	graduationMonth: integer("graduation_month").notNull(),
 	graduationYear: integer("graduation_year").notNull(),
@@ -45,6 +46,7 @@ export const data = pgTable("data", {
 	shirtType: text("shirt_type").notNull(),
 	shirtSize: text("shirt_size").notNull(),
 	interestedEventTypes: text("interested_event_types").array().notNull(),
+	universityID: text("short_id").notNull().unique(),
 });
 
 /* EVENTS */
