@@ -1,5 +1,5 @@
 import { createInsertSchema } from "drizzle-zod";
-import { data, users } from "./schema";
+import { data, users, events, eventsToCategories } from "./schema";
 import { z } from "zod";
 import c from "config";
 
@@ -84,3 +84,10 @@ export const insertUserWithDataSchemaFormified = userFormified.merge(userDataFor
 const sometable = createInsertSchema(data);
 
 type iType = z.infer<typeof sometable>;
+
+export const insertEventSchema = createInsertSchema(events);
+export const insertEventToCategoriesSchema = createInsertSchema(
+  eventsToCategories
+).omit({
+  eventID: true,
+});
