@@ -7,7 +7,7 @@ export default function DashLayout({
 }) {
 	return (
 		<>
-			<Navbar siteRegion="Dashboard" />
+			<Navbar siteRegion="Dashboard" showBorder />
 			<div>{children}</div>
 		</>
 	);
