@@ -6,7 +6,17 @@ import { users } from "db/schema";
 import { eq } from "db/drizzle";
 import ProfileButton from "@/components/shared/profile-button";
 import { Button } from "@/components/ui/button";
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
+
 import c from "config";
+import { Menu } from "lucide-react";
 
 type NavbarProps = {
 	siteRegion?: string;
@@ -49,6 +59,8 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 					</>
 				)}
 			</div>
+
+			{/* Large screen navbar */}
 			<div className="hidden items-center justify-end gap-x-2 md:flex">
 				{user ? (
 					<>
@@ -102,6 +114,73 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 						</Link>
 					</>
 				)}
+			</div>
+
+			{/* Small screen navbar */}
+			<div className="flex items-center justify-end gap-2 md:hidden">
+				<Sheet>
+					<SheetTrigger asChild>
+						<Menu />
+					</SheetTrigger>
+					<SheetContent className="flex max-w-[40%] flex-col-reverse items-center justify-center gap-y-1">
+						{user ? (
+							<>
+								<Link
+									href={
+										clerkUser?.publicMetadata
+											.registrationComplete
+											? "/dash"
+											: "/register"
+									}
+								>
+									<Button
+										variant={
+											clerkUser?.publicMetadata
+												.registrationComplete
+												? "ghost"
+												: "default"
+										}
+									>
+										{clerkUser?.publicMetadata
+											.registrationComplete
+											? "Dashboard"
+											: "Complete Registration"}
+									</Button>
+								</Link>
+								<Link href={"/events"}>
+									<Button variant={"ghost"}>Events</Button>
+								</Link>
+								{(user.role === "admin" ||
+									user.role === "super_admin") && (
+									<Link href={"/admin"}>
+										<Button variant={"ghost"}>Admin</Button>
+									</Link>
+								)}
+								<div className="px-4">
+									<ProfileButton
+										clerkUser={clerkUser}
+										clerkAuth={clerkAuth}
+										user={user}
+									/>
+								</div>
+							</>
+						) : (
+							<>
+								<Link href={"/sign-in"}>
+									<Button
+										variant={"outline"}
+										className="hover:bg-background"
+									>
+										Sign In
+									</Button>
+								</Link>
+								<Link href={"/register"}>
+									<Button>Register</Button>
+								</Link>
+							</>
+						)}
+					</SheetContent>
+				</Sheet>
 			</div>
 		</div>
 	);
