@@ -38,7 +38,7 @@ export default async function AdminLayout({
 		<>
 			<ClientToast />
 			<Navbar siteRegion="Admin" />
-			<div className="z-20 flex h-12 w-full border-b bg-nav px-5">
+			<div className="z-20 flex h-12 w-full border-b px-5">
 				{Object.entries(c.dashPaths.admin).map(([name, path]) => {
 					return <DashNavItem key={name} name={name} path={path} />;
 				})}
