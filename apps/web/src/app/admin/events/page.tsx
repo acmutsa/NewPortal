@@ -1,7 +1,7 @@
 import React from "react";
 
 function Page() {
-  return <div className="text-foreground pt-44 px-5">Events</div>;
+	return <div className="px-5 text-foreground">Events</div>;
 }
 
 export default Page;
