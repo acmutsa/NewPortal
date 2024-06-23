@@ -3,6 +3,7 @@ import { db } from "db";
 import { users } from "db/schema";
 import { eq } from "db/drizzle";
 import { redirect } from "next/navigation";
+import Navbar from "@/components/shared/navbar"
 
 export default async function DashLayout({
 	children,
@@ -23,5 +24,5 @@ export default async function DashLayout({
 		return redirect("/onboarding");
 	}
 
-	return <>{children}</>;
+	return <><Navbar siteRegion="Dashboard" showBorder />{children}</>;
 }
