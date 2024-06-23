@@ -15,5 +15,19 @@ export default async function Page() {
 	});
 
 	if (!user) return redirect("/onboarding");
-	return <div>Dash Index</div>;
+	return (
+		<main className="flex min-h-screen w-screen items-center justify-center">
+			<div>
+				<div>
+					<h2 className="text-xl font-bold">Welcome,</h2>
+					<h1 className="pb-5 text-5xl font-black">
+						{user.firstName}
+					</h1>
+				</div>
+				<div className="shadow-x grid min-h-[40vh] w-[900px] max-w-[100vw] grid-cols-3 rounded-xl border border-border">
+					<div></div>
+				</div>
+			</div>
+		</main>
+	);
 }
