@@ -231,6 +231,7 @@ export default function NewEventForm({
 										<FormControl>
 											<Input {...field} />
 										</FormControl>
+										<FormMessage />
 									</FormItem>
 								)}
 							/>
@@ -284,28 +285,31 @@ export default function NewEventForm({
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel>Start</FormLabel>
-											<DateTimePicker
-												value={
-													!!field.value
-														? parseAbsolute(
-																field.value.toISOString(),
-																getLocalTimeZone(),
-															)
-														: null
-												}
-												onChange={(date) => {
-													field.onChange(
-														!!date
-															? date.toDate(
+											<FormControl>
+												<DateTimePicker
+													value={
+														!!field.value
+															? parseAbsolute(
+																	field.value.toISOString(),
 																	getLocalTimeZone(),
 																)
-															: null,
-													);
-												}}
-												shouldCloseOnSelect={false}
-												granularity={"minute"}
-												label="Event Start"
-											/>
+															: null
+													}
+													onChange={(date) => {
+														field.onChange(
+															!!date
+																? date.toDate(
+																		getLocalTimeZone(),
+																	)
+																: null,
+														);
+													}}
+													shouldCloseOnSelect={false}
+													granularity={"minute"}
+													label="Event Start"
+												/>
+											</FormControl>
+
 											<FormMessage />
 										</FormItem>
 									)}
@@ -316,28 +320,30 @@ export default function NewEventForm({
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel>End</FormLabel>
-											<DateTimePicker
-												value={
-													!!field.value
-														? parseAbsolute(
-																field.value.toISOString(),
-																getLocalTimeZone(),
-															)
-														: null
-												}
-												onChange={(date) => {
-													field.onChange(
-														!!date
-															? date.toDate(
+											<FormControl>
+												<DateTimePicker
+													value={
+														!!field.value
+															? parseAbsolute(
+																	field.value.toISOString(),
 																	getLocalTimeZone(),
 																)
-															: null,
-													);
-												}}
-												shouldCloseOnSelect={false}
-												granularity={"minute"}
-												label="Event End"
-											/>
+															: null
+													}
+													onChange={(date) => {
+														field.onChange(
+															!!date
+																? date.toDate(
+																		getLocalTimeZone(),
+																	)
+																: null,
+														);
+													}}
+													shouldCloseOnSelect={false}
+													granularity={"minute"}
+													label="Event End"
+												/>
+											</FormControl>
 											<FormMessage />
 										</FormItem>
 									)}
@@ -367,28 +373,33 @@ export default function NewEventForm({
 												<FormLabel>
 													Check-In Start
 												</FormLabel>
-												<DateTimePicker
-													value={
-														!!field.value
-															? parseAbsolute(
-																	field.value.toISOString(),
-																	getLocalTimeZone(),
-																)
-															: null
-													}
-													onChange={(date) => {
-														field.onChange(
-															!!date
-																? date.toDate(
+												<FormControl>
+													<DateTimePicker
+														value={
+															!!field.value
+																? parseAbsolute(
+																		field.value.toISOString(),
 																		getLocalTimeZone(),
 																	)
-																: null,
-														);
-													}}
-													shouldCloseOnSelect={false}
-													granularity={"minute"}
-													label="Check-In Start"
-												/>
+																: null
+														}
+														onChange={(date) => {
+															field.onChange(
+																!!date
+																	? date.toDate(
+																			getLocalTimeZone(),
+																		)
+																	: null,
+															);
+														}}
+														shouldCloseOnSelect={
+															false
+														}
+														granularity={"minute"}
+														label="Check-In Start"
+													/>
+												</FormControl>
+
 												<FormMessage />
 											</FormItem>
 										)}
@@ -401,28 +412,32 @@ export default function NewEventForm({
 												<FormLabel>
 													Check-In End
 												</FormLabel>
-												<DateTimePicker
-													value={
-														!!field.value
-															? parseAbsolute(
-																	field.value.toISOString(),
-																	getLocalTimeZone(),
-																)
-															: null
-													}
-													onChange={(date) => {
-														field.onChange(
-															!!date
-																? date.toDate(
+												<FormControl>
+													<DateTimePicker
+														value={
+															!!field.value
+																? parseAbsolute(
+																		field.value.toISOString(),
 																		getLocalTimeZone(),
 																	)
-																: null,
-														);
-													}}
-													shouldCloseOnSelect={false}
-													granularity={"minute"}
-													label="Check-In End"
-												/>
+																: null
+														}
+														onChange={(date) => {
+															field.onChange(
+																!!date
+																	? date.toDate(
+																			getLocalTimeZone(),
+																		)
+																	: null,
+															);
+														}}
+														shouldCloseOnSelect={
+															false
+														}
+														granularity={"minute"}
+														label="Check-In End"
+													/>
+												</FormControl>
 												<FormMessage />
 											</FormItem>
 										)}
@@ -511,6 +526,11 @@ export default function NewEventForm({
 								)}
 							/>
 						</FormGroupWrapper>
+
+						<p className="text-medium text-destructive">
+							{form.formState.errors.root?.message}
+						</p>
+
 						<Button
 							disabled={
 								actionStatus == "executing" ||
