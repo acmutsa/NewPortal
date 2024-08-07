@@ -72,15 +72,15 @@ export default function NewEventForm({
 	} | null>(null);
 	const router = useRouter();
 
-	const OneHourInMiliseconds = c.OneHourInMilliseconds;
-
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			start: defaultDate,
 			checkinStart: defaultDate,
 			end: new Date(defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS),
-			checkinEnd: new Date(defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS),
+			checkinEnd: new Date(
+				defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS,
+			),
 			thumbnailUrl: c.thumbnails.default,
 			categories: [],
 			isUserCheckinable: true,
@@ -129,7 +129,6 @@ export default function NewEventForm({
 		if (Object.keys(form.formState.errors).length > 0) {
 			console.log("Errors: ", form.formState.errors);
 		}
-		
 	}, [form.formState]);
 
 	const {
@@ -181,6 +180,12 @@ export default function NewEventForm({
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submit: ", values);
 		toast.loading("Creating Event...");
+		const checkinStart = differentCheckinTime
+			? values.checkinStart
+			: values.start;
+		const checkinEnd = differentCheckinTime
+			? values.checkinEnd
+			: values.end;
 		if (thumbnail) {
 			const thumbnailBlob = await upload(thumbnail.name, thumbnail, {
 				access: "public",
@@ -189,6 +194,8 @@ export default function NewEventForm({
 			runCreateEvent({
 				...values,
 				thumbnailUrl: thumbnailBlob.url,
+				checkinStart,
+				checkinEnd,
 				categories: values.categories.map(
 					(cat) => categoryOptions[cat],
 				),
@@ -196,6 +203,8 @@ export default function NewEventForm({
 		} else {
 			runCreateEvent({
 				...values,
+				checkinStart,
+				checkinEnd,
 				categories: values.categories.map(
 					(cat) => categoryOptions[cat],
 				),
