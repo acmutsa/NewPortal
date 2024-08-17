@@ -6,7 +6,6 @@ import { columns } from "./columns";
 
 import { DataTable } from "@/components/ui/data-table";
 import EventStatsSheet from "@/components/dash/admin/events/EventStatsSheet";
-import Seperator from "@radix-ui/react-separator";
 import { Button } from "@/components/ui/button";
 import AdminCheckinLog from "@/components/dash/shared/AdminCheckinLog";
 
