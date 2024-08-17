@@ -12,6 +12,7 @@ import {
 	getUTCDate,
 } from "@/lib/utils";
 
+
 export default async function EventDetails({ id }: { id: string }) {
 	const headerTimeZone = headers().get(VERCEL_IP_TIMEZONE_HEADER_KEY);
 	const clientTimeZone = getClientTimeZone(headerTimeZone);

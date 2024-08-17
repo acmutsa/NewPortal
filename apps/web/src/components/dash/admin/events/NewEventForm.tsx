@@ -80,7 +80,9 @@ export default function NewEventForm({
 			start: defaultDate,
 			checkinStart: defaultDate,
 			end: new Date(defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS),
-			checkinEnd: new Date(defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS),
+			checkinEnd: new Date(
+				defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS,
+			),
 			thumbnailUrl: c.thumbnails.default,
 			categories: [],
 			isUserCheckinable: true,
@@ -180,7 +182,7 @@ export default function NewEventForm({
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submit: ", values);
-		toast.loading("Creating Event...");
+		toast.loading("Adding Check-Ins");
 		if (thumbnail) {
 			const thumbnailBlob = await upload(thumbnail.name, thumbnail, {
 				access: "public",
@@ -250,7 +252,7 @@ export default function NewEventForm({
 									<FormItem>
 										<FormLabel>Description</FormLabel>
 										<FormControl>
-											<Textarea {...field}></Textarea>
+											<Textarea {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -317,7 +319,6 @@ export default function NewEventForm({
 													label="Event Start"
 												/>
 											</FormControl>
-
 											<FormMessage />
 										</FormItem>
 									)}
@@ -407,7 +408,6 @@ export default function NewEventForm({
 														label="Check-In Start"
 													/>
 												</FormControl>
-
 												<FormMessage />
 											</FormItem>
 										)}
