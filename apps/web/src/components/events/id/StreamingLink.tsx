@@ -33,7 +33,7 @@ export default function StreamingLink({
 					setSrc(fallBackSrc);
 				}}
 			/>
-			<p className="md:text-base lg:text-lg">
+			<p className="md:text-base xl:text-lg 2xl:text-xl">
 				{capitalizeFirstLetter(title)}
 			</p>
 		</Link>

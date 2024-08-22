@@ -43,7 +43,11 @@ export default {
 			"Prefer not to say",
 		],
 	},
-	calendarLinks: ["google", "outlook", "ics"],
+	calendarLinks: [
+		{ title: "google" },
+		{ title: "outlook" },
+		{ title: "ics", titleOverride : "iCal" },
+	],
 	streamingLinks: [
 		{ title: "twitch", href: "https://www.twitch.tv/acmutsa" },
 		{ title: "youtube", href: "https://www.youtube.com/@acmutsa/streams" },

@@ -31,6 +31,11 @@ export type EventCalendarLink = {
 	location: string;
 };
 
+export type EventCalendarName = {
+	title:string;
+	titleOverride?:string;
+}
+
 export type DetailsProps = {
 	event: EventAndCategoriesType;
 	startTime: string;
@@ -41,6 +46,7 @@ export type DetailsProps = {
 	eventCalendarLink: EventCalendarLink;
 	isEventPassed: boolean;
 	isCheckinAvailable: boolean;
+	isEventHappening: boolean;
 };
 
 export type CalendarDetails = {
