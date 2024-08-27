@@ -12,7 +12,6 @@ import {
 import { differenceInHours, isAfter } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { EVENT_DATE_FORMAT_STRING, EVENT_TIME_FORMAT_STRING } from "@/lib/constants/events";
-import { Badge } from "@/components/ui/badge";
 import EventDetailsLiveIndicator from "../shared/EventDetailsLiveIndicator";
 export default async function EventDetails({ id }: { id: string }) {
 	

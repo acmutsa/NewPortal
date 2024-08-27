@@ -1,4 +1,5 @@
 "use client";
+
 import {
 	Form,
 	FormField,
@@ -17,7 +18,6 @@ import {
 } from "@/components/ui/MultiSelect";
 import {
 	AlertDialog,
-	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -27,9 +27,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
-import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { useState } from "react";
 import { getLocalTimeZone, parseAbsolute } from "@internationalized/date";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,8 +35,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { insertEventSchema, insertEventSchemaFormified } from "db/zod";
-import { CalendarWithYears } from "@/components/ui/calendarWithYearSelect";
+import { insertEventSchemaFormified } from "db/zod";
 import { FormGroupWrapper } from "@/components/shared/form-group-wrapper";
 import { DateTimePicker } from "@/components/ui/date-time-picker/date-time-picker";
 import c from "config";
@@ -118,12 +115,6 @@ export default function NewEventForm({
 		setThumbnail(file);
 		return true;
 	}
-
-	useEffect(() => {
-		if (Object.keys(form.formState.errors).length > 0) {
-			console.log("Errors: ", form.formState.errors);
-		}
-	}, [form.formState]);
 
 	const {
 		execute: runCreateEvent,
@@ -468,6 +459,7 @@ export default function NewEventForm({
 								)}
 							/>
 						</FormGroupWrapper>
+						{/* Come here and insert points option */}
 						<FormGroupWrapper title="Additional">
 							<FormField
 								name="categories"
