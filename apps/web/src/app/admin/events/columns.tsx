@@ -128,7 +128,10 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem>
-							<Link href={`/admin/events/${data.id}/edit`}>
+							<Link
+								href={`/admin/events/${data.id}/edit`}
+								onClickCapture={(e) => e.stopPropagation()}
+							>
 								Edit
 							</Link>
 						</DropdownMenuItem>

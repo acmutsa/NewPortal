@@ -2,6 +2,7 @@ import { count, db, eq, gte, sql, between, inArray, desc } from "db";
 import { checkins, events, users, data } from "db/schema";
 import { getUTCDate } from "@/lib/utils";
 import c from "config";
+import { sEvent } from "./constants/events";
 
 export const getCategoryOptions = async () => {
 	const categories = (await db.query.eventCategories.findMany()).reduce(
@@ -37,7 +38,7 @@ export const getEventStatsOverview = async () => {
 	return groupedStats;
 };
 
-export const getEventById = async (id: string) => {
+export const getEventById = async (id: string): Promise<sEvent | undefined> => {
 	return await db.query.events.findFirst({
 		where: (events, { eq }) => eq(events.id, id),
 	});
