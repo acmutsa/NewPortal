@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import clsx from "clsx";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import CalendarLink from "./CalendarLink";
 import { UserRoundCheck } from "lucide-react";
 import type { DetailsProps } from "@/lib/types/events";
 import EventDetailsLiveIndicator from "../shared/EventDetailsLiveIndicator";
+import EventImage from "../shared/EventImage";
 
 export default function EventDetailsMobile(detailsProps: DetailsProps) {
 	const { streamingLinks, calendarLinks, checkingInInfo, aboutOrg } = c;
@@ -30,15 +30,8 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 	return (
 		<div className="flex flex-col space-y-4 lg:hidden">
 			<div className="relative flex h-auto w-full items-center justify-center">
-				{/* Find a way to wrap this for async */}
-				<Image
+				<EventImage
 					src={event.thumbnailUrl}
-					alt="Event Image"
-					priority={true}
-					width={0}
-					sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-					height={0}
-					quality={75}
 					className={clsx("h-auto w-1/2 rounded-md", {})}
 				/>
 				{isEventHappening && (
@@ -98,7 +91,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 				>
 					<Button
 						className={clsx(
-							"flex items-center gap-4 bg-blue-400 p-5 dark:bg-sky-300 min-w-[60%] md:min-w-[50%]",
+							"flex min-w-[60%] items-center gap-4 bg-blue-400 p-5 dark:bg-sky-300 md:min-w-[50%]",
 							{
 								"pointer-events-none grayscale":
 									isEventPassed || !isCheckinAvailable,

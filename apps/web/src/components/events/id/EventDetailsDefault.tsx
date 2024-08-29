@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import clsx from "clsx";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import StreamingLink from "./StreamingLink";
 import CalendarLink from "./CalendarLink";
 import { UserRoundCheck } from "lucide-react";
 import { DetailsProps } from "@/lib/types/events";
+import EventImage from "../shared/EventImage";
 export default function EventDetailsDefault(detailsProps: DetailsProps) {
 
 	const { streamingLinks, calendarLinks, checkingInInfo, aboutOrg } = c;
@@ -32,15 +32,10 @@ export default function EventDetailsDefault(detailsProps: DetailsProps) {
 		<div className="hidden flex-col items-center gap-4 lg:flex">
 			<div className="flex w-[98%] flex-row items-center justify-between xl:w-[95%]">
 				<div className="flex flex-col items-start justify-center xl:w-1/2 ">
-					<Image
+					<EventImage
 						src={thumbnailUrl}
-						alt="Event Image"
-						priority={true}
-						width={0}
-						sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-						height={0}
-						quality={100}
-						className="h-auto w-[350px] max-w-[350px] rounded-md xl:w-[500px] xl:max-w-[500px]"
+						className="h-auto w-[350px] max-w-[350px] rounded-md
+					xl:w-[500px] xl:max-w-[500px]"
 					/>
 					<EventCategories
 						event={event}
