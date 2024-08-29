@@ -110,7 +110,12 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
 						<DropdownMenuItem>
-							<Link href={`/events/${data.id}`}>View</Link>
+							<Link
+								href={`/events/${data.id}`}
+								className="h-full w-full"
+							>
+								View
+							</Link>
 						</DropdownMenuItem>
 						<DropdownMenuItem>
 							<div
@@ -130,6 +135,7 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 						<DropdownMenuItem>
 							<Link
 								href={`/admin/events/${data.id}/edit`}
+								className="h-full w-full"
 								onClickCapture={(e) => e.stopPropagation()}
 							>
 								Edit

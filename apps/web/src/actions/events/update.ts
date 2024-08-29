@@ -1,11 +1,9 @@
 "use server";
 
 import { and, db, eq, inArray, sql } from "db";
-import { customAlphabet } from "nanoid";
 import { updateEventSchema } from "db/zod";
 import { adminAction } from "@/lib/safe-action";
 import { eventCategories, events, eventsToCategories } from "db/schema";
-import c from "config";
 
 export const updateEvent = adminAction(
 	updateEventSchema,
