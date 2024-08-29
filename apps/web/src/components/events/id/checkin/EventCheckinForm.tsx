@@ -15,23 +15,16 @@ import { Button } from "@/components/ui/button";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { userCheckinFormSchema } from "@/validators/userCheckin";
+import { userCheckinSchemaFormified } from "db/zod";
 import { useAction } from "next-safe-action/hooks";
-import type { Noop, RefCallBack } from "react-hook-form";
 import c from "config";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Star, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { checkInUserAction } from "@/actions/events/checkin";
 import { useRouter } from "next/navigation";
-type RatingFormAttributes = {
-	onChange: (...event: any[]) => void;
-	onBlur: Noop;
-	value: number;
-	disabled?: boolean | undefined;
-	name: string;
-	ref: RefCallBack;
-};
+import type { CheckInUserClientProps } from "db/types";
+import type { RatingFormAttributes } from "@/lib/types/events";
 
 export default function EventCheckinForm({
 	eventID,
@@ -44,8 +37,8 @@ export default function EventCheckinForm({
 	const [feedbackLengthMessage, setFeedbackLengthMessage] = useState<string>(
 		`0 / ${maxCheckinDescriptionLength} characters`,
 	);
-	const userCheckinForm = useForm<z.infer<typeof userCheckinFormSchema>>({
-		resolver: zodResolver(userCheckinFormSchema),
+	const userCheckinForm = useForm<z.infer<typeof userCheckinSchemaFormified>>({
+		resolver: zodResolver(userCheckinSchemaFormified),
 		defaultValues: {
 			feedback: "",
 			rating: 0,
@@ -107,7 +100,7 @@ export default function EventCheckinForm({
 	});
 
 	const onSubmit = async (
-		checkInValues: z.infer<typeof userCheckinFormSchema>,
+		checkInValues: CheckInUserClientProps,
 	) => {
 		toast.dismiss();
 		resetCheckInUser();
@@ -115,8 +108,8 @@ export default function EventCheckinForm({
 		toast.loading("Checking in...");
 		runCheckInUser({
 			...checkInValues,
-			userId: userID,
-			eventId: eventID,
+			userID,
+			eventID,
 		});
 	};
 

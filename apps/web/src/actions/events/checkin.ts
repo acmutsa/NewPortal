@@ -16,9 +16,9 @@ const {
 
 export const checkInUserAction = authenticatedAction(
 	userCheckinSchemaFormified,
-	async ({ feedback, rating, userId, eventId }) => {
+	async ({ feedback, rating, userID, eventID }) => {
 		try {
-			await checkInUserClient({eventId, userId, feedback, rating});
+			await checkInUserClient({eventID, userID, feedback, rating});
 		} catch (e) {
 			///@ts-expect-error could not find the type of the error and the status code is the next most accurate way of telling an issue
 			if (e.code === UNIQUE_KEY_CONSTRAINT_VIOLATION_CODE) {

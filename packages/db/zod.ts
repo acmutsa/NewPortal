@@ -117,7 +117,6 @@ export const insertEventSchemaFormified = insertEventSchema
 export const selectEventSchema = createSelectSchema(events);
 
 export const selectCheckinSchema = createSelectSchema(checkins);
-export type Checkin = z.infer<typeof selectCheckinSchema>;
 
 export const adminCheckinSchema = z.object({
 	universityIDs: z.string().regex(new RegExp(`(\\w+[,\\W]*)+`), {
@@ -134,16 +133,17 @@ export const universityIDSplitter = z
 
 export const userCheckInSchema = createInsertSchema(checkins);
 
-export const userCheckinSchemaFormified = userCheckInSchema.merge(z.object({
-	eventId: z.string().min(1),
-	feedback: z
-		.string()
-		.max(c.maxCheckinDescriptionLength, {
-			message: `Feedback must be ${c.maxCheckinDescriptionLength} characters or less.`,
-		}),
-	rating: z
-		.number()
-		.int()
-		.min(1, { message: "Please provide a rating." })
-		.max(5),
+export const userCheckinSchemaFormified = userCheckInSchema.merge(
+	z.object({
+		eventID: z.string().min(c.events.idLength),
+		feedback: z
+			.string()
+			.max(c.maxCheckinDescriptionLength, {
+				message: `Feedback must be ${c.maxCheckinDescriptionLength} characters or less.`,
+			}),
+		rating: z
+			.number()
+			.int()
+			.min(1, { message: "Please provide a rating." })
+			.max(5,{ message:"Rating must be between 1 and 5." }),
 }));
