@@ -9,10 +9,6 @@ export default function EventImage(props:EventImageProps){
 
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(()=>{
-    console.log("loaded is: ", loaded)
-  },[loaded])
-
   const combinedProps = {
 		alt: "Event Image",
 		priority: true,
