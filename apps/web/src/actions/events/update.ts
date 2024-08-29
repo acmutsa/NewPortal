@@ -36,45 +36,24 @@ export const updateEvent = adminAction(
 				return;
 			}
 
-			// const { id } = ids[0];
-			console.log("Got here!");
-			// create sets
-			// const oldSet: Set<string> = new Set(oldCategories as string[]);
-			// console.dir(oldSet);
-			// const newSet: Set<string> = new Set(categories as string[]);
-			// console.dir(newSet);
 			//find new categories
 			const newCategories: string[] = categories.filter(
 				(item: string) => !oldCategories.includes(item),
 			);
-			console.log("New Categories", newCategories);
 
 			//find deleting categories
 			const deletingCategories: string[] = oldCategories.filter(
 				(item: string) => !categories.includes(item),
 			);
-			console.log("Deleting Categories", deletingCategories);
 
 			const insertVal = newCategories.map((cat) => ({
 				eventID,
 				categoryID: cat,
 			}));
 
-			const events_to_categories = await tx
-				.insert(eventsToCategories)
-				.values(insertVal)
-				.returning();
+			await tx.insert(eventsToCategories).values(insertVal).returning();
 
-			// if (events_to_categories.length === insertVal.length) {
-			// 	res = {
-			// 		success: false,
-			// 		code: "events_to_categories_failed",
-			// 	};
-			// 	tx.rollback();
-			// 	return;
-			// }
-
-			const deletedVals = await tx
+			await tx
 				.delete(eventsToCategories)
 				.where(
 					and(
@@ -86,15 +65,6 @@ export const updateEvent = adminAction(
 					),
 				)
 				.returning({ deletedID: eventsToCategories.categoryID });
-
-			// if (deletedVals.length === deletingCategories.length) {
-			// 	res = {
-			// 		success: false,
-			// 		code: "events_to_categories_failed",
-			// 	};
-			// 	tx.rollback();
-			// 	return;
-			// }
 		});
 
 		await db.execute(sql`VACUUM events_to_categories`);

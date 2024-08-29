@@ -183,11 +183,9 @@ function EditEventForm({
 		const categories = values.categories.map(
 			(name) => categoryOptions[name],
 		);
-		console.log("categories:", categories);
 		const oldCategories = oldValues.categories.map(
 			(name) => categoryOptions[name],
 		);
-		console.log("old categories:", oldCategories);
 
 		if (thumbnail) {
 			const thumbnailBlob = await upload(thumbnail.name, thumbnail, {
