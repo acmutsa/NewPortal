@@ -7,12 +7,6 @@ import { adminAction } from "@/lib/safe-action";
 import { eventCategories, events, eventsToCategories } from "db/schema";
 import c from "config";
 
-// const nanoid = customAlphabet(
-// 	"1234567890abcdefghijklmnopqrstuvwxyz",
-// 	c.events.idLength,
-// );
-
-// I know this is a horribly written function, but I don't care it was hard :(
 export const updateEvent = adminAction(
 	updateEventSchema,
 	async ({ eventID, oldCategories, categories, ...e }) => {
