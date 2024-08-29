@@ -2,8 +2,11 @@ import {
 	events,
 	eventsToCategories,
 	eventCategories,
-	eventsToCategoriesRelations,
 } from "db/schema";
+
+import type { Noop, RefCallBack } from "react-hook-form";
+
+import type { ImageProps } from "next/image";
 
 export type EventToCategoriesType = typeof eventsToCategories.$inferSelect;
 
@@ -11,7 +14,6 @@ export type EventCategoryType = typeof eventCategories.$inferSelect;
 
 export type EventsToCategoriesWithCategoryType = EventToCategoriesType & {
 	category: {
-		// id?: string;
 		name: string;
 		color: string;
 	};
@@ -63,3 +65,21 @@ export enum CheckinResult {
 	SOME_FAILED = "some_failed",
 	FAILED = "failed",
 }
+
+export type EventImageProps = Omit<ImageProps, 'alt'> & {
+	alt?:string;
+}
+
+export type RatingFormAttributes = {
+	onChange: (...event: any[]) => void;
+	onBlur: Noop;
+	value: number;
+	disabled?: boolean | undefined;
+	name: string;
+	ref: RefCallBack;
+};
+
+export type NewEventFormProps = {
+	defaultDate: Date;
+	categoryOptions: { [key: string]: string };
+};

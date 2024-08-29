@@ -46,11 +46,8 @@ import { upload } from "@vercel/blob/client";
 import { createEvent } from "@/actions/events/createNewEvent";
 import { ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
 import { bucketEventThumbnailBaseUrl } from "config";
+import type { NewEventFormProps } from "@/lib/types/events";
 
-type NewEventFormProps = {
-	defaultDate: Date;
-	categoryOptions: { [key: string]: string };
-};
 
 const formSchema = insertEventSchemaFormified;
 
