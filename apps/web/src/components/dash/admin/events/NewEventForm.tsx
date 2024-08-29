@@ -43,8 +43,9 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { upload } from "@vercel/blob/client";
-import { createEvent } from "@/actions/events/new";
+import { createEvent } from "@/actions/events/createNewEvent";
 import { ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
+import { bucketEventThumbnailBaseUrl } from "config";
 
 type NewEventFormProps = {
 	defaultDate: Date;
@@ -75,6 +76,7 @@ export default function NewEventForm({
 			thumbnailUrl: c.thumbnails.default,
 			categories: [],
 			isUserCheckinable: true,
+			points: 1
 		},
 	});
 	const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -157,13 +159,11 @@ export default function NewEventForm({
 			toast.error(
 				`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
 			);
-			console.log("error: ", error);
 			resetAction();
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log("Submit: ", values);
 		toast.loading("Creating Event...");
 		const checkinStart = differentCheckinTime
 			? values.checkinStart
@@ -171,11 +171,16 @@ export default function NewEventForm({
 		const checkinEnd = differentCheckinTime
 			? values.checkinEnd
 			: values.end;
+			// Come back and make cleaner
 		if (thumbnail) {
-			const thumbnailBlob = await upload(thumbnail.name, thumbnail, {
-				access: "public",
-				handleUploadUrl: "/api/upload/thumbnail",
-			});
+			const thumbnailBlob = await upload(
+				`${bucketEventThumbnailBaseUrl}/${thumbnail.name}`,
+				thumbnail,
+				{
+					access: "public",
+					handleUploadUrl: "/api/upload/thumbnail",
+				},
+			);
 			runCreateEvent({
 				...values,
 				thumbnailUrl: thumbnailBlob.url,
@@ -197,12 +202,11 @@ export default function NewEventForm({
 		}
 	};
 
+	
+
 	return (
 		<>
 			<AlertDialog open={error != null}>
-				{/* <AlertDialogTrigger asChild>
-					<Button variant="outline">Show Dialog</Button>
-				</AlertDialogTrigger> */}
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>{error?.title}</AlertDialogTitle>
@@ -459,7 +463,6 @@ export default function NewEventForm({
 								)}
 							/>
 						</FormGroupWrapper>
-						{/* Come here and insert points option */}
 						<FormGroupWrapper title="Additional">
 							<FormField
 								name="categories"
@@ -493,6 +496,33 @@ export default function NewEventForm({
 												</MultiSelectorList>
 											</MultiSelectorContent>
 										</MultiSelector>
+									</FormItem>
+								)}
+							/>
+							<FormField
+								name="points"
+								control={form.control}
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Points</FormLabel>
+										<FormControl>
+											<Input
+												type="number"
+												className="max-w-[25%]"
+												min={c.minEventPoints}
+												max={c.maxEventPoints}
+												{...field}
+												onChange={(e) => {
+													const parsedPoints = parseInt(
+														e.target.value,
+														10,
+													);
+														const points = (parsedPoints < 1) ? 1 : parsedPoints;
+														field.onChange(points);
+												}}
+											/>
+										</FormControl>
+										<FormMessage />
 									</FormItem>
 								)}
 							/>
