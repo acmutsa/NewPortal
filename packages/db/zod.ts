@@ -115,24 +115,9 @@ export const insertEventSchemaFormified = insertEventSchema
 export const updateEventSchemaFormified = insertEventSchema
 	.merge(
 		z.object({
-			categories: z
-				.object({
-					id: z.string().min(1),
-					name: z.string().min(1),
-				})
-				.array()
-				.min(1),
-			eventID: z.string().min(1),
-			oldCategories: z
-				.object({
-					id: z.string().min(1),
-					name: z.string().min(1),
-				})
-				.array()
-				.min(1),
+			categories: z.string().min(1).array(),
 		}),
 	)
-	.omit({ id: true })
 	.refine((event) => event.start < event.end, {
 		message: "Event start time must be before end",
 		path: ["end"],
@@ -141,6 +126,13 @@ export const updateEventSchemaFormified = insertEventSchema
 		message: "Event checkin start time must be before checkin end",
 		path: ["checkinEnd"],
 	});
+export const updateEventSchema = insertEventSchema.merge(
+	z.object({
+		categories: z.string().min(1).array(),
+		oldCategories: z.string().min(1).array(),
+		eventID: z.string().min(1),
+	}),
+);
 
 export const selectEventSchema = createSelectSchema(events);
 

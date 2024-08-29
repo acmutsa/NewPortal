@@ -49,11 +49,11 @@ import { useAction } from "next-safe-action/hooks";
 import { upload } from "@vercel/blob/client";
 import { updateEvent } from "@/actions/events/update";
 import { ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
-import { iEvent } from "@/lib/constants/events";
+import { iEvent, uEvent } from "@/lib/constants/events";
 
 type NewEventFormProps = {
 	eventID: string;
-	oldValues: iEvent;
+	oldValues: uEvent;
 	categoryOptions: { [key: string]: string };
 };
 
@@ -64,7 +64,6 @@ function EditEventForm({
 	oldValues,
 	categoryOptions,
 }: NewEventFormProps) {
-	console.log("Old categories:", oldValues.categories);
 	const [error, setError] = useState<{
 		title: string;
 		description: string;
@@ -73,7 +72,9 @@ function EditEventForm({
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
-		defaultValues: oldValues,
+		defaultValues: {
+			...oldValues,
+		},
 	});
 	const [thumbnail, setThumbnail] = useState<File | null>(null);
 	const [differentCheckinTime, setDifferentCheckinTime] = useState(
@@ -178,6 +179,16 @@ function EditEventForm({
 		const checkinEnd = differentCheckinTime
 			? values.checkinEnd
 			: values.end;
+
+		const categories = values.categories.map(
+			(name) => categoryOptions[name],
+		);
+		console.log("categories:", categories);
+		const oldCategories = oldValues.categories.map(
+			(name) => categoryOptions[name],
+		);
+		console.log("old categories:", oldCategories);
+
 		if (thumbnail) {
 			const thumbnailBlob = await upload(thumbnail.name, thumbnail, {
 				access: "public",
@@ -186,25 +197,20 @@ function EditEventForm({
 			runUpdateEvent({
 				...values,
 				eventID,
-				oldCategories: oldValues.categories,
+				categories,
+				oldCategories,
 				thumbnailUrl: thumbnailBlob.url,
 				checkinStart,
 				checkinEnd,
-				categories: values.categories.map(
-					(cat) => categoryOptions[cat],
-				),
 			});
 		} else {
 			runUpdateEvent({
 				...values,
 				eventID,
-				oldCategories: oldValues.categories,
-				thumbnailUrl: oldValues.thumbnailUrl,
+				categories,
+				oldCategories,
 				checkinStart,
 				checkinEnd,
-				categories: values.categories.map(
-					(cat) => categoryOptions[cat],
-				),
 			});
 		}
 	};
@@ -499,7 +505,7 @@ function EditEventForm({
 														categoryOptions,
 													).map(([name, id]) => (
 														<MultiSelectorItem
-															key={id}
+															key={id} // category id
 															value={name}
 														>
 															{name}

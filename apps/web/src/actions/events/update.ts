@@ -1,8 +1,8 @@
 "use server";
 
-import { db, eq, inArray, sql } from "db";
+import { and, db, eq, inArray, sql } from "db";
 import { customAlphabet } from "nanoid";
-import { updateEventSchemaFormified } from "db/zod";
+import { updateEventSchema } from "db/zod";
 import { adminAction } from "@/lib/safe-action";
 import { eventCategories, events, eventsToCategories } from "db/schema";
 import c from "config";
@@ -14,7 +14,7 @@ import c from "config";
 
 // I know this is a horribly written function, but I don't care it was hard :(
 export const updateEvent = adminAction(
-	updateEventSchemaFormified,
+	updateEventSchema,
 	async ({ eventID, oldCategories, categories, ...e }) => {
 		let res = {
 			success: true,
@@ -23,7 +23,7 @@ export const updateEvent = adminAction(
 		await db.transaction(async (tx) => {
 			const ids = await tx
 				.update(events)
-				.set({ ...e })
+				.set(e)
 				.where(eq(events.id, eventID))
 				.returning({ eventID: events.id });
 
@@ -37,32 +37,27 @@ export const updateEvent = adminAction(
 			}
 
 			// const { id } = ids[0];
-
+			console.log("Got here!");
 			// create sets
-			const oldSet = new Set(oldCategories as string[]);
-			console.dir(oldSet);
-			const newSet = new Set(categories as string[]);
-			console.dir(newSet);
+			// const oldSet: Set<string> = new Set(oldCategories as string[]);
+			// console.dir(oldSet);
+			// const newSet: Set<string> = new Set(categories as string[]);
+			// console.dir(newSet);
 			//find new categories
-			const newCategories = newSet.difference(oldSet);
+			const newCategories: string[] = categories.filter(
+				(item: string) => !oldCategories.includes(item),
+			);
+			console.log("New Categories", newCategories);
 
 			//find deleting categories
-			const deletingCategories = oldSet.difference(newSet);
+			const deletingCategories: string[] = oldCategories.filter(
+				(item: string) => !categories.includes(item),
+			);
+			console.log("Deleting Categories", deletingCategories);
 
-			const newCatArray = Array.from(newCategories) as string[];
-			const newCatIds = await tx
-				.select({ id: eventCategories.id })
-				.from(eventCategories)
-				.where(inArray(eventCategories.name, newCatArray));
-			const oldCatArray = Array.from(deletingCategories) as string[];
-			const oldCatIds = await tx
-				.select({ id: eventCategories.id })
-				.from(eventCategories)
-				.where(inArray(eventCategories.name, oldCatArray));
-
-			const insertVal = newCatIds.map((cat) => ({
+			const insertVal = newCategories.map((cat) => ({
 				eventID,
-				categoryID: cat.id,
+				categoryID: cat,
 			}));
 
 			const events_to_categories = await tx
@@ -70,33 +65,36 @@ export const updateEvent = adminAction(
 				.values(insertVal)
 				.returning();
 
-			if (events_to_categories.length === insertVal.length) {
-				res = {
-					success: false,
-					code: "events_to_categories_failed",
-				};
-				tx.rollback();
-				return;
-			}
+			// if (events_to_categories.length === insertVal.length) {
+			// 	res = {
+			// 		success: false,
+			// 		code: "events_to_categories_failed",
+			// 	};
+			// 	tx.rollback();
+			// 	return;
+			// }
 
 			const deletedVals = await tx
 				.delete(eventsToCategories)
 				.where(
-					inArray(
-						eventsToCategories.categoryID,
-						oldCatIds.map((o) => o.id),
+					and(
+						inArray(
+							eventsToCategories.categoryID,
+							deletingCategories,
+						),
+						eq(eventsToCategories.eventID, eventID),
 					),
 				)
 				.returning({ deletedID: eventsToCategories.categoryID });
 
-			if (deletedVals.length === oldCatIds.length) {
-				res = {
-					success: false,
-					code: "events_to_categories_failed",
-				};
-				tx.rollback();
-				return;
-			}
+			// if (deletedVals.length === deletingCategories.length) {
+			// 	res = {
+			// 		success: false,
+			// 		code: "events_to_categories_failed",
+			// 	};
+			// 	tx.rollback();
+			// 	return;
+			// }
 		});
 
 		await db.execute(sql`VACUUM events_to_categories`);
