@@ -1,5 +1,6 @@
-export default {
+const c =  {
 	clubName: "ClubKit",
+	universityName:"UTSA",
 	universityID: {
 		name: "ABC123",
 		maxLength: 6,
@@ -66,6 +67,8 @@ export default {
 		},
 	},
 	maxCheckinDescriptionLength: 400,
+	minEventPoints: 0,
+	maxEventPoints:100,
 	icon: {
 		svg: "/img/logos/acm.svg",
 	},
@@ -75,7 +78,7 @@ export default {
 	},
 } as const;
 
-export const majors = [
+const majors = [
 	"Accounting",
 	"Accounting Technician",
 	"Actuarial Science",
@@ -189,6 +192,13 @@ export const majors = [
 	"Other",
 ] as const;
 
+const bucketEventThumbnailBaseUrl = `${c.clubName}-${c.universityName}/event-thumbnails`;
+
+export default c;
+export {
+	majors,
+	bucketEventThumbnailBaseUrl,
+}
 
 	
 
