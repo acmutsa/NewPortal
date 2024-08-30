@@ -70,8 +70,8 @@ export default async function EventCheckin({
 	return (
 		<div className="flex w-full flex-1 flex-col gap-[8%]">
 			<div className="flex w-full flex-col items-center justify-center gap-3 text-xl">
-				<h1 className="text-2xl">Thanks for attending</h1>
-				<h1 className="text-center text-2xl font-bold">{`${event.name}`}</h1>
+				<h1 className="text-2xl lg:text-3xl">Thanks for attending</h1>
+				<h1 className="text-center text-2xl lg:text-3xl font-bold">{`${event.name}`}</h1>
 			</div>
 			<EventCheckinForm eventID={eventID} userID={userID} />
 		</div>
