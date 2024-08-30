@@ -34,8 +34,7 @@ export default function EventDetailsDefault(detailsProps: DetailsProps) {
 				<div className="flex flex-col items-start justify-center xl:w-1/2 ">
 					<EventImage
 						src={thumbnailUrl}
-						className="h-auto w-[350px] max-w-[350px] rounded-md
-					xl:w-[500px] xl:max-w-[500px]"
+						className="h-auto w-full max-w-[350px] rounded-md xl:max-w-[500px]"
 					/>
 					<EventCategories
 						event={event}

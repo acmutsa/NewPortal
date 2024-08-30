@@ -36,7 +36,7 @@ export default function EventCardComponent({ event,isPast,isEventCurrentlyHappen
 					className="absolute top-0 z-50 animate-pulse "
 				>
 					<Badge className="flex flex-row items-center justify-between gap-3 rounded-sm border-transparent bg-inherit bg-red-600 hover:bg-red-400">
-						<h3 className="text-lg font-bold text-primary">
+						<h3 className="text-lg font-bold text-white">
 							Happening Now
 						</h3>
 					</Badge>
@@ -83,11 +83,11 @@ export default function EventCardComponent({ event,isPast,isEventCurrentlyHappen
 					className={clsx(
 						"flex h-full w-1/2 flex-row items-center justify-center border-l border-gray-400",
 						{
-							"pointer-events-none": isEventCheckinAllowed,
+							"pointer-events-none": !isEventCheckinAllowed,
 						},
 					)}
-					aria-disabled={isEventCheckinAllowed}
-					tabIndex={isEventCheckinAllowed ? -1 : 0}
+					aria-disabled={!isEventCheckinAllowed}
+					tabIndex={!isEventCheckinAllowed ? -1 : 0}
 				>
 					<h1
 						className={clsx("text-blue-400 dark:text-sky-300", {
