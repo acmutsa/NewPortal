@@ -1,7 +1,7 @@
-import { count, db, eq, gte, sql, between, inArray, desc } from "db";
+import { count, db, eq, gte, sql, inArray, desc } from "db";
 import { checkins, events, users, data } from "db/schema";
-import { getUTCDate } from "@/lib/utils";
 import c from "config";
+import { CheckInUserClientProps } from "db/types";
 
 export const getCategoryOptions = async () => {
 	const categories = (await db.query.eventCategories.findMany()).reduce(
@@ -149,12 +149,6 @@ export const getUserCheckin = async (eventID: string, userID: number) => {
 	});
 };
 
-export const getUserCheckins = async (userID: number) => {
-	return db.query.checkins.findMany({
-		where: eq(checkins.userID, userID),
-	});
-};
-
 export const getEventList = async () => {
 	return await db.query.events.findMany({
 		columns: { id: true, name: true },
@@ -176,19 +170,12 @@ export const getUserDataAndCheckin = async (
 	});
 };
 
-export const checkInUser = async (
-	eventID: string,
-	userID: number,
-	feedback: string,
-	rating?: number,
-	adminID?: string,
+export const checkInUserClient = async (
+	props:CheckInUserClientProps
 ) => {
+	
 	return db.insert(checkins).values({
-		userID,
-		eventID,
-		adminID,
-		rating,
-		feedback,
+		...props
 	});
 };
 
@@ -202,7 +189,6 @@ export const checkInUserList = async (
 		columns: { userID: true, universityID: true },
 	});
 
-	const time = getUTCDate();
 	const successfulIDs = (
 		await db
 			.insert(checkins)
@@ -211,7 +197,6 @@ export const checkInUserList = async (
 					userID,
 					eventID,
 					adminID,
-					time,
 				})),
 			)
 			.returning({ userID: checkins.userID })
