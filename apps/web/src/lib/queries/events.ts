@@ -2,9 +2,7 @@ import { db, eq } from "db";
 import { eventCategories, events, eventsToCategories } from "db/schema";
 import { iEvent, uEvent } from "../types/events";
 
-export async function getEventWithCategoriesById(
-	id: string,
-){
+export async function getEventWithCategoriesById(id: string) {
 	const event = await db.query.events.findFirst({
 		where: () => eq(events.id, id),
 		with: {
@@ -23,7 +21,7 @@ export async function getEventWithCategoriesById(
 		},
 	});
 
-	if (!event) return undefined;
+	if (event === undefined) return undefined;
 
 	return {
 		name: event.name,

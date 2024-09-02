@@ -13,7 +13,7 @@ import c from "config";
 export default async function Page({ params: { id } }: IDParamProp) {
 	const categoryOptions = await getCategoryOptions();
 	const oldValues: uEvent | undefined = await getEventWithCategoriesById(id);
-	if (!oldValues) {
+	if (oldValues === undefined) {
 		return (
 			<FullScreenMessage
 				title="Event Not Found!"
