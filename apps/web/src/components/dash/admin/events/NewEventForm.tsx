@@ -81,7 +81,8 @@ export default function NewEventForm({
 		},
 	});
 	const [thumbnail, setThumbnail] = useState<File | null>(null);
-	const [differentCheckinTime, setDifferentCheckinTime] = useState(false);
+	const [hasDifferentCheckinTime, setHasDifferentCheckinTime] =
+		useState(false);
 
 	function validateAndSetThumbnail(
 		event: React.ChangeEvent<HTMLInputElement>,
@@ -174,10 +175,10 @@ export default function NewEventForm({
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submit: ", values);
 		toast.loading("Creating Event...");
-		const checkinStart = differentCheckinTime
+		const checkinStart = hasDifferentCheckinTime
 			? values.checkinStart
 			: values.start;
-		const checkinEnd = differentCheckinTime
+		const checkinEnd = hasDifferentCheckinTime
 			? values.checkinEnd
 			: values.end;
 		if (thumbnail) {
@@ -364,16 +365,16 @@ export default function NewEventForm({
 									Use Different Check-In Time?
 								</FormLabel>
 								<Switch
-									checked={differentCheckinTime}
+									checked={hasDifferentCheckinTime}
 									onCheckedChange={() => {
-										setDifferentCheckinTime(
+										setHasDifferentCheckinTime(
 											(prev) => !prev,
 										);
 									}}
 									aria-readonly
 								/>
 							</div>
-							{differentCheckinTime && (
+							{hasDifferentCheckinTime && (
 								<div className="grid grid-cols-2 gap-4">
 									<FormField
 										control={form.control}

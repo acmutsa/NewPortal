@@ -38,7 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { insertEventSchema, updateEventSchemaFormified } from "db/zod";
+import { updateEventSchemaFormified as formSchema } from "db/zod";
 import { CalendarWithYears } from "@/components/ui/calendarWithYearSelect";
 import { FormGroupWrapper } from "@/components/shared/form-group-wrapper";
 import { DateTimePicker } from "@/components/ui/date-time-picker/date-time-picker";
@@ -48,22 +48,19 @@ import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { upload } from "@vercel/blob/client";
 import { updateEvent } from "@/actions/events/update";
-import { ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
-import { iEvent, uEvent } from "@/lib/constants/events";
+import { iEvent, uEvent } from "@/lib/types/events";
 
-type NewEventFormProps = {
+type EditEventFormProps = {
 	eventID: string;
 	oldValues: uEvent;
 	categoryOptions: { [key: string]: string };
 };
 
-const formSchema = updateEventSchemaFormified;
-
-function EditEventForm({
+export default function EditEventForm({
 	eventID,
 	oldValues,
 	categoryOptions,
-}: NewEventFormProps) {
+}: EditEventFormProps) {
 	const [error, setError] = useState<{
 		title: string;
 		description: string;
@@ -77,7 +74,7 @@ function EditEventForm({
 		},
 	});
 	const [thumbnail, setThumbnail] = useState<File | null>(null);
-	const [differentCheckinTime, setDifferentCheckinTime] = useState(
+	const [hasDifferentCheckinTime, setHasDifferentCheckinTime] = useState(
 		oldValues.start != oldValues.checkinStart ||
 			oldValues.end != oldValues.checkinEnd,
 	);
@@ -173,10 +170,10 @@ function EditEventForm({
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submit: ", values);
 		toast.loading("Creating Event...");
-		const checkinStart = differentCheckinTime
+		const checkinStart = hasDifferentCheckinTime
 			? values.checkinStart
 			: values.start;
-		const checkinEnd = differentCheckinTime
+		const checkinEnd = hasDifferentCheckinTime
 			? values.checkinEnd
 			: values.end;
 
@@ -216,9 +213,6 @@ function EditEventForm({
 	return (
 		<>
 			<AlertDialog open={error != null}>
-				{/* <AlertDialogTrigger asChild>
-					<Button variant="outline">Show Dialog</Button>
-				</AlertDialogTrigger> */}
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>{error?.title}</AlertDialogTitle>
@@ -375,16 +369,16 @@ function EditEventForm({
 									Use Different Check-In Time?
 								</FormLabel>
 								<Switch
-									checked={differentCheckinTime}
+									checked={hasDifferentCheckinTime}
 									onCheckedChange={() => {
-										setDifferentCheckinTime(
+										setHasDifferentCheckinTime(
 											(prev) => !prev,
 										);
 									}}
 									aria-readonly
 								/>
 							</div>
-							{differentCheckinTime && (
+							{hasDifferentCheckinTime && (
 								<div className="grid grid-cols-2 gap-4">
 									<FormField
 										control={form.control}
@@ -567,5 +561,3 @@ function EditEventForm({
 		</>
 	);
 }
-
-export default EditEventForm;

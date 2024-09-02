@@ -1,8 +1,10 @@
 import { db, eq } from "db";
 import { eventCategories, events, eventsToCategories } from "db/schema";
-import { iEvent, uEvent } from "../constants/events";
+import { iEvent, uEvent } from "../types/events";
 
-export async function getEventWithCategoriesById(id: string): Promise<uEvent> {
+export async function getEventWithCategoriesById(
+	id: string,
+){
 	const event = await db.query.events.findFirst({
 		where: () => eq(events.id, id),
 		with: {
@@ -21,9 +23,7 @@ export async function getEventWithCategoriesById(id: string): Promise<uEvent> {
 		},
 	});
 
-	if (!event) {
-		throw Error("Event does not exist");
-	}
+	if (!event) return undefined;
 
 	return {
 		name: event.name,

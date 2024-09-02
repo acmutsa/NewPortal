@@ -25,7 +25,6 @@ export const updateEvent = adminAction(
 					code: "update_event_failed",
 				};
 				tx.rollback();
-				return;
 			}
 
 			//find new categories
@@ -43,7 +42,7 @@ export const updateEvent = adminAction(
 				categoryID: cat,
 			}));
 
-			await tx.insert(eventsToCategories).values(insertVal).returning();
+			await tx.insert(eventsToCategories).values(insertVal);
 
 			await tx
 				.delete(eventsToCategories)
@@ -55,8 +54,7 @@ export const updateEvent = adminAction(
 						),
 						eq(eventsToCategories.eventID, eventID),
 					),
-				)
-				.returning({ deletedID: eventsToCategories.categoryID });
+				);
 		});
 
 		await db.execute(sql`VACUUM events_to_categories`);
