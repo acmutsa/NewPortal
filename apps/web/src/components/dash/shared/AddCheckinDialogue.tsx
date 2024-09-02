@@ -18,6 +18,8 @@ import {
 	DialogTitle,
 	DialogContent,
 	DialogHeader,
+	DialogFooter,
+	DialogClose,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
@@ -48,10 +50,9 @@ import {
 } from "@/components/ui/select";
 
 import c from "config";
-import { DialogClose } from "@radix-ui/react-dialog";
 
 type Props = {
-	trigger: ReactNode;
+	// trigger: ReactNode;
 	eventList: { id: string; name: string }[];
 	default?: {
 		eventID?: string;
@@ -59,7 +60,7 @@ type Props = {
 	};
 };
 
-async function AddCheckinDialogue({ trigger, eventList, ...props }: Props) {
+async function AddCheckinDialogue({ eventList, ...props }: Props) {
 	const form = useForm<AdminCheckin>({
 		resolver: zodResolver(adminCheckinSchema),
 		defaultValues: {
@@ -114,9 +115,8 @@ async function AddCheckinDialogue({ trigger, eventList, ...props }: Props) {
 	}
 
 	return (
-		<Dialog>
-			<DialogTrigger asChild>{trigger}</DialogTrigger>
-			<DialogContent>
+		<>
+			<DialogContent onClick={(e) => e.stopPropagation()}>
 				<DialogHeader>
 					<DialogTitle>Add Checkin</DialogTitle>
 					<Form {...form}>
@@ -179,22 +179,24 @@ async function AddCheckinDialogue({ trigger, eventList, ...props }: Props) {
 									</FormItem>
 								)}
 							/>
-							<Button
-								type="submit"
-								className="w-full"
-								disabled={
-									actionStatus == "executing" ||
-									(actionStatus == "hasSucceeded" &&
-										actionResult.data?.success)
-								}
-							>
-								Submit
-							</Button>
+							<DialogFooter>
+								<Button
+									type="submit"
+									className="w-full"
+									disabled={
+										actionStatus == "executing" ||
+										(actionStatus == "hasSucceeded" &&
+											actionResult.data?.success)
+									}
+								>
+									Submit
+								</Button>
+							</DialogFooter>
 						</form>
 					</Form>
 				</DialogHeader>
 			</DialogContent>
-		</Dialog>
+		</>
 	);
 }
 
