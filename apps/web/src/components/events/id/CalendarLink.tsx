@@ -6,7 +6,6 @@ import { useState } from "react";
 import { createCalendarLink, capitalizeFirstLetter } from "@/lib/utils";
 import type { CalendarDetails, EventCalendarName } from "@/lib/types/events";
 
-// TODO: Have a quick convo about this. They are tiny icons so they
 export default function CalendarLink({
 	calendarName,
 	calendarDetails,
@@ -38,7 +37,7 @@ export default function CalendarLink({
 				alt="Calendar Icon"
 				height={25}
 				width={25}
-				onError={(e) => {
+				onError={() => {
 					setSrc(fallBackSrc);
 				}}
 			/>
