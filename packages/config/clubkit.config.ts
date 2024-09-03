@@ -46,7 +46,7 @@ export default {
 	calendarLinks: [
 		{ title: "google" },
 		{ title: "outlook" },
-		{ title: "ics", titleOverride : "iCal" },
+		{ title: "ics", titleOverride: "iCal" },
 	],
 	streamingLinks: [
 		{ title: "twitch", href: "https://www.twitch.tv/acmutsa" },
@@ -74,6 +74,8 @@ export default {
 		maxSizeInBytes: 500000,
 	},
 } as const;
+
+export const defaultTheme = "light";
 
 export const majors = [
 	"Accounting",
@@ -188,7 +190,3 @@ export const majors = [
 	"Webpage Design",
 	"Other",
 ] as const;
-
-
-	
-
