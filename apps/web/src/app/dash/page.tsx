@@ -70,7 +70,7 @@ export default async function Page() {
 								<Button
 									variant="outline"
 									size="sm"
-									className="mt-2"
+									className="mt-2 opacity-0"
 								>
 									Edit Profile
 								</Button>
