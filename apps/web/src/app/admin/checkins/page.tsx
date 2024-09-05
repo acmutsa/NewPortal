@@ -22,15 +22,15 @@ export default async function Page() {
 					<CheckinsStatsSheet />
 				</Suspense>
 				<div>
-					<AddCheckinDialogue
-						eventList={eventList}
-						trigger={
+					<Dialog>
+						<DialogTrigger asChild>
 							<Button className="flex flex-nowrap gap-x-2">
 								<UserRoundPlus />
 								Add Checkin
 							</Button>
-						}
-					/>
+						</DialogTrigger>
+						<AddCheckinDialogue eventList={eventList} />
+					</Dialog>
 				</div>
 			</div>
 			{/* <div className="border-muted">{events?.[0].name}</div> */}

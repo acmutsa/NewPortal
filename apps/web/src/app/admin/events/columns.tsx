@@ -17,6 +17,9 @@ import { DataTableColumnHeader } from "@/components/ui/data-table";
 import type { EventType } from "@/lib/types/events";
 // import { Event } from "db/zod";
 import { formatDate } from "date-fns";
+import AddCheckinDialogue from "@/components/dash/shared/AddCheckinDialogue";
+import { Dialog } from "@radix-ui/react-dialog";
+import { DialogTrigger } from "@/components/ui/dialog";
 
 type EventWithCheckins = Partial<EventType> & { checkin_count: number };
 
@@ -101,45 +104,60 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 		cell: ({ row }) => {
 			const data = row.original;
 			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" className="h-8 w-8 p-0">
-							<span className="sr-only">Open menu</span>
-							<MoreHorizontal className="h-4 w-4" />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuItem>
-							<Link href={`/events/${data.id}`}>View</Link>
-						</DropdownMenuItem>
-						<DropdownMenuItem>
-							<div
-								className="h-full w-full"
-								onClick={async (e) => {
-									e.stopPropagation();
-									await navigator.clipboard.writeText(
-										`https://portal.acmutsa.org/events/${data.id}`,
-									);
-								}}
-								//TODO: set sonner to signify link copied
-							>
-								Copy link
-							</div>
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>
-							<Link href={`/admin/events/${data.id}/edit`}>
-								Edit
-							</Link>
-						</DropdownMenuItem>
-						<DropdownMenuItem>
-							<Link href={`/admin/events/${data.id}/checkin`}>
-								Add Checkin
-							</Link>
-						</DropdownMenuItem>
-						{/* TODO: Add delete button w/confirmation dialogue */}
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<Dialog>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" className="h-8 w-8 p-0">
+								<span className="sr-only">Open menu</span>
+								<MoreHorizontal className="h-4 w-4" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuItem>
+								<Link href={`/events/${data.id}`}>View</Link>
+							</DropdownMenuItem>
+							<DropdownMenuItem>
+								<div
+									className="h-full w-full"
+									onClick={async (e) => {
+										e.stopPropagation();
+										await navigator.clipboard.writeText(
+											`https://portal.acmutsa.org/events/${data.id}`,
+										);
+									}}
+									//TODO: set sonner to signify link copied
+								>
+									Copy link
+								</div>
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem>
+								<Link href={`/admin/events/${data.id}/edit`}>
+									Edit
+								</Link>
+							</DropdownMenuItem>
+							<DropdownMenuItem asChild>
+								<DialogTrigger asChild>
+									<div
+										className="h-full w-full"
+										onClick={(e) => e.stopPropagation()}
+									>
+										Add Checkin
+									</div>
+								</DialogTrigger>
+							</DropdownMenuItem>
+							{/* TODO: Add delete button w/confirmation dialogue */}
+						</DropdownMenuContent>
+					</DropdownMenu>
+					<AddCheckinDialogue
+						eventList={[
+							{
+								id: row.original.id!,
+								name: row.original.name!,
+							},
+						]}
+					/>
+				</Dialog>
 			);
 		},
 	},
