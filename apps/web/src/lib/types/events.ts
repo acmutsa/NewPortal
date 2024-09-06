@@ -5,6 +5,13 @@ import {
 	eventsToCategoriesRelations,
 } from "db/schema";
 
+import {
+	insertEventSchemaFormified,
+	selectEventSchema,
+	updateEventSchemaFormified,
+} from "db/zod";
+import { z } from "zod";
+
 export type EventToCategoriesType = typeof eventsToCategories.$inferSelect;
 
 export type EventCategoryType = typeof eventCategories.$inferSelect;
@@ -32,9 +39,9 @@ export type EventCalendarLink = {
 };
 
 export type EventCalendarName = {
-	title:string;
-	titleOverride?:string;
-}
+	title: string;
+	titleOverride?: string;
+};
 
 export type DetailsProps = {
 	event: EventAndCategoriesType;
@@ -63,3 +70,7 @@ export enum CheckinResult {
 	SOME_FAILED = "some_failed",
 	FAILED = "failed",
 }
+
+export type iEvent = z.infer<typeof insertEventSchemaFormified>;
+export type uEvent = z.infer<typeof updateEventSchemaFormified>;
+export type sEvent = z.infer<typeof selectEventSchema>;

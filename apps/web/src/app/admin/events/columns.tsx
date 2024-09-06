@@ -118,7 +118,7 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 							</DropdownMenuItem>
 							<DropdownMenuItem>
 								<div
-									className="h-full w-full"
+									className="h-full w-full cursor-pointer"
 									onClick={async (e) => {
 										e.stopPropagation();
 										await navigator.clipboard.writeText(
@@ -132,14 +132,17 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem>
-								<Link href={`/admin/events/${data.id}/edit`}>
+								<Link
+									href={`/admin/events/${data.id}/edit`}
+									className="h-full w-full"
+								>
 									Edit
 								</Link>
 							</DropdownMenuItem>
 							<DropdownMenuItem asChild>
 								<DialogTrigger asChild>
 									<div
-										className="h-full w-full"
+										className="h-full w-full cursor-pointer"
 										onClick={(e) => e.stopPropagation()}
 									>
 										Add Checkin
