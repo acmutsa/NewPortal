@@ -6,8 +6,10 @@ import PageError from "@/components/shared/PageError";
 import { Suspense } from "react";
 import { getUserCheckin } from "@/lib/queries";
 import { getUTCDate } from "@/lib/utils";
-export default function Page({ params }: { params: { slug: string } }) {
-	const { userId: clerkId } = auth();
+
+export default function Page({params}: {params: {slug: string}}){
+
+    const { userId: clerkId } = auth();
 	if (!clerkId) {
 		redirect("/sign-in");
 	}

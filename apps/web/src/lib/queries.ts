@@ -2,6 +2,7 @@ import { count, db, eq, gte, sql, between, inArray, desc } from "db";
 import { checkins, events, users, data } from "db/schema";
 import { getUTCDate } from "@/lib/utils";
 import c from "config";
+import { sEvent } from "./types/events";
 
 export const getCategoryOptions = async () => {
 	const categories = (await db.query.eventCategories.findMany()).reduce(

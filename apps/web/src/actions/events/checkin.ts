@@ -2,11 +2,10 @@
 
 import { authenticatedAction, adminAction } from "@/lib/safe-action";
 import { userCheckInSchemaFormified } from "@/validators/userCheckin";
+import { UNIQUE_KEY_CONSTRAINT_VIOLATION_CODE } from "@/lib/constants/";
 import { checkInUser, checkInUserList } from "@/lib/queries";
-import { UNIQUE_KEY_CONSTRAINT_VIOLATION_CODE } from "@/lib/constants/shared";
 import { AdminCheckin, adminCheckinSchema, universityIDSplitter } from "db/zod";
 import { CheckinResult } from "@/lib/types/events";
-
 export const checkInUserAction = authenticatedAction(
 	userCheckInSchemaFormified,
 	async ({ feedback, rating, userId, eventId }) => {
