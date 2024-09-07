@@ -94,22 +94,3 @@ export type NewEventFormProps = {
 	defaultDate: Date;
 	categoryOptions: { [key: string]: string };
 };
-
-
-export type EventImageProps = Omit<ImageProps, 'alt'> & {
-	alt?:string;
-}
-
-export type RatingFormAttributes = {
-	onChange: (...event: any[]) => void;
-	onBlur: Noop;
-	value: number;
-	disabled?: boolean | undefined;
-	name: string;
-	ref: RefCallBack;
-};
-
-export type NewEventFormProps = {
-	defaultDate: Date;
-	categoryOptions: { [key: string]: string };
-};
