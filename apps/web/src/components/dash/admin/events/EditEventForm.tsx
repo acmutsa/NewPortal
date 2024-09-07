@@ -1,5 +1,4 @@
 "use client";
-
 import {
 	Form,
 	FormField,
@@ -7,6 +6,7 @@ import {
 	FormControl,
 	FormLabel,
 	FormMessage,
+	FormDescription,
 } from "@/components/ui/form";
 import {
 	MultiSelector,
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/MultiSelect";
 import {
 	AlertDialog,
+	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -27,7 +28,9 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 import { getLocalTimeZone, parseAbsolute } from "@internationalized/date";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +38,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { insertEventSchemaFormified } from "db/zod";
+import { updateEventSchemaFormified as formSchema } from "db/zod";
+import { CalendarWithYears } from "@/components/ui/calendarWithYearSelect";
 import { FormGroupWrapper } from "@/components/shared/form-group-wrapper";
 import { DateTimePicker } from "@/components/ui/date-time-picker/date-time-picker";
 import c from "config";
@@ -43,18 +47,20 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { upload } from "@vercel/blob/client";
-import { createEvent } from "@/actions/events/createNewEvent";
-import { ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
-import { bucketEventThumbnailBaseUrl } from "config";
-import type { NewEventFormProps } from "@/lib/types/events";
+import { updateEvent } from "@/actions/events/update";
+import { iEvent, uEvent } from "@/lib/types/events";
 
+type EditEventFormProps = {
+	eventID: string;
+	oldValues: uEvent;
+	categoryOptions: { [key: string]: string };
+};
 
-const formSchema = insertEventSchemaFormified;
-
-export default function NewEventForm({
-	defaultDate,
+export default function EditEventForm({
+	eventID,
+	oldValues,
 	categoryOptions,
-}: NewEventFormProps) {
+}: EditEventFormProps) {
 	const [error, setError] = useState<{
 		title: string;
 		description: string;
@@ -64,21 +70,14 @@ export default function NewEventForm({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			start: defaultDate,
-			checkinStart: defaultDate,
-			end: new Date(defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS),
-			checkinEnd: new Date(
-				defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS,
-			),
-			thumbnailUrl: c.thumbnails.default,
-			categories: [],
-			isUserCheckinable: true,
-			points: 1
+			...oldValues,
 		},
 	});
 	const [thumbnail, setThumbnail] = useState<File | null>(null);
-	const [hasDifferentCheckinTime, setHasDifferentCheckinTime] =
-		useState(false);
+	const [hasDifferentCheckinTime, setHasDifferentCheckinTime] = useState(
+		oldValues.start != oldValues.checkinStart ||
+			oldValues.end != oldValues.checkinEnd,
+	);
 
 	function validateAndSetThumbnail(
 		event: React.ChangeEvent<HTMLInputElement>,
@@ -116,19 +115,25 @@ export default function NewEventForm({
 		return true;
 	}
 
+	useEffect(() => {
+		if (Object.keys(form.formState.errors).length > 0) {
+			console.log("Errors: ", form.formState.errors);
+		}
+	}, [form.formState]);
+
 	const {
-		execute: runCreateEvent,
+		execute: runUpdateEvent,
 		status: actionStatus,
 		result: actionResult,
 		reset: resetAction,
-	} = useAction(createEvent, {
-		onSuccess: async ({ success, code, eventID }) => {
+	} = useAction(updateEvent, {
+		onSuccess: async ({ success, code }) => {
 			toast.dismiss();
 			if (!success) {
 				switch (code) {
-					case "insert_event_failed":
+					case "update_event_failed":
 						setError({
-							title: "Creating event failed",
+							title: "Updating event failed",
 							description: `Attempt to create event has failed. Please try again or contact ${c.contactEmail}.`,
 						});
 						break;
@@ -145,7 +150,7 @@ export default function NewEventForm({
 				resetAction();
 				return;
 			}
-			toast.success("Event Created successfully!", {
+			toast.success("Event Updated successfully!", {
 				description: "You'll be redirected shortly.",
 			});
 			setTimeout(() => {
@@ -157,11 +162,13 @@ export default function NewEventForm({
 			toast.error(
 				`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
 			);
+			console.log("error: ", error);
 			resetAction();
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		console.log("Submit: ", values);
 		toast.loading("Creating Event...");
 		const checkinStart = hasDifferentCheckinTime
 			? values.checkinStart
@@ -169,38 +176,39 @@ export default function NewEventForm({
 		const checkinEnd = hasDifferentCheckinTime
 			? values.checkinEnd
 			: values.end;
-			// Come back and make cleaner
+
+		const categories = values.categories.map(
+			(name) => categoryOptions[name],
+		);
+		const oldCategories = oldValues.categories.map(
+			(name) => categoryOptions[name],
+		);
+
 		if (thumbnail) {
-			const thumbnailBlob = await upload(
-				`${bucketEventThumbnailBaseUrl}/${thumbnail.name}`,
-				thumbnail,
-				{
-					access: "public",
-					handleUploadUrl: "/api/upload/thumbnail",
-				},
-			);
-			runCreateEvent({
+			const thumbnailBlob = await upload(thumbnail.name, thumbnail, {
+				access: "public",
+				handleUploadUrl: "/api/upload/thumbnail",
+			});
+			runUpdateEvent({
 				...values,
+				eventID,
+				categories,
+				oldCategories,
 				thumbnailUrl: thumbnailBlob.url,
 				checkinStart,
 				checkinEnd,
-				categories: values.categories.map(
-					(cat) => categoryOptions[cat],
-				),
 			});
 		} else {
-			runCreateEvent({
+			runUpdateEvent({
 				...values,
+				eventID,
+				categories,
+				oldCategories,
 				checkinStart,
 				checkinEnd,
-				categories: values.categories.map(
-					(cat) => categoryOptions[cat],
-				),
 			});
 		}
 	};
-
-	
 
 	return (
 		<>
@@ -260,6 +268,10 @@ export default function NewEventForm({
 								}) => (
 									<FormItem>
 										<FormLabel>Thumbnail</FormLabel>
+										<FormDescription>
+											<strong>Current:</strong>{" "}
+											{oldValues.thumbnailUrl}
+										</FormDescription>
 										<FormControl>
 											<Input
 												{...fieldProps}
@@ -485,7 +497,7 @@ export default function NewEventForm({
 														categoryOptions,
 													).map(([name, id]) => (
 														<MultiSelectorItem
-															key={id}
+															key={id} // category id
 															value={name}
 														>
 															{name}
@@ -494,33 +506,6 @@ export default function NewEventForm({
 												</MultiSelectorList>
 											</MultiSelectorContent>
 										</MultiSelector>
-									</FormItem>
-								)}
-							/>
-							<FormField
-								name="points"
-								control={form.control}
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Points</FormLabel>
-										<FormControl>
-											<Input
-												type="number"
-												className="max-w-[25%]"
-												min={c.minEventPoints}
-												max={c.maxEventPoints}
-												{...field}
-												onChange={(e) => {
-													const parsedPoints = parseInt(
-														e.target.value,
-														10,
-													);
-														const points = (parsedPoints < 1) ? 1 : parsedPoints;
-														field.onChange(points);
-												}}
-											/>
-										</FormControl>
-										<FormMessage />
 									</FormItem>
 								)}
 							/>

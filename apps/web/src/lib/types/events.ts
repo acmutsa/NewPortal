@@ -4,6 +4,13 @@ import {
 	eventCategories,
 } from "db/schema";
 
+import {
+	insertEventSchemaFormified,
+	selectEventSchema,
+	updateEventSchemaFormified,
+} from "db/zod";
+import { z } from "zod";
+
 import type { Noop, RefCallBack } from "react-hook-form";
 
 import type { ImageProps } from "next/image";
@@ -34,9 +41,9 @@ export type EventCalendarLink = {
 };
 
 export type EventCalendarName = {
-	title:string;
-	titleOverride?:string;
-}
+	title: string;
+	titleOverride?: string;
+};
 
 export type DetailsProps = {
 	event: EventAndCategoriesType;
@@ -65,6 +72,29 @@ export enum CheckinResult {
 	SOME_FAILED = "some_failed",
 	FAILED = "failed",
 }
+
+export type iEvent = z.infer<typeof insertEventSchemaFormified>;
+export type uEvent = z.infer<typeof updateEventSchemaFormified>;
+export type sEvent = z.infer<typeof selectEventSchema>;
+
+export type EventImageProps = Omit<ImageProps, 'alt'> & {
+	alt?:string;
+}
+
+export type RatingFormAttributes = {
+	onChange: (...event: any[]) => void;
+	onBlur: Noop;
+	value: number;
+	disabled?: boolean | undefined;
+	name: string;
+	ref: RefCallBack;
+};
+
+export type NewEventFormProps = {
+	defaultDate: Date;
+	categoryOptions: { [key: string]: string };
+};
+
 
 export type EventImageProps = Omit<ImageProps, 'alt'> & {
 	alt?:string;
