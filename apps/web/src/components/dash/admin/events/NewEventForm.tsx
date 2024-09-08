@@ -64,6 +64,8 @@ export default function NewEventForm({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
+			name:"",
+			description:"",
 			start: defaultDate,
 			checkinStart: defaultDate,
 			end: new Date(defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS),
