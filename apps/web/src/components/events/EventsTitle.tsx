@@ -6,7 +6,7 @@ export default function EventsTitle() {
 				Events
 			</h1>
 			<h3 className="text-center font-bold sm:text-xl">
-				Check out what {c.clubName} Has Planned!
+				Check Out What {c.clubName} Has Planned!
 			</h3>
 		</div>
 	);
