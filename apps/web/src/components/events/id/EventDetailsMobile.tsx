@@ -12,7 +12,14 @@ import EventDetailsLiveIndicator from "../shared/EventDetailsLiveIndicator";
 import EventImage from "../shared/EventImage";
 
 export default function EventDetailsMobile(detailsProps: DetailsProps) {
-	const { streamingLinks, calendarLinks, checkingInInfo, aboutOrg } = c;
+	const {
+		streamingLinks,
+		calendarLinks,
+		events: { 
+			checkingInInfo, 
+			aboutOrg 
+		},
+	} = c;
 
 	const {
 		event,

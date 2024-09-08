@@ -11,7 +11,13 @@ import { DetailsProps } from "@/lib/types/events";
 import EventImage from "../shared/EventImage";
 export default function EventDetailsDefault(detailsProps: DetailsProps) {
 
-	const { streamingLinks, calendarLinks, checkingInInfo, aboutOrg } = c;
+	const {
+		streamingLinks,
+		calendarLinks,
+		events: { 
+			checkingInInfo, aboutOrg 
+		},
+	} = c;
 
 	const {
 		event,
