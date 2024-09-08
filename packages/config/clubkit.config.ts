@@ -4,20 +4,7 @@ export default {
 		name: "ABC123",
 		maxLength: 6,
 	},
-	OneHourInMilliseconds: 3600000,
 	contactEmail: "tech@acmutsa.org",
-	// Think this can be removed?
-	eventTypes: {
-		ACM: {
-			color: "#179BD5",
-		},
-		"ACM-W": {
-			color: "#7BE9E8",
-		},
-		"Rowdy Creators": {
-			color: "#FFD51E",
-		},
-	},
 	membership: {
 		activeThreshold: 7,
 	},
@@ -76,6 +63,7 @@ export default {
 } as const;
 
 export const majors = [
+	"Computer Science",
 	"Accounting",
 	"Accounting Technician",
 	"Actuarial Science",
@@ -109,7 +97,6 @@ export const majors = [
 	"Computer & Information Sciences, General",
 	"Computer Engineering",
 	"Computer Networking/Telecommunications",
-	"Computer Science",
 	"Computer Software & Media Applications",
 	"Computer System Administration",
 	"Construction Engineering/Management",

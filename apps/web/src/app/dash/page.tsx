@@ -81,7 +81,7 @@ export default async function Page() {
 						<CardHeader>
 							<CardTitle>Attendance Points</CardTitle>
 							<CardDescription>
-								{`${new Date().getMonth() > 6 ? "Fall" : "Spring"} Semester ${new Date().getFullYear()}`}
+								{`${new Date().getMonth() > 6 ? "Fall" : "Spring"} ${new Date().getFullYear()}`}
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
