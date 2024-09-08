@@ -69,10 +69,14 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 			</div>
 			<div className="flex w-full flex-col items-center justify-center">
 				<div className="flex w-full flex-col items-center justify-center gap-y-1 px-7 pb-6 pt-2">
-					<h1 className="w-1/2 border-b border-muted-foreground text-center text-xl font-bold">
-						Description
-					</h1>
-					<p className="text-base md:w-3/4">{event.description}</p>
+					<div className="w-full px-[8%]">
+						<h1 className="border-b border-muted-foreground text-left text-xl font-bold">
+							Description
+						</h1>
+					</div>
+					<p className="w-[85%] px-[9px] md:px-3">
+						{event.description}
+					</p>
 				</div>
 			</div>
 			<div className="flex flex-col items-center justify-center">
