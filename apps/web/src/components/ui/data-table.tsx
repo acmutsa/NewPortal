@@ -183,6 +183,7 @@ export function DataTable<TData, TValue>({
 									<Link
 										legacyBehavior
 										href={`${viewRoute ?? ""}${row.getValue("id")}`}
+										key={row.id}
 									>
 										<TableRow
 											key={row.id}
