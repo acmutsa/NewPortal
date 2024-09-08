@@ -4,6 +4,14 @@ export default {
 		name: "ABC123",
 		maxLength: 6,
 	},
+	semesters: {
+		current: {
+			title: "Fall 2024",
+			startDate: new Date("2024-08-24"),
+			endDate: new Date("2024-12-31"),
+			pointsRequired: 7,
+		},
+	},
 	contactEmail: "tech@acmutsa.org",
 	membership: {
 		activeThreshold: 7,
@@ -33,7 +41,7 @@ export default {
 	calendarLinks: [
 		{ title: "google" },
 		{ title: "outlook" },
-		{ title: "ics", titleOverride : "iCal" },
+		{ title: "ics", titleOverride: "iCal" },
 	],
 	streamingLinks: [
 		{ title: "twitch", href: "https://www.twitch.tv/acmutsa" },
