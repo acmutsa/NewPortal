@@ -1,25 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-	Dialog,
-	DialogTrigger,
 	DialogTitle,
 	DialogContent,
 	DialogHeader,
 	DialogFooter,
-	DialogClose,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
@@ -35,8 +20,8 @@ import { CheckinResult } from "@/lib/types/events";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useAction } from "next-safe-action/hooks";
-import React, { ReactNode } from "react";
-import { AdminCheckin, adminCheckinSchema, universityIDSplitter } from "db/zod";
+import React from "react";
+import { AdminCheckin, adminCheckinSchema,  } from "db/zod";
 import { adminCheckin } from "@/actions/events/checkin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -48,11 +33,9 @@ import {
 	SelectContent,
 	SelectItem,
 } from "@/components/ui/select";
-
 import c from "config";
 
 type Props = {
-	// trigger: ReactNode;
 	eventList: { id: string; name: string }[];
 	default?: {
 		eventID?: string;
@@ -60,7 +43,7 @@ type Props = {
 	};
 };
 
-async function AddCheckinDialogue({ eventList, ...props }: Props) {
+function AddCheckinDialogue({ eventList, ...props }: Props) {
 	const form = useForm<AdminCheckin>({
 		resolver: zodResolver(adminCheckinSchema),
 		defaultValues: {
@@ -147,6 +130,7 @@ async function AddCheckinDialogue({ eventList, ...props }: Props) {
 												{eventList.map((event) => (
 													<SelectItem
 														value={event.id}
+														key={event.id}
 													>
 														{event.name}
 													</SelectItem>
