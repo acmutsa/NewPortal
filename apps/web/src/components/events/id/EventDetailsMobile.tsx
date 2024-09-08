@@ -40,7 +40,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 			</div>
 			<div className="flex w-full flex-col items-center justify-center gap-5">
 				<EventCategories event={event} isPast={isEventPassed} />
-				<div className="flex flex-col gap-2">
+				<div className="flex flex-col gap-2 text-base sm:text-lg md:text-xl">
 					<div className="flex items-center justify-start gap-3">
 						<MapPin size={24} />
 						<p className=" flex">{event.location}</p>
@@ -68,12 +68,11 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 				</div>
 			</div>
 			<div className="flex w-full flex-col items-center justify-center">
-				{/* Might want to consider a scrollview for this if it gets too long? */}
 				<div className="flex w-full flex-col items-center justify-center gap-y-1 px-7 pb-6 pt-2">
 					<h1 className="w-1/2 border-b border-muted-foreground text-center text-xl font-bold">
 						Description
 					</h1>
-					<p className="text-center md:w-3/4">{event.description}</p>
+					<p className="text-base md:w-3/4">{event.description}</p>
 				</div>
 			</div>
 			<div className="flex flex-col items-center justify-center">
@@ -106,7 +105,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 				</Link>
 			</div>
 			<div className="flex w-full flex-col items-center justify-center gap-5 pt-5">
-				<h1 className="text-xl font-bold">Streaming on...</h1>
+				<h1 className="text-xl font-bold">Where to Watch</h1>
 				<div className="flex w-full flex-row items-center justify-center gap-5">
 					{streamingLinks.map((link) => (
 						<StreamingLink
@@ -118,7 +117,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 				</div>
 			</div>
 			<div className="flex w-full flex-col items-center justify-center gap-5">
-				<h1 className="text-xl font-bold">Need a Reminder?</h1>
+				<h1 className="text-xl font-bold">Reminders</h1>
 				<div className="flex w-full flex-row flex-wrap items-center justify-center gap-6 px-3">
 					{calendarLinks.map((cal) => (
 						<CalendarLink
@@ -129,17 +128,21 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 					))}
 				</div>
 			</div>
-			<div className="flex w-full flex-col items-center justify-center gap-1 pt-8">
-				<h1 className="w-1/2 border-b border-muted-foreground text-center text-xl font-bold">
-					About ACM
-				</h1>
-				<p className=" px-7 text-center md:w-3/4">{aboutOrg}</p>
+			<div className="flex flex-col items-center justify-center gap-1 pt-8">
+				<div className="w-full px-[8%]">
+					<h1 className="border-b border-muted-foreground text-left text-xl font-bold">
+						About ACM
+					</h1>
+				</div>
+				<p className="w-[85%] px-[9px] md:px-3">{aboutOrg}</p>
 			</div>
 			<div className="flex w-full flex-col items-center justify-center gap-1 pt-8">
-				<h1 className="w-1/2 border-b border-muted-foreground text-center text-xl font-bold">
-					Checking-in
-				</h1>
-				<p className="px-7 text-center md:w-3/4">{checkingInInfo}</p>
+				<div className="w-full px-[8%]">
+					<h1 className="border-b border-muted-foreground text-left text-xl font-bold">
+						Checking In
+					</h1>
+				</div>
+				<p className="w-[85%] px-[9px] md:px-3">{checkingInInfo}</p>
 			</div>
 		</div>
 	);
