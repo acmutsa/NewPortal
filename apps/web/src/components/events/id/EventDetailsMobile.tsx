@@ -32,7 +32,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 			<div className="relative flex h-auto w-full items-center justify-center">
 				<EventImage
 					src={event.thumbnailUrl}
-					className={clsx("h-auto w-1/2 rounded-md", {})}
+					className="h-auto w-1/2 rounded-md"
 				/>
 				{isEventHappening && (
 					<EventDetailsLiveIndicator className="absolute left-[26%] top-1 z-50" />
@@ -70,11 +70,11 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 			<div className="flex w-full flex-col items-center justify-center">
 				<div className="flex w-full flex-col items-center justify-center gap-y-1 px-7 pb-6 pt-2">
 					<div className="w-full px-[8%]">
-						<h1 className="border-b border-muted-foreground text-left text-xl font-bold">
+						<h1 className="border-b border-muted-foreground text-left text-xl sm:text-2xl md:text-3xl font-bold">
 							Description
 						</h1>
 					</div>
-					<p className="w-[85%] px-[9px] md:px-3">
+					<p className="w-[85%] pl-[9px] md:px-3">
 						{event.description}
 					</p>
 				</div>
@@ -134,19 +134,19 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 			</div>
 			<div className="flex flex-col items-center justify-center gap-1 pt-8">
 				<div className="w-full px-[8%]">
-					<h1 className="border-b border-muted-foreground text-left text-xl font-bold">
+					<h1 className="border-b border-muted-foreground text-left text-xl sm:text-2xl md:text-3xl font-bold">
 						About ACM
 					</h1>
 				</div>
-				<p className="w-[85%] px-[9px] md:px-3">{aboutOrg}</p>
+				<p className="w-[85%] pl-[9px] md:pl-3">{aboutOrg}</p>
 			</div>
 			<div className="flex w-full flex-col items-center justify-center gap-1 pt-8">
 				<div className="w-full px-[8%]">
-					<h1 className="border-b border-muted-foreground text-left text-xl font-bold">
+					<h1 className="border-b border-muted-foreground text-left text-xl sm:text-2xl md:text-3xl font-bold">
 						Checking In
 					</h1>
 				</div>
-				<p className="w-[85%] px-[9px] md:px-3">{checkingInInfo}</p>
+				<p className="w-[85%] pl-[9px] md:pl-3">{checkingInInfo}</p>
 			</div>
 		</div>
 	);
