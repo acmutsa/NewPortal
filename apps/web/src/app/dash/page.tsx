@@ -1,12 +1,11 @@
-import { SignOutButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "db";
-import { users } from "db/schema";
-import { eq } from "db/drizzle";
+import { users,data,checkins,events } from "db/schema";
+import { eq,count,between,sum,sql } from "db/drizzle";
 import { redirect } from "next/navigation";
 import c from "config";
 import Image from "next/image";
-import CircularProgressBar from "@/components/shared/circular-progress";
+import { RadialChartProgress } from "@/components/shared/circular-progress";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,7 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
+	CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -30,14 +30,60 @@ export default async function Page() {
 
 	if (!userId) return redirect("/sign-in");
 
-	const user = await db.query.users.findFirst({
-		where: eq(users.clerkID, userId),
-		with: {
-			data: true,
-		},
-	});
+	// Cache this later
+	const queryResult = await db
+		.select({
+			user: users,
+			userData: data,
+			events:events,
+			// Still do not think the dates are working right here
+			currentSemesterPoints: sql`SUM(${events.points}) FILTER (WHERE ${checkins.time} BETWEEN ${c.semesters.current.startDate} AND ${c.semesters.current.endDate})`.mapWith(Number),
+			totalPoints: sum(events.points),
+			currentSemesterEventsAttended: count(
+				between(
+					checkins.time,
+					c.semesters.current.startDate,
+					c.semesters.current.endDate,
+				),
+			),
+			totalEventsAttended: count(checkins.eventID),
+			checkins: checkins,
+		})
+		.from(users)
+		.innerJoin(data, eq(users.userID, data.userID))
+		.leftJoin(checkins, eq(users.userID, checkins.userID))
+		.leftJoin(events, eq(events.id, checkins.eventID))
+		.groupBy(checkins.userID, checkins.eventID, users.userID, data.userID,events.id)
+		.where(eq(users.clerkID, userId));
 
-	if (!user) return redirect("/onboarding");
+		console.log(queryResult);
+	
+		
+
+	if (!queryResult || queryResult.length < 1) return redirect("/onboarding");
+	
+	const userDashResult = queryResult[0];
+
+	const {
+		user,
+		userData,
+		currentSemesterPoints,
+		totalPoints,
+		currentSemesterEventsAttended,
+		totalEventsAttended,
+		// checkins,
+	} = userDashResult;
+
+	const hasUserMetRequiredPoints = currentSemesterPoints >= c.semesters.current.pointsRequired;
+
+	const radialChartProgressProps = {
+		titleText: "Attendance Points",
+		descriptionText: c.semesters.current.title,
+		current: currentSemesterPoints ?? 0,
+		total: c.semesters.current.pointsRequired,
+		footerText: hasUserMetRequiredPoints ? 'Way To Go! You have gained enough points to attend our banquet🎉': `Keep Attending Events to earn more points!`,
+	};
+	
 	return (
 		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center">
 			<div>
@@ -65,7 +111,7 @@ export default async function Page() {
 								</h2>
 								<p className="mt-1 flex items-center text-sm text-muted-foreground">
 									<GraduationCapIcon className="mr-2 h-4 w-4" />
-									{`${user.data.major}, ${user.data.graduationYear}`}
+									{`${userData.major}, ${userData.graduationYear}`}
 								</p>
 								<Button
 									variant="outline"
@@ -77,20 +123,41 @@ export default async function Page() {
 							</div>
 						</CardContent>
 					</Card>
-					<Card>
+
+					<RadialChartProgress {...radialChartProgressProps}>
+						
+					</RadialChartProgress>
+					
+					{/* <Card>
 						<CardHeader>
 							<CardTitle>Attendance Points</CardTitle>
 							<CardDescription>
-								{`${new Date().getMonth() > 6 ? "Fall" : "Spring"} ${new Date().getFullYear()}`}
+								<div className="flex w-full flex-row items-center justify-between">
+									<p>{c.semesters.current.title}</p>
+									<p>Total Points</p>
+								</div>
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<div className="text-3xl font-bold">{0}</div>
+							<div className="flex w-full flex-row items-center justify-between">
+								<p className="text-3xl font-bold">
+									{currentSemesterCheckins}
+								</p>
+								<p className="text-3xl font-bold">
+									{totalCheckins}
+								</p>
+								<CircularProgressBar current={8} total={c.semesters.current.pointsRequired} size={150} />
+							</div>
+						</CardContent>
+						<CardFooter>
 							<p className="mt-2 text-sm text-muted-foreground">
 								Keep attending events to earn more points!
 							</p>
-						</CardContent>
-					</Card>
+						</CardFooter>
+					</Card> */}
+
+
+
 					<Card className="md:col-span-3">
 						<CardHeader>
 							<CardTitle>Your Activity</CardTitle>
@@ -119,3 +186,6 @@ export default async function Page() {
 		</main>
 	);
 }
+
+export const runtime = 'edge'
+export const revalidate = 30

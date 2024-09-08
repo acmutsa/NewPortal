@@ -1,42 +1,138 @@
-interface CircularProgressBarProps {
-	progress: number;
-	size: number;
+"use client";
+
+import { TrendingUp } from "lucide-react";
+import {
+	Label,
+	PolarGrid,
+	PolarRadiusAxis,
+	RadialBar,
+	RadialBarChart,
+} from "recharts";
+
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+
+const chartData = [
+	{ browser: "safari", visitors: 4, fill: "var(--color-safari)" },
+];
+
+const chartConfig = {
+	visitors: {
+		label: "Visitors",
+	},
+	safari: {
+		label: "Safari",
+		color: "hsl(var(--chart-2))",
+	},
+} satisfies ChartConfig;
+
+interface RadialChartProgressProps {
+	titleText?:string;
+	descriptionText?:string;
+	footerText?:string;
+	current:number;
+	total:number;
+	className?: string;
 }
 
-const CircularProgressBar = ({ progress, size }: CircularProgressBarProps) => {
-	const strokeWidth = 12;
-	const radius = (size - strokeWidth) / 2;
-	const circumference = 2 * Math.PI * radius;
-	const offset = circumference - (progress / 100) * circumference;
+export function RadialChartProgress(props:RadialChartProgressProps) {
 
+	const { 
+		titleText, 
+		descriptionText, 
+		footerText, 
+		current, 
+		total, 
+		className 
+	} = props;
+
+	const isTitleOrDescriptionPresent = titleText || descriptionText;
 	return (
-		<div className="flex items-center justify-center">
-			<svg width={size} height={size} className="-rotate-90 transform">
-				<circle
-					stroke="#e2e8f0"
-					fill="transparent"
-					strokeWidth={strokeWidth}
-					r={radius}
-					cx={size / 2}
-					cy={size / 2}
-				/>
-				<circle
-					stroke="#4f46e5"
-					fill="transparent"
-					strokeWidth={strokeWidth}
-					strokeDasharray={circumference}
-					strokeDashoffset={offset}
-					strokeLinecap="round"
-					r={radius}
-					cx={size / 2}
-					cy={size / 2}
-				/>
-			</svg>
-			<div className="absolute flex flex-col items-center justify-center">
-				<p className="text-2xl font-bold text-indigo-600">4/6 Points</p>
-			</div>
-		</div>
+		<Card className={`flex flex-col ${className}`}>
+			{isTitleOrDescriptionPresent && (
+				<CardHeader className="items-center pb-0">
+				{titleText && <CardTitle>{titleText}</CardTitle>}
+				{descriptionText && <CardDescription>{descriptionText}</CardDescription>}
+			</CardHeader>)
+			}
+			<CardContent className="flex-1 pb-0">
+				<ChartContainer
+					config={chartConfig}
+					className="mx-auto aspect-square max-h-[250px]"
+				>
+					<RadialBarChart
+						data={chartData}
+						startAngle={0}
+						endAngle={Math.min(360, (current / total) * 360)}
+						innerRadius={80}
+						outerRadius={110}
+					>
+						<PolarGrid
+							gridType="circle"
+							radialLines={false}
+							stroke="none"
+							className="first:fill-muted last:fill-background"
+							polarRadius={[86, 74]}
+						/>
+						<RadialBar
+							dataKey="visitors"
+							background
+							cornerRadius={10}
+						/>
+						<PolarRadiusAxis
+							tick={false}
+							tickLine={false}
+							axisLine={false}
+						>
+							<Label
+								content={({ viewBox }) => {
+									if (
+										viewBox &&
+										"cx" in viewBox &&
+										"cy" in viewBox
+									) {
+										return (
+											<text
+												x={viewBox.cx}
+												y={viewBox.cy}
+												textAnchor="middle"
+												dominantBaseline="middle"
+											>
+												<tspan
+													x={viewBox.cx}
+													y={viewBox.cy}
+													className="fill-foreground text-4xl font-bold"
+												>{`${current >= total ? `${current}`:`${current} / ${total}`}`}</tspan>
+												<tspan
+													x={viewBox.cx}
+													y={(viewBox.cy || 0) + 24}
+													className="fill-muted-foreground"
+												>
+													Points
+												</tspan>
+											</text>
+										);
+									}
+								}}
+							/>
+						</PolarRadiusAxis>
+					</RadialBarChart>
+				</ChartContainer>
+			</CardContent>
+			{footerText && (
+				<CardFooter>
+				<p className="mt-2 text-sm text-muted-foreground text-center">
+					{footerText}
+				</p>
+			</CardFooter>
+			)}
+		</Card>
 	);
-};
-
-export default CircularProgressBar;
+}
