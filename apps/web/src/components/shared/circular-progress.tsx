@@ -132,7 +132,7 @@ export function RadialChartProgress(props:RadialChartProgressProps) {
 			</CardContent>
 			{footerText && (
 				<CardFooter>
-				<p className="mt-2 text-sm text-muted-foreground text-center">
+				<p className="mt-2 text-sm text-muted-foreground text-center w-full">
 					{footerText}
 				</p>
 			</CardFooter>

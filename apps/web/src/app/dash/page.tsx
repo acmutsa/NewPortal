@@ -5,9 +5,11 @@ import { eq,count,between,sum,sql } from "db/drizzle";
 import { redirect } from "next/navigation";
 import c from "config";
 import { RadialChartProgress } from "@/components/shared/circular-progress";
-import { getUserCheckins } from "@/lib/queries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
+import { getClientTimeZone } from "@/lib/utils";
+import { headers } from "next/headers";
 import {
 	Card,
 	CardContent,
@@ -21,17 +23,16 @@ import {
 	CalendarIcon,
 	GraduationCapIcon,
 	MapPinIcon,
-	UserIcon,
 } from "lucide-react";
 import Link from "next/link";
-
-
+import { formatInTimeZone } from "date-fns-tz";
 interface AttendedEvents {
 	id: string;
 	name: string;
 	points: number;
 	start: typeof events.start;
 }
+
 export default async function Page() {
 	const { userId } = auth();
 
@@ -89,6 +90,17 @@ export default async function Page() {
 		// checkins,
 	} = userDashResult;
 
+	const clientHeaderTimezoneValue = headers().get(
+		VERCEL_IP_TIMEZONE_HEADER_KEY,
+	);
+
+	const clientTimeZone = getClientTimeZone(clientHeaderTimezoneValue);
+	const joinedDate = formatInTimeZone(
+		user.joinDate,
+		clientTimeZone,
+		"MMMM dd, yyyy",
+	);
+
 	const hasUserMetRequiredPoints =
 		currentSemesterPoints >= c.semesters.current.pointsRequired;
 
@@ -98,25 +110,23 @@ export default async function Page() {
 		current: currentSemesterPoints ?? 0,
 		total: c.semesters.current.pointsRequired,
 		footerText: hasUserMetRequiredPoints
-			? "Way To Go! You have gained enough points to attend our banquet🎉"
-			: `Keep attending avents to earn more points!`,
+			? `Way to go! You have gained enough points to attend our ${c.semesters.current.title} banquet 🎉`
+			: `Keep attending events to earn more points!`,
 	};
-
-	console.log(userDashResult.attendedEvents);
 
 	const slicedEvents = attendedEvents.slice(0, 5);
 
 	return (
-		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center pb-4">
-			<div>
+		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center py-4 px-4 md:px-5 overflow-x-hidden ">
+			<div className="flex flex-col">
 				<div>
 					<h2 className="text-xl font-bold">Welcome,</h2>
 					<h1 className="pb-5 text-5xl font-black">
 						{user.firstName}
 					</h1>
 				</div>
-				<div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-					<Card className="md:col-span-2">
+				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+					<Card className="md:col-span-1">
 						<CardHeader>
 							<CardTitle>Profile</CardTitle>
 						</CardHeader>
@@ -135,6 +145,9 @@ export default async function Page() {
 									<GraduationCapIcon className="mr-2 h-4 w-4" />
 									{`${userData.major}, ${userData.graduationYear}`}
 								</p>
+								<p className="mt-1">
+								{`Joined on: ${joinedDate}`}
+								</p>
 								{/* <Button
 									variant="outline"
 									size="sm"
@@ -147,9 +160,9 @@ export default async function Page() {
 
 					<RadialChartProgress {...radialChartProgressProps} />
 
-					<Card className="md:col-span-3">
+					<Card className="md:col-span-2 xl:col-span-1">
 						<CardHeader>
-							<CardTitle> Recent Activity </CardTitle>
+							<CardTitle> Recent Attendance </CardTitle>
 							<div className="flex w-full flex-col items-start justify-between border-b border-muted py-2 text-muted-foreground md:flex-row md:items-center md:justify-start md:gap-6">
 								<p>{`Events this semester: ${currentSemesterEventsAttended}`}</p>
 								<p>{`Events Total: ${totalEventsAttended}`}</p>
