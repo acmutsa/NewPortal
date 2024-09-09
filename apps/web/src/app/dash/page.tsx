@@ -4,9 +4,8 @@ import { users,data,checkins,events } from "db/schema";
 import { eq,count,between,sum,sql } from "db/drizzle";
 import { redirect } from "next/navigation";
 import c from "config";
-import Image from "next/image";
 import { RadialChartProgress } from "@/components/shared/circular-progress";
-
+import { getUserCheckins } from "@/lib/queries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +23,15 @@ import {
 	MapPinIcon,
 	UserIcon,
 } from "lucide-react";
+import Link from "next/link";
 
+
+interface AttendedEvents {
+	id: string;
+	name: string;
+	points: number;
+	start: typeof events.start;
+}
 export default async function Page() {
 	const { userId } = auth();
 
@@ -35,9 +42,18 @@ export default async function Page() {
 		.select({
 			user: users,
 			userData: data,
-			events:events,
+			attendedEvents: sql<
+				Array<AttendedEvents>
+			>`JSONB_AGG(JSONB_BUILD_OBJECT(
+			'id', ${events.id},
+			'name', ${events.name},
+			'points', ${events.points},
+			'start', ${events.start}) ORDER BY ${events.start} DESC)`.as("attendedEvents"),
 			// Still do not think the dates are working right here
-			currentSemesterPoints: sql`SUM(${events.points}) FILTER (WHERE ${checkins.time} BETWEEN ${c.semesters.current.startDate} AND ${c.semesters.current.endDate})`.mapWith(Number),
+			currentSemesterPoints:
+				sql`SUM(${events.points}) FILTER (WHERE ${checkins.time} BETWEEN ${c.semesters.current.startDate} AND ${c.semesters.current.endDate})`.mapWith(
+					Number,
+				),
 			totalPoints: sum(events.points),
 			currentSemesterEventsAttended: count(
 				between(
@@ -46,22 +62,20 @@ export default async function Page() {
 					c.semesters.current.endDate,
 				),
 			),
-			totalEventsAttended: count(checkins.eventID),
-			checkins: checkins,
+			totalEventsAttended: count(checkins.userID),
+			userCheckins: sql`ARRAY_AGG(${checkins.eventID})`,
 		})
 		.from(users)
 		.innerJoin(data, eq(users.userID, data.userID))
 		.leftJoin(checkins, eq(users.userID, checkins.userID))
 		.leftJoin(events, eq(events.id, checkins.eventID))
-		.groupBy(checkins.userID, checkins.eventID, users.userID, data.userID,events.id)
+		.groupBy(users.userID, data.userID)
 		.where(eq(users.clerkID, userId));
 
-		console.log(queryResult);
-	
-		
+	if (queryResult.length === 0) {
+		return redirect("/sign-in");
+	}
 
-	if (!queryResult || queryResult.length < 1) return redirect("/onboarding");
-	
 	const userDashResult = queryResult[0];
 
 	const {
@@ -71,21 +85,29 @@ export default async function Page() {
 		totalPoints,
 		currentSemesterEventsAttended,
 		totalEventsAttended,
+		attendedEvents,
 		// checkins,
 	} = userDashResult;
 
-	const hasUserMetRequiredPoints = currentSemesterPoints >= c.semesters.current.pointsRequired;
+	const hasUserMetRequiredPoints =
+		currentSemesterPoints >= c.semesters.current.pointsRequired;
 
 	const radialChartProgressProps = {
 		titleText: "Attendance Points",
 		descriptionText: c.semesters.current.title,
 		current: currentSemesterPoints ?? 0,
 		total: c.semesters.current.pointsRequired,
-		footerText: hasUserMetRequiredPoints ? 'Way To Go! You have gained enough points to attend our banquet🎉': `Keep Attending Events to earn more points!`,
+		footerText: hasUserMetRequiredPoints
+			? "Way To Go! You have gained enough points to attend our banquet🎉"
+			: `Keep attending avents to earn more points!`,
 	};
-	
+
+	console.log(userDashResult.attendedEvents);
+
+	const slicedEvents = attendedEvents.slice(0, 5);
+
 	return (
-		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center">
+		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center pb-4">
 			<div>
 				<div>
 					<h2 className="text-xl font-bold">Welcome,</h2>
@@ -98,14 +120,14 @@ export default async function Page() {
 						<CardHeader>
 							<CardTitle>Profile</CardTitle>
 						</CardHeader>
-						<CardContent className="flex items-center space-x-4">
+						<CardContent className="flex flex-row items-center gap-5">
 							<Avatar className="h-20 w-20">
 								<AvatarImage src={""} alt={user.firstName} />
 								<AvatarFallback>
-									{`${user.firstName.charAt(0) + user.lastName.charAt(-1)}`}
+									{`${user.firstName.charAt(0) + user.lastName.charAt(0)}`}
 								</AvatarFallback>
 							</Avatar>
-							<div>
+							<div className="flex flex-col">
 								<h2 className="text-xl font-semibold">
 									{user.firstName} {user.lastName}
 								</h2>
@@ -113,72 +135,42 @@ export default async function Page() {
 									<GraduationCapIcon className="mr-2 h-4 w-4" />
 									{`${userData.major}, ${userData.graduationYear}`}
 								</p>
-								<Button
+								{/* <Button
 									variant="outline"
 									size="sm"
-									className="mt-2 opacity-0"
-								>
+									className="mt-2 opacity-0">
 									Edit Profile
-								</Button>
+								</Button> */}
 							</div>
 						</CardContent>
 					</Card>
 
-					<RadialChartProgress {...radialChartProgressProps}>
-						
-					</RadialChartProgress>
-					
-					{/* <Card>
-						<CardHeader>
-							<CardTitle>Attendance Points</CardTitle>
-							<CardDescription>
-								<div className="flex w-full flex-row items-center justify-between">
-									<p>{c.semesters.current.title}</p>
-									<p>Total Points</p>
-								</div>
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<div className="flex w-full flex-row items-center justify-between">
-								<p className="text-3xl font-bold">
-									{currentSemesterCheckins}
-								</p>
-								<p className="text-3xl font-bold">
-									{totalCheckins}
-								</p>
-								<CircularProgressBar current={8} total={c.semesters.current.pointsRequired} size={150} />
-							</div>
-						</CardContent>
-						<CardFooter>
-							<p className="mt-2 text-sm text-muted-foreground">
-								Keep attending events to earn more points!
-							</p>
-						</CardFooter>
-					</Card> */}
-
-
+					<RadialChartProgress {...radialChartProgressProps} />
 
 					<Card className="md:col-span-3">
 						<CardHeader>
-							<CardTitle>Your Activity</CardTitle>
+							<CardTitle> Recent Activity </CardTitle>
+							<div className="flex w-full flex-col items-start justify-between border-b border-muted py-2 text-muted-foreground md:flex-row md:items-center md:justify-start md:gap-6">
+								<p>{`Events this semester: ${currentSemesterEventsAttended}`}</p>
+								<p>{`Events Total: ${totalEventsAttended}`}</p>
+							</div>
 						</CardHeader>
 						<CardContent>
-							{/* <ul className="space-y-4">
-								{user.recentEvents.map((event, index) => (
-									<li
+							<ul className="space-y-4 flex flex-col">
+								{slicedEvents?.map((event, index) => (
+									<Link
+										href={`events/${event.id}`}
 										key={index}
-										className="flex items-center justify-between border-b pb-2 last:border-0"
+										
 									>
-										<div className="flex items-center space-x-2">
-											<CalendarIcon className="h-5 w-5 text-muted-foreground" />
-											<span>{event.name}</span>
-										</div>
-										<Badge variant="secondary">
-											{event.date}
-										</Badge>
-									</li>
+										<li className="flex items-center justify-between border-b pb-2 last:border-0">
+											<div className="flex items-center space-x-2">
+												<span>{event.name}</span>
+											</div>
+										</li>
+									</Link>
 								))}
-							</ul> */}
+							</ul>
 						</CardContent>
 					</Card>
 				</div>
