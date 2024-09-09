@@ -1,6 +1,5 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import {
 	Label,
 	PolarGrid,
@@ -19,9 +18,7 @@ import {
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
-const chartData = [
-	{ browser: "safari", visitors: 4, fill: "var(--color-safari)" },
-];
+
 
 const chartConfig = {
 	visitors: {
@@ -53,7 +50,13 @@ export function RadialChartProgress(props:RadialChartProgressProps) {
 		className 
 	} = props;
 
+	const chartData = [
+		{ browser: "safari", visitors: current, fill: "var(--color-safari)" },
+	];
+
 	const isTitleOrDescriptionPresent = titleText || descriptionText;
+
+	const startAngle = 90;
 	return (
 		<Card className={`flex flex-col ${className}`}>
 			{isTitleOrDescriptionPresent && (
@@ -69,8 +72,9 @@ export function RadialChartProgress(props:RadialChartProgressProps) {
 				>
 					<RadialBarChart
 						data={chartData}
-						startAngle={0}
-						endAngle={Math.min(360, (current / total) * 360)}
+						startAngle={startAngle}
+						// We need to add the start angle here to make the chart start from the top and accomodate the 90 degree offset
+						endAngle={Math.min(360, (current / total) * 360)+startAngle}
 						innerRadius={80}
 						outerRadius={110}
 					>
