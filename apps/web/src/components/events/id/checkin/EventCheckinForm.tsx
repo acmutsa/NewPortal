@@ -74,7 +74,7 @@ export default function EventCheckinForm({
 				description: "Redirecting to events page...",
 			});
 			setTimeout(() => {
-				push("/events");
+				push("/dash");
 			}, 2500);
 		},
 		onError: async (e) => {

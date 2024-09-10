@@ -91,7 +91,7 @@ export const getEventsWithCheckins = async () => {
 };
 
 export const getUserWithData = async () => {
-	return await db
+	return db
 		.select({
 			user: users,
 			data: data,
