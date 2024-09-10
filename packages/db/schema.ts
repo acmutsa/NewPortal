@@ -18,7 +18,6 @@ import { relations } from "drizzle-orm";
 import c from "config";
 
 /* USERS */
-// Why is this not the other way around? If a user is deleted, then their data should be deleted as well
 export const users = pgTable("users", {
 	userID: serial("user_id")
 		.primaryKey()

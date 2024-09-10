@@ -1,19 +1,31 @@
-import { SignOutButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "db";
-import { users } from "db/schema";
-import { eq } from "db/drizzle";
 import { redirect } from "next/navigation";
-
-export default async function Page() {
+import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
+import UserDash from "@/components/dash/UserDash";
+import { headers } from "next/headers";
+import { getClientTimeZone } from "@/lib/utils";
+import { Suspense } from "react";
+import { LoaderCircle } from "lucide-react";
+export default function Page() {
 	const { userId } = auth();
 
 	if (!userId) return redirect("/sign-in");
 
-	const user = await db.query.users.findFirst({
-		where: eq(users.clerkID, userId),
-	});
-
-	if (!user) return redirect("/onboarding");
-	return <div>Dash Index</div>;
+	const clientTimeZoneValue = headers().get(VERCEL_IP_TIMEZONE_HEADER_KEY);
+	const clientTimeZone = getClientTimeZone(clientTimeZoneValue);
+	
+	return (
+		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center overflow-x-hidden px-4 py-4 md:px-5 ">
+			 <Suspense fallback={
+				<div className="flex flex-col items-center space-y-2">
+				<LoaderCircle className="h-auto w-7 lg:w-8 xl:w-9 animate-spin" />
+				<h3>Loading. Please wait.</h3>
+			</div>}>
+				<UserDash userId={userId} clientTimeZone={clientTimeZone} />
+			</Suspense> 
+		</main>
+	);
 }
+
+export const runtime = 'edge'
+export const revalidate = 30

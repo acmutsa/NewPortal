@@ -4,20 +4,15 @@ export default {
 		name: "ABC123",
 		maxLength: 6,
 	},
-	OneHourInMilliseconds: 3600000,
-	contactEmail: "tech@acmutsa.org",
-	// Think this can be removed?
-	eventTypes: {
-		ACM: {
-			color: "#179BD5",
-		},
-		"ACM-W": {
-			color: "#7BE9E8",
-		},
-		"Rowdy Creators": {
-			color: "#FFD51E",
+	semesters: {
+		current: {
+			title: "Fall 2024",
+			startDate: new Date("2024-08-24"),
+			endDate: new Date("2024-12-31"),
+			pointsRequired: 7,
 		},
 	},
+	contactEmail: "tech@acmutsa.org",
 	membership: {
 		activeThreshold: 7,
 	},
@@ -46,7 +41,7 @@ export default {
 	calendarLinks: [
 		{ title: "google" },
 		{ title: "outlook" },
-		{ title: "ics", titleOverride : "iCal" },
+		{ title: "ics", titleOverride: "iCal" },
 	],
 	streamingLinks: [
 		{ title: "twitch", href: "https://www.twitch.tv/acmutsa" },
@@ -76,6 +71,7 @@ export default {
 } as const;
 
 export const majors = [
+	"Computer Science",
 	"Accounting",
 	"Accounting Technician",
 	"Actuarial Science",
@@ -109,7 +105,6 @@ export const majors = [
 	"Computer & Information Sciences, General",
 	"Computer Engineering",
 	"Computer Networking/Telecommunications",
-	"Computer Science",
 	"Computer Software & Media Applications",
 	"Computer System Administration",
 	"Construction Engineering/Management",

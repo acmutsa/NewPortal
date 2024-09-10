@@ -30,7 +30,7 @@ export type EventAndCategoriesType = EventType & {
 	eventsToCategories: EventsToCategoriesWithCategoryType[];
 };
 
-export type EventCalendarLink = {
+export interface EventCalendarLink{
 	title: string;
 	description: string;
 	start: string;
@@ -38,12 +38,12 @@ export type EventCalendarLink = {
 	location: string;
 };
 
-export type EventCalendarName = {
-	title: string;
-	titleOverride?: string;
-};
+export interface EventCalendarName {
+	title:string;
+	titleOverride?:string;
+}
 
-export type DetailsProps = {
+export interface DetailsProps {
 	event: EventAndCategoriesType;
 	startTime: string;
 	startDate: string;
@@ -56,7 +56,7 @@ export type DetailsProps = {
 	isEventHappening: boolean;
 };
 
-export type CalendarDetails = {
+export interface CalendarDetails {
 	title: string;
 	description: string;
 	start: string;
