@@ -164,7 +164,7 @@ export default async function Page() {
 					<Card className="md:col-span-2 xl:col-span-1">
 						<CardHeader className="pb-3 md:pb-6">
 							<CardTitle> Recent Activity </CardTitle>
-							<div className="flex w-full flex-col items-start justify-between py-2 text-muted-foreground md:flex-row md:items-center md:justify-start md:gap-6">
+							<div className="flex w-full flex-col items-start justify-between py-2 text-muted-foreground border-b border-muted md:flex-row md:items-center md:justify-start md:gap-6">
 								<p>
 									<span className="font-semibold text-primary">
 										{currentSemesterEventsAttended}
