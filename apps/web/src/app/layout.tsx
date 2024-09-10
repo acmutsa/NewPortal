@@ -15,12 +15,10 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`${inter.className} dark`}>
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
-  );
+		<ClerkProvider>
+			<html lang="en">
+				<body className={`${inter.className} dark`}>{children}</body>
+			</html>
+		</ClerkProvider>
+	);
 }

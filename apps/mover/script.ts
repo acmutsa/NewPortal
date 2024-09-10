@@ -31,6 +31,8 @@ async function move() {
 		}),
 	});
 
+	console.log(req);
+
 	const res = await req.json();
 
 	const allMembers = res.allMembers;

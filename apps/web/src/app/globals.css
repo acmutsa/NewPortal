@@ -1,3 +1,5 @@
+@import url("https://use.typekit.net/emo8lyj.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -108,4 +110,12 @@
 
 .rdp-vhidden {
 	@apply hidden;
+}
+
+.bg-hero {
+	/* background-color: ; */
+	background-image: linear-gradient(hsl(0deg, 0%, 3.92%, 1), hsl(0deg, 0%, 3.92%, 0.25)), url("/design/landing-globe.jpeg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-position: bottom center;
 }

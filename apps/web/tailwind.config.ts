@@ -23,6 +23,12 @@ const config = {
 				"3xl": "1600px",
 				monitor: "1920px",
 			},
+			fontFamily: {
+				acm: ["good-times", "sans-serif"],
+			},
+			fontSize: {
+				title: ["12rem", ".60"],
+			},
 			colors: {
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
