@@ -178,7 +178,8 @@ export default async function UserDash({
 						</div>
 					</CardHeader>
 					<CardContent>
-						<div className="flex flex-col space-y-2">
+						{attendedEvents.length > 1 && (
+							<div className="flex flex-col space-y-2">
 							{slicedEvents?.map((event, index) => (
 								<Link
 									href={`events/${event.id}`}
@@ -188,7 +189,7 @@ export default async function UserDash({
 									{event.name}
 								</Link>
 							))}
-						</div>
+						</div>)}
 					</CardContent>
 				</Card>
 			</div>
