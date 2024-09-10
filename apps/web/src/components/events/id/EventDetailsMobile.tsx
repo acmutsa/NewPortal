@@ -69,9 +69,8 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 					<div>
 						<h3>
 							Points Gained:{" "}
-							<span className="text-sky-500">
-								{event.points} Point(s)
-							</span>
+							<span className="text-blue-500">{event.points}</span>
+							{" "}pt(s)
 						</h3>
 					</div>
 				</div>

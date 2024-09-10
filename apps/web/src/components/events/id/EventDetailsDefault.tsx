@@ -49,12 +49,17 @@ export default function EventDetailsDefault(detailsProps: DetailsProps) {
 					/>
 				</div>
 
-				{/* Description starts here */}
-				<div className="flex flex-col items-center justify-between">
-					<p className="w-full text-start text-lg 2xl:text-2xl ">
-						{description}
-					</p>
-					<div className="flex h-auto w-full flex-col justify-center gap-2 font-bold md:text-base lg:text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl 3xl:font-medium">
+				{/* Right side view starts here */}
+				<div className="flex flex-col items-center justify-between space-y-6">
+					<div className="h-full w-full flex-1 flex-col space-y-3 rounded-md border-2 px-2">
+						<h2 className="w-full text-center text-2xl font-semibold underline">
+							Description
+						</h2>
+						<p className="w-full text-start text-lg 2xl:text-2xl ">
+							{description}
+						</p>
+					</div>
+					<div className="flex h-auto w-full flex-col justify-center gap-2 space-y-1 font-bold md:text-base lg:text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl 3xl:font-medium">
 						<div className="flex items-center justify-start gap-2">
 							<Calendar size={24} />
 							<p className="flex">{startDate}</p>
@@ -75,9 +80,10 @@ export default function EventDetailsDefault(detailsProps: DetailsProps) {
 						<div className="flex w-full flex-row items-center ">
 							<h3>
 								Points Gained:{" "}
-								<span className="text-sky-500">
-									{points} Point(s)
-								</span>
+								<span className="text-blue-500">
+									{event.points}
+								</span>{" "}
+								pt(s)
 							</h3>
 						</div>
 					</div>
@@ -87,7 +93,7 @@ export default function EventDetailsDefault(detailsProps: DetailsProps) {
 			{/* New layout */}
 			<div className="flex h-auto w-full flex-col gap-20 pt-10">
 				<div className="ml-2 flex h-full w-full flex-row justify-evenly gap-4 2xl:justify-around">
-					<div className="flex h-full flex-row items-center justify-center gap-12">
+					<div className="flex h-full w-3/4 flex-row items-center justify-around">
 						{/* Streaming on div */}
 						<div className="flex flex-col items-center justify-center gap-5">
 							<h1 className="text-2xl font-bold xl:text-3xl">
@@ -119,33 +125,35 @@ export default function EventDetailsDefault(detailsProps: DetailsProps) {
 						</div>
 					</div>
 				</div>
-				<Link
-					href={checkInUrl}
-					className={clsx(
-						"flex h-full w-full flex-row items-center justify-center",
-						{
-							"pointer-events-none":
-								isEventPassed || !isCheckinAvailable,
-						},
-					)}
-					aria-disabled={isEventPassed}
-					tabIndex={isEventPassed ? -1 : 0}
-				>
-					<Button
+				<div className="flex items-center justify-center w-full">
+					<Link
+						href={checkInUrl}
 						className={clsx(
-							"flex min-w-[70%] items-center gap-4 bg-blue-400 p-6 dark:bg-sky-300",
+							"flex h-full w-[60%] xl:w-1/2 monitor:w-[40%] flex-row items-center justify-center",
 							{
-								"pointer-events-none grayscale":
+								"pointer-events-none":
 									isEventPassed || !isCheckinAvailable,
 							},
 						)}
+						aria-disabled={isEventPassed}
+						tabIndex={isEventPassed ? -1 : 0}
 					>
-						<UserRoundCheck size={24} />
-						<p className="text-base lg:text-lg xl:text-xl 2xl:text-2xl monitor:text-3xl">
-							{checkInMessage}
-						</p>
-					</Button>
-				</Link>
+						<Button
+							className={clsx(
+								"flex min-w-[70%] items-center gap-4 bg-blue-400 p-6 dark:bg-sky-300",
+								{
+									"pointer-events-none grayscale":
+										isEventPassed || !isCheckinAvailable,
+								},
+							)}
+						>
+							<UserRoundCheck size={24} />
+							<p className="text-base lg:text-lg xl:text-xl 2xl:text-2xl monitor:text-3xl">
+								{checkInMessage}
+							</p>
+						</Button>
+					</Link>
+				</div>
 			</div>
 			<div className="flex w-[98%] flex-row items-start justify-between gap-20 px-10 pt-10 xl:w-[90%]">
 				<div className="flex flex-col items-start justify-center gap-1">
