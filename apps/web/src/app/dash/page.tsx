@@ -112,12 +112,13 @@ export default async function Page() {
 		footerText: hasUserMetRequiredPoints
 			? `Way to go! You have gained enough points to attend our ${c.semesters.current.title} banquet 🎉`
 			: `Keep attending events to earn more points!`,
+		fill: "#3b82f6",
 	};
 
 	const slicedEvents = attendedEvents.slice(0, 5);
 
 	return (
-		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center py-4 px-4 md:px-5 overflow-x-hidden ">
+		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center overflow-x-hidden px-4 py-4 md:px-5 ">
 			<div className="flex flex-col">
 				<div>
 					<h2 className="text-xl font-bold">Welcome,</h2>
@@ -134,7 +135,7 @@ export default async function Page() {
 							<Avatar className="h-20 w-20">
 								<AvatarImage src={""} alt={user.firstName} />
 								<AvatarFallback>
-									{`${user.firstName.charAt(0) + user.lastName.charAt(0)}`}
+									{`${user.firstName.trim().charAt(0) + user.lastName.trim().charAt(0)}`}
 								</AvatarFallback>
 							</Avatar>
 							<div className="flex flex-col">
@@ -145,8 +146,8 @@ export default async function Page() {
 									<GraduationCapIcon className="mr-2 h-4 w-4" />
 									{`${userData.major}, ${userData.graduationYear}`}
 								</p>
-								<p className="mt-1">
-								{`Joined on: ${joinedDate}`}
+								<p className="mt-2 flex items-center text-balance text-base text-muted-foreground">
+									{`Member since ${joinedDate}`}
 								</p>
 								{/* <Button
 									variant="outline"
@@ -161,29 +162,35 @@ export default async function Page() {
 					<RadialChartProgress {...radialChartProgressProps} />
 
 					<Card className="md:col-span-2 xl:col-span-1">
-						<CardHeader>
-							<CardTitle> Recent Attendance </CardTitle>
-							<div className="flex w-full flex-col items-start justify-between border-b border-muted py-2 text-muted-foreground md:flex-row md:items-center md:justify-start md:gap-6">
-								<p>{`Events this semester: ${currentSemesterEventsAttended}`}</p>
-								<p>{`Events Total: ${totalEventsAttended}`}</p>
+						<CardHeader className="pb-3 md:pb-6">
+							<CardTitle> Recent Activity </CardTitle>
+							<div className="flex w-full flex-col items-start justify-between py-2 text-muted-foreground md:flex-row md:items-center md:justify-start md:gap-6">
+								<p>
+									<span className="font-semibold text-primary">
+										{currentSemesterEventsAttended}
+									</span>{" "}
+									Events attended this semester
+								</p>
+								<p>
+									<span className="font-semibold text-primary">
+										{totalEventsAttended}
+									</span>{" "}
+									Total events attented
+								</p>
 							</div>
 						</CardHeader>
 						<CardContent>
-							<ul className="space-y-4 flex flex-col">
+							<div className="flex flex-col space-y-2">
 								{slicedEvents?.map((event, index) => (
 									<Link
 										href={`events/${event.id}`}
 										key={index}
-										
+										className="rounded-md border-b border-muted p-1 pb-4 hover:underline"
 									>
-										<li className="flex items-center justify-between border-b pb-2 last:border-0">
-											<div className="flex items-center space-x-2">
-												<span>{event.name}</span>
-											</div>
-										</li>
+										{event.name}
 									</Link>
 								))}
-							</ul>
+							</div>
 						</CardContent>
 					</Card>
 				</div>

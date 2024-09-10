@@ -36,6 +36,7 @@ interface RadialChartProgressProps {
 	footerText?:string;
 	current:number;
 	total:number;
+	fill?:string;
 	className?: string;
 }
 
@@ -51,7 +52,7 @@ export function RadialChartProgress(props:RadialChartProgressProps) {
 	} = props;
 
 	const chartData = [
-		{ browser: "safari", visitors: current, fill: "var(--color-safari)" },
+		{ browser: "safari", visitors: current, fill: props.fill ?? "var(--color-safari)" },
 	];
 
 	const isTitleOrDescriptionPresent = titleText || descriptionText;
