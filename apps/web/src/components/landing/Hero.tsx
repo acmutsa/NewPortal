@@ -14,7 +14,7 @@ export default function Hero() {
 							UTSA
 						</span>
 					</h1>
-					<h3 className="max-w-full text-center lg:text-xl">
+					<h3 className="mt-8 max-w-xl text-center lg:text-xl">
 						We are the premier Computer Science Organization at{" "}
 						<strong>UTSA</strong>, run & staffed by students.
 					</h3>
@@ -22,7 +22,7 @@ export default function Hero() {
 
 				<div className="flex flex-wrap items-center justify-center gap-x-5 px-8">
 					<Link href="/register">
-						<Button>Register</Button>
+						<Button className="bg-primary">Register</Button>
 					</Link>
 					<Link href="/events" className="h-min p-2">
 						<p>Find Events →</p>

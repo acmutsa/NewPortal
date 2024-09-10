@@ -114,8 +114,9 @@
 
 .bg-hero {
 	/* background-color: ; */
-	background-image: linear-gradient(hsl(0deg, 0%, 3.92%, 1), hsl(0deg, 0%, 3.92%, 0.25)), url("/design/landing-globe.jpeg");
-	background-size: 100%;
+	/* background-image: linear-gradient(hsl(0deg, 0%, 3.92%, 1), hsl(0deg, 0%, 3.92%, 0.25)), url("/design/landing-globe.jpeg"); */
+	background-image: url("/design/hero_npb.webp");
+	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: bottom center;
 }
