@@ -49,8 +49,8 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 				<EventCategories event={event} isPast={isEventPassed} />
 				<div className="flex flex-col gap-2 text-base sm:text-lg md:text-xl">
 					<div className="flex items-center justify-start gap-3">
-						<MapPin size={24} />
-						<p className=" flex">{event.location}</p>
+						<Calendar size={24} />
+						<p className="flex">{startDate}</p>
 					</div>
 					<div className="flex items-center justify-start gap-3">
 						<Clock size={24} />
@@ -60,10 +60,12 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 						<Hourglass size={24} />
 						<p className="flex">{formattedEventDuration}</p>
 					</div>
+
 					<div className="flex items-center justify-start gap-3">
-						<Calendar size={24} />
-						<p className="flex">{startDate}</p>
+						<MapPin size={24} />
+						<p className=" flex">{event.location}</p>
 					</div>
+
 					<div>
 						<h3>
 							Points Gained:{" "}
@@ -77,7 +79,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 			<div className="flex w-full flex-col items-center justify-center">
 				<div className="flex w-full flex-col items-center justify-center gap-y-1 px-7 pb-6 pt-2">
 					<div className="w-full px-[8%]">
-						<h1 className="border-b border-muted-foreground text-left text-xl sm:text-2xl md:text-3xl font-bold">
+						<h1 className="border-b border-muted-foreground text-left text-xl font-bold sm:text-2xl md:text-3xl">
 							Description
 						</h1>
 					</div>
@@ -141,7 +143,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 			</div>
 			<div className="flex flex-col items-center justify-center gap-1 pt-8">
 				<div className="w-full px-[8%]">
-					<h1 className="border-b border-muted-foreground text-left text-xl sm:text-2xl md:text-3xl font-bold">
+					<h1 className="border-b border-muted-foreground text-left text-xl font-bold sm:text-2xl md:text-3xl">
 						About ACM
 					</h1>
 				</div>
@@ -149,7 +151,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 			</div>
 			<div className="flex w-full flex-col items-center justify-center gap-1 pt-8">
 				<div className="w-full px-[8%]">
-					<h1 className="border-b border-muted-foreground text-left text-xl sm:text-2xl md:text-3xl font-bold">
+					<h1 className="border-b border-muted-foreground text-left text-xl font-bold sm:text-2xl md:text-3xl">
 						Checking In
 					</h1>
 				</div>

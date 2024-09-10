@@ -35,44 +35,44 @@ export default function EventDetailsDefault(detailsProps: DetailsProps) {
 	const { thumbnailUrl, location, description, points } = event;
 
 	return (
-		<div className="hidden flex-col items-center gap-4 overflow-x-hidden lg:flex">
+		<div className="hidden flex-col items-center gap-4 overflow-x-hidden pt-7 lg:flex">
 			<div className="grid w-[98%] grid-cols-2">
 				<div className="flex w-full flex-col items-center justify-center space-y-4 ">
 					<EventImage
 						src={thumbnailUrl}
-						className="w-auto h-[500px] rounded-md "
+						className="h-[500px] w-[500px] rounded-md"
 					/>
 					<EventCategories
 						event={event}
 						isPast={isEventPassed}
 						className="h-full w-[350px] max-w-[350px] items-start xl:w-[500px] xl:max-w-[500px]"
 					/>
-					<div className="flex h-auto flex-col justify-center gap-2 font-bold md:text-base lg:text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl 3xl:font-medium">
-						<div className="flex w-full flex-col space-y-2">
-							<div className="flex flex-row items-center justify-center gap-4">
-								<div className="flex items-center justify-start gap-2">
-									<Clock size={24} />
-									<p className=" flex">{startTime}</p>
-								</div>
-								<div className="flex items-center justify-start gap-2">
-									<Hourglass size={24} />
-									<p className="flex">
-										{formattedEventDuration}
-									</p>
-								</div>
-							</div>
-							<div className="flex w-full flex-row items-center justify-center gap-4">
-								<div className="flex flex-row items-center justify-start gap-2">
-									<MapPin size={24} />
-									<p className="flex">{location}</p>
-								</div>
-								<div className="flex items-center justify-start gap-2">
-									<Calendar size={24} />
-									<p className="flex">{startDate}</p>
-								</div>
-							</div>
+				</div>
+
+				{/* Description starts here */}
+				<div className="flex flex-col items-center justify-between">
+					<p className="w-full text-start text-lg 2xl:text-2xl ">
+						{description}
+					</p>
+					<div className="flex h-auto w-full flex-col justify-center gap-2 font-bold md:text-base lg:text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl 3xl:font-medium">
+						<div className="flex items-center justify-start gap-2">
+							<Calendar size={24} />
+							<p className="flex">{startDate}</p>
 						</div>
-						<div className="flex w-full items-center justify-center">
+						<div className="flex items-center justify-start gap-2">
+							<Clock size={24} />
+							<p className=" flex">{startTime}</p>
+						</div>
+						<div className="flex items-center justify-start gap-2">
+							<Hourglass size={24} />
+							<p className="flex">{formattedEventDuration}</p>
+						</div>
+						<div className="flex flex-row items-center justify-start gap-2">
+							<MapPin size={24} />
+							<p className="flex">{location}</p>
+						</div>
+
+						<div className="flex w-full flex-row items-center ">
 							<h3>
 								Points Gained:{" "}
 								<span className="text-sky-500">
@@ -82,15 +82,10 @@ export default function EventDetailsDefault(detailsProps: DetailsProps) {
 						</div>
 					</div>
 				</div>
-
-				{/* Description starts here */}
-				<div className="flex flex-col items-center justify-center">
-					<p className="text-lg 2xl:text-2xl">{description}</p>
-				</div>
 			</div>
 
 			{/* New layout */}
-			<div className="flex h-auto w-full flex-col gap-12">
+			<div className="flex h-auto w-full flex-col gap-20 pt-10">
 				<div className="ml-2 flex h-full w-full flex-row justify-evenly gap-4 2xl:justify-around">
 					<div className="flex h-full flex-row items-center justify-center gap-12">
 						{/* Streaming on div */}
