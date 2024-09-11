@@ -42,19 +42,23 @@ export const updateEvent = adminAction(
 				categoryID: cat,
 			}));
 
-			await tx.insert(eventsToCategories).values(insertVal);
+			if (insertVal.length != 0) {
+				await tx.insert(eventsToCategories).values(insertVal);
+			}
 
-			await tx
-				.delete(eventsToCategories)
-				.where(
-					and(
-						inArray(
-							eventsToCategories.categoryID,
-							deletingCategories,
+			if (deletingCategories.length != 0) {
+				await tx
+					.delete(eventsToCategories)
+					.where(
+						and(
+							inArray(
+								eventsToCategories.categoryID,
+								deletingCategories,
+							),
+							eq(eventsToCategories.eventID, eventID),
 						),
-						eq(eventsToCategories.eventID, eventID),
-					),
-				);
+					);
+			}
 		});
 
 		await db.execute(sql`VACUUM events_to_categories`);
