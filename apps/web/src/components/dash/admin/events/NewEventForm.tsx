@@ -1,4 +1,5 @@
 "use client";
+
 import {
 	Form,
 	FormField,
@@ -17,7 +18,6 @@ import {
 } from "@/components/ui/MultiSelect";
 import {
 	AlertDialog,
-	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogDescription,
@@ -27,9 +27,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
-import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { useState } from "react";
 import { getLocalTimeZone, parseAbsolute } from "@internationalized/date";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,8 +35,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { insertEventSchema, insertEventSchemaFormified } from "db/zod";
-import { CalendarWithYears } from "@/components/ui/calendarWithYearSelect";
+import { insertEventSchemaFormified } from "db/zod";
 import { FormGroupWrapper } from "@/components/shared/form-group-wrapper";
 import { DateTimePicker } from "@/components/ui/date-time-picker/date-time-picker";
 import c from "config";
@@ -46,13 +43,11 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { upload } from "@vercel/blob/client";
-import { createEvent } from "@/actions/events/new";
+import { createEvent } from "@/actions/events/createNewEvent";
 import { ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
+import { bucketEventThumbnailBaseUrl } from "config";
+import type { NewEventFormProps } from "@/lib/types/events";
 
-type NewEventFormProps = {
-	defaultDate: Date;
-	categoryOptions: { [key: string]: string };
-};
 
 const formSchema = insertEventSchemaFormified;
 
@@ -69,6 +64,8 @@ export default function NewEventForm({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
+			name:"",
+			description:"",
 			start: defaultDate,
 			checkinStart: defaultDate,
 			end: new Date(defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS),
@@ -78,6 +75,7 @@ export default function NewEventForm({
 			thumbnailUrl: c.thumbnails.default,
 			categories: [],
 			isUserCheckinable: true,
+			points: 1
 		},
 	});
 	const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -120,12 +118,6 @@ export default function NewEventForm({
 		return true;
 	}
 
-	useEffect(() => {
-		if (Object.keys(form.formState.errors).length > 0) {
-			console.log("Errors: ", form.formState.errors);
-		}
-	}, [form.formState]);
-
 	const {
 		execute: runCreateEvent,
 		status: actionStatus,
@@ -167,13 +159,11 @@ export default function NewEventForm({
 			toast.error(
 				`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
 			);
-			console.log("error: ", error);
 			resetAction();
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log("Submit: ", values);
 		toast.loading("Creating Event...");
 		const checkinStart = hasDifferentCheckinTime
 			? values.checkinStart
@@ -181,11 +171,16 @@ export default function NewEventForm({
 		const checkinEnd = hasDifferentCheckinTime
 			? values.checkinEnd
 			: values.end;
+			// Come back and make cleaner
 		if (thumbnail) {
-			const thumbnailBlob = await upload(thumbnail.name, thumbnail, {
-				access: "public",
-				handleUploadUrl: "/api/upload/thumbnail",
-			});
+			const thumbnailBlob = await upload(
+				`${bucketEventThumbnailBaseUrl}/${thumbnail.name}`,
+				thumbnail,
+				{
+					access: "public",
+					handleUploadUrl: "/api/upload/thumbnail",
+				},
+			);
 			runCreateEvent({
 				...values,
 				thumbnailUrl: thumbnailBlob.url,
@@ -207,12 +202,11 @@ export default function NewEventForm({
 		}
 	};
 
+	
+
 	return (
 		<>
 			<AlertDialog open={error != null}>
-				{/* <AlertDialogTrigger asChild>
-					<Button variant="outline">Show Dialog</Button>
-				</AlertDialogTrigger> */}
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>{error?.title}</AlertDialogTitle>
@@ -502,6 +496,33 @@ export default function NewEventForm({
 												</MultiSelectorList>
 											</MultiSelectorContent>
 										</MultiSelector>
+									</FormItem>
+								)}
+							/>
+							<FormField
+								name="points"
+								control={form.control}
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Points</FormLabel>
+										<FormControl>
+											<Input
+												type="number"
+												className="max-w-[25%]"
+												min={c.minEventPoints}
+												max={c.maxEventPoints}
+												{...field}
+												onChange={(e) => {
+													const parsedPoints = parseInt(
+														e.target.value,
+														10,
+													);
+														const points = (parsedPoints < 1) ? 1 : parsedPoints;
+														field.onChange(points);
+												}}
+											/>
+										</FormControl>
+										<FormMessage />
 									</FormItem>
 								)}
 							/>

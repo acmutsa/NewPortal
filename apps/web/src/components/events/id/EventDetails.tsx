@@ -12,7 +12,6 @@ import {
 import { differenceInHours, isAfter } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { EVENT_DATE_FORMAT_STRING, EVENT_TIME_FORMAT_STRING } from "@/lib/constants/events";
-import { Badge } from "@/components/ui/badge";
 import EventDetailsLiveIndicator from "../shared/EventDetailsLiveIndicator";
 export default async function EventDetails({ id }: { id: string }) {
 	
@@ -87,8 +86,8 @@ export default async function EventDetails({ id }: { id: string }) {
 			<div className="flex w-full flex-col items-center justify-center lg:flex-row">
 				<h1 className="px-2 py-1 text-center text-2xl font-black sm:text-2xl md:px-8 md:text-3xl lg:text-5xl">
 					{event.name}
+					{/* <span className="hidden lg:flex">{isEventHappening && <EventDetailsLiveIndicator />}</span> */}
 				</h1>
-				<div className="hidden lg:flex">{isEventHappening && <EventDetailsLiveIndicator />}</div>
 			</div>
 			<EventDetailsMobile {...detailsProps} />
 			<EventDetailsDefault {...detailsProps} />

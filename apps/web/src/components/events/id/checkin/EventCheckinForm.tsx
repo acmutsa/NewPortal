@@ -15,23 +15,16 @@ import { Button } from "@/components/ui/button";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { userCheckinFormSchema } from "@/validators/userCheckin";
+import { userCheckinSchemaFormified } from "db/zod";
 import { useAction } from "next-safe-action/hooks";
-import type { Noop, RefCallBack } from "react-hook-form";
 import c from "config";
-import React, { useState, useEffect } from "react";
-import { Star, X, Check } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { checkInUserAction } from "@/actions/events/checkin";
 import { useRouter } from "next/navigation";
-type RatingFormAttributes = {
-	onChange: (...event: any[]) => void;
-	onBlur: Noop;
-	value: number;
-	disabled?: boolean | undefined;
-	name: string;
-	ref: RefCallBack;
-};
+import type { CheckInUserClientProps } from "db/types";
+import RatingStars from "./RatingStars";
 
 export default function EventCheckinForm({
 	eventID,
@@ -44,11 +37,13 @@ export default function EventCheckinForm({
 	const [feedbackLengthMessage, setFeedbackLengthMessage] = useState<string>(
 		`0 / ${maxCheckinDescriptionLength} characters`,
 	);
-	const userCheckinForm = useForm<z.infer<typeof userCheckinFormSchema>>({
-		resolver: zodResolver(userCheckinFormSchema),
+	const userCheckinForm = useForm<z.infer<typeof userCheckinSchemaFormified>>({
+		resolver: zodResolver(userCheckinSchemaFormified),
 		defaultValues: {
 			feedback: "",
 			rating: 0,
+			eventID,
+			userID,
 		},
 	});
 
@@ -107,7 +102,7 @@ export default function EventCheckinForm({
 	});
 
 	const onSubmit = async (
-		checkInValues: z.infer<typeof userCheckinFormSchema>,
+		checkInValues: CheckInUserClientProps,
 	) => {
 		toast.dismiss();
 		resetCheckInUser();
@@ -115,15 +110,18 @@ export default function EventCheckinForm({
 		toast.loading("Checking in...");
 		runCheckInUser({
 			...checkInValues,
-			userId: userID,
-			eventId: eventID,
+			userID,
+			eventID,
 		});
 	};
 
 	const isSuccess =
 		checkInUserStatus === "hasSucceeded" && checkInUserResult.data?.success;
 	const isError = checkInUserStatus === "hasErrored";
-
+	useEffect(() => {
+		console.log(userCheckinForm.formState.errors);
+	}
+	, [userCheckinForm.formState.errors]);
 	return (
 		<>
 			<Form {...userCheckinForm}>
@@ -131,7 +129,7 @@ export default function EventCheckinForm({
 					onSubmit={userCheckinForm.handleSubmit(onSubmit)}
 					className="mx-5 flex h-full flex-row sm:mx-0 sm:justify-center"
 				>
-					<div className="flex w-full flex-col items-start justify-start space-y-12 sm:w-3/4">
+					<div className="flex w-full flex-col items-start justify-start 2xl:justify-center space-y-12 sm:w-3/4">
 						<FormField
 							control={userCheckinForm.control}
 							name="rating"
@@ -141,7 +139,7 @@ export default function EventCheckinForm({
 										{"Rating"}
 									</FormLabel>
 									<FormControl>
-										<StarContainer {...field} />
+										<RatingStars {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -205,63 +203,6 @@ export default function EventCheckinForm({
 	);
 }
 
-const StarContainer = (formAttributes: RatingFormAttributes) => {
-	const { onChange, onBlur, value, disabled, name, ref } = formAttributes;
 
-	const [rating, setRating] = useState<number>(0);
-	const ratingStyle = "#FFD700";
 
-	return (
-		<div
-			className="flex w-full items-center justify-start space-x-2"
-			ref={ref}
-		>
-			{Array.from({ length: 5 }, (_, i) => {
-				if (i + 1 > rating) {
-					return (
-						<RatingStar
-							starNumber={i + 1}
-							setStarRating={setRating}
-							key={i}
-							onChange={onChange}
-						/>
-					);
-				} else {
-					return (
-						<RatingStar
-							starNumber={i + 1}
-							setStarRating={setRating}
-							color={ratingStyle}
-							key={i}
-							onChange={onChange}
-						/>
-					);
-				}
-			})}
-		</div>
-	);
-};
 
-const RatingStar = ({
-	starNumber,
-	setStarRating,
-	color,
-	onChange,
-}: {
-	starNumber: number;
-	setStarRating: React.Dispatch<React.SetStateAction<number>>;
-	color?: string;
-	onChange: (...event: any[]) => void;
-}) => {
-	return (
-		<Star
-			size={32}
-			onClick={() => {
-				setStarRating(starNumber);
-				onChange(starNumber);
-			}}
-			color={color}
-			enableBackground={color}
-		/>
-	);
-};

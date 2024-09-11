@@ -13,8 +13,8 @@ import EventCategories from "./EventCategories";
 import { Badge } from "../ui/badge";
 import { formatInTimeZone } from "date-fns-tz";
 import { EVENT_DATE_FORMAT_STRING, EVENT_TIME_FORMAT_STRING } from "@/lib/constants/events";
+import EventImage from "./shared/EventImage";
 export default function EventCardComponent({ event,isPast,isEventCurrentlyHappening, isEventCheckinAllowed,clientTimezone }: { event: EventAndCategoriesType,isPast:boolean,isEventCurrentlyHappening:boolean,clientTimezone:string,isEventCheckinAllowed:boolean}) {
-
 	const {
 		thumbnailUrl,
 		start,
@@ -35,23 +35,16 @@ export default function EventCardComponent({ event,isPast,isEventCurrentlyHappen
 					href={eventDetailsLink}
 					className="absolute top-0 z-50 animate-pulse "
 				>
-					<Badge className="flex flex-row items-center rounded-sm justify-between gap-3 border-transparent bg-inherit bg-red-600 hover:bg-red-400">
-						<h3 className="text-lg font-bold text-primary">
+					<Badge className="flex flex-row items-center justify-between gap-3 rounded-sm border-transparent bg-inherit bg-red-600 hover:bg-red-400">
+						<h3 className="text-lg font-bold text-white">
 							Happening Now
 						</h3>
 					</Badge>
 				</Link>
 			)}
 			<CardHeader className="flex h-full justify-center p-0 pb-4">
-				{/* Come back and make sure skeleton loads here or something to ensure no weird layouts */}
-				<Image
+				<EventImage
 					src={thumbnailUrl}
-					alt="Event Image"
-					priority={true}
-					width={0}
-					sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-					height={0}
-					quality={100}
 					className={clsx("w-full rounded-md", {
 						"h-auto grayscale group-hover:grayscale-0": isPast,
 					})}
@@ -73,9 +66,7 @@ export default function EventCardComponent({ event,isPast,isEventCurrentlyHappen
 					</p>
 					<span className="flex w-full flex-row items-center justify-center gap-3 text-primary">
 						<p>Points:</p>
-						<p>
-							{points}
-						</p>
+						<p>{points}</p>
 					</span>
 				</div>
 			</CardContent>
@@ -92,11 +83,11 @@ export default function EventCardComponent({ event,isPast,isEventCurrentlyHappen
 					className={clsx(
 						"flex h-full w-1/2 flex-row items-center justify-center border-l border-gray-400",
 						{
-							"pointer-events-none": isEventCheckinAllowed,
+							"pointer-events-none": !isEventCheckinAllowed,
 						},
 					)}
-					aria-disabled={isEventCheckinAllowed}
-					tabIndex={isEventCheckinAllowed ? -1 : 0}
+					aria-disabled={!isEventCheckinAllowed}
+					tabIndex={!isEventCheckinAllowed ? -1 : 0}
 				>
 					<h1
 						className={clsx("text-blue-400 dark:text-sky-300", {

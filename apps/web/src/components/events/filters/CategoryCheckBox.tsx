@@ -1,13 +1,15 @@
 "use client"
 import { Checkbox } from "@/components/ui/checkbox";
 import { usePathname,useSearchParams,useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { EventCategoryType } from "@/lib/types/events";
 import { EVENT_FILTERS } from "@/lib/constants/events";
 
 export default function CategoryCheckBox({category,checkBoxSet}:{category:EventCategoryType,checkBoxSet:Set<string>}){
-    const name = category.name;
-    const color = category.color;
+    const {
+        name,
+        color
+    } = category;
     const { CATEGORIES} = EVENT_FILTERS
     
     
@@ -24,7 +26,7 @@ export default function CategoryCheckBox({category,checkBoxSet}:{category:EventC
         if(checkedBoxes){
             if(checkBoxSet.has(name)){
                 checkBoxSet.delete(name);
-                if (checkBoxSet.size<=0){
+                if (checkBoxSet.size <= 0 ){
                     params.delete('categories');
                     replace(`${pathname}?${params.toString()}`);
                     return;
@@ -36,30 +38,36 @@ export default function CategoryCheckBox({category,checkBoxSet}:{category:EventC
         }else{
             params.set('categories',name);
         }
-        console.log("Replacing with:",`${pathname}?${params.toString()}`);
         replace(`${pathname}?${params.toString()}`);
         refresh();
     }
     return (
-      <div className="flex items-center space-x-2">
-        <Checkbox 
-        id={name} 
-        onClick={()=>{
-            setCheck(!checked);
-            handleCheck(name);  
-        }}
-        checked={checked}
-        className=" focus-visible:ring-0 focus-visible:ring-offset-0"
-         />
-        <label
-          htmlFor={name}
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        style={{color:color}}
-           >
-         {name}
-        </label>
-      </div>
-    );
+		<div
+			className="flex w-full justify-between gap-2"
+			onClick={() => {
+				setCheck(!checked);
+				handleCheck(name);
+			}}
+		>
+			<div className="flex items-center space-x-2">
+				<Checkbox
+					id={name}
+					checked={checked}
+					className=" focus-visible:ring-0 focus-visible:ring-offset-0"
+				/>
+				<label
+					htmlFor={name}
+					className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+				>
+					{name}
+				</label>
+			</div>
+			<div
+				className="h-4 w-4 rounded-full"
+				style={{ backgroundColor: color }}
+			></div>
+		</div>
+	);
 
 
 }

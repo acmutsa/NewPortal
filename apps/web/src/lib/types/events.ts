@@ -2,7 +2,6 @@ import {
 	events,
 	eventsToCategories,
 	eventCategories,
-	eventsToCategoriesRelations,
 } from "db/schema";
 
 import {
@@ -12,13 +11,16 @@ import {
 } from "db/zod";
 import { z } from "zod";
 
+import type { Noop, RefCallBack } from "react-hook-form";
+
+import type { ImageProps } from "next/image";
+
 export type EventToCategoriesType = typeof eventsToCategories.$inferSelect;
 
 export type EventCategoryType = typeof eventCategories.$inferSelect;
 
 export type EventsToCategoriesWithCategoryType = EventToCategoriesType & {
 	category: {
-		// id?: string;
 		name: string;
 		color: string;
 	};
@@ -74,3 +76,21 @@ export enum CheckinResult {
 export type iEvent = z.infer<typeof insertEventSchemaFormified>;
 export type uEvent = z.infer<typeof updateEventSchemaFormified>;
 export type sEvent = z.infer<typeof selectEventSchema>;
+
+export type EventImageProps = Omit<ImageProps, 'alt'> & {
+	alt?:string;
+}
+
+export type RatingFormAttributes = {
+	onChange: (...event: any[]) => void;
+	onBlur: Noop;
+	value: number;
+	disabled?: boolean | undefined;
+	name: string;
+	ref: RefCallBack;
+};
+
+export type NewEventFormProps = {
+	defaultDate: Date;
+	categoryOptions: { [key: string]: string };
+};

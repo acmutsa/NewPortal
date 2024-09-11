@@ -1,5 +1,5 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { data, users, events, checkins, eventsToCategories } from "./schema";
+import { data, users, events, checkins } from "./schema";
 import { z } from "zod";
 import c from "config";
 
@@ -101,6 +101,7 @@ export const insertEventSchemaFormified = insertEventSchema
 				.string()
 				.array()
 				.min(1, "You must select one or more categories"),
+				points:z.number().min(c.minEventPoints).max(c.maxEventPoints)
 		}),
 	)
 	.omit({ id: true })
@@ -137,7 +138,6 @@ export const updateEventSchema = insertEventSchema.merge(
 export const selectEventSchema = createSelectSchema(events);
 
 export const selectCheckinSchema = createSelectSchema(checkins);
-export type Checkin = z.infer<typeof selectCheckinSchema>;
 
 export const adminCheckinSchema = z.object({
 	universityIDs: z.string().regex(new RegExp(`(\\w+[,\\W]*)+`), {
@@ -151,3 +151,20 @@ export const universityIDSplitter = z
 	.transform((val) => val.split(/[,\W]+/));
 
 // Current events or events of the week
+
+export const userCheckInSchema = createInsertSchema(checkins);
+
+export const userCheckinSchemaFormified = userCheckInSchema.merge(
+	z.object({
+		eventID: z.string().min(c.events.idLength),
+		feedback: z
+			.string()
+			.max(c.maxCheckinDescriptionLength, {
+				message: `Feedback must be ${c.maxCheckinDescriptionLength} characters or less.`,
+			}),
+		rating: z
+			.number()
+			.int()
+			.min(1, { message: "Please provide a rating." })
+			.max(5,{ message:"Rating must be between 1 and 5." }),
+}));
