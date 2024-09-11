@@ -3,6 +3,7 @@ import {
 	text,
 	varchar,
 	uniqueIndex,
+	uuid,
 	boolean,
 	timestamp,
 	integer,
@@ -14,9 +15,9 @@ import {
 	serial,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import c from "config";
 
 /* USERS */
-
 export const users = pgTable("users", {
 	userID: serial("user_id")
 		.primaryKey()
@@ -26,6 +27,7 @@ export const users = pgTable("users", {
 	lastName: text("last_name").notNull(),
 	email: text("email").notNull().unique(),
 	role: text("role").notNull().default("member"),
+	joinDate: timestamp("join_date").defaultNow().notNull(),
 });
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -50,21 +52,24 @@ export const data = pgTable("data", {
 });
 
 /* EVENTS */
-
 export const eventCategories = pgTable("event_categories", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull().unique(),
 	color: text("color").notNull(),
 });
 
-export const eventCategoriesRelations = relations(eventCategories, ({ many }) => ({
-	eventsToCategories: many(eventsToCategories),
-}));
+export const eventCategoriesRelations = relations(
+	eventCategories,
+	({ many }) => ({
+		eventsToCategories: many(eventsToCategories),
+	}),
+);
 
 export const events = pgTable("events", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(),
 	description: text("description").notNull(),
+	thumbnailUrl: text("thumbnail_Url").default(c.thumbnails.default).notNull(),
 	start: timestamp("start").notNull(),
 	end: timestamp("end").notNull(),
 	checkinStart: timestamp("checkin_start").notNull(),
@@ -72,9 +77,10 @@ export const events = pgTable("events", {
 	location: text("location").notNull(),
 	isUserCheckinable: boolean("is_user_checkinable").notNull().default(true),
 	isHidden: boolean("is_hidden").notNull().default(false),
+	points: integer("points").notNull().default(1),
 });
 
-export const eventsRelations = relations(events, ({ one, many }) => ({
+export const eventsRelations = relations(events, ({ many }) => ({
 	eventsToCategories: many(eventsToCategories),
 	checkins: many(checkins),
 }));
@@ -82,36 +88,45 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
 export const eventsToCategories = pgTable("events_to_categories", {
 	eventID: text("event_id")
 		.notNull()
-		.references(() => events.id),
+		.references(() => events.id, { onDelete: "cascade" }),
 	categoryID: text("category_id")
 		.notNull()
-		.references(() => eventCategories.id),
+		.references(() => eventCategories.id, { onDelete: "cascade" }),
 });
 
-export const eventsToCategoriesRelations = relations(eventsToCategories, ({ one }) => ({
-	category: one(eventCategories, {
-		fields: [eventsToCategories.categoryID],
-		references: [eventCategories.id],
+export const eventsToCategoriesRelations = relations(
+	eventsToCategories,
+	({ one }) => ({
+		category: one(eventCategories, {
+			fields: [eventsToCategories.categoryID],
+			references: [eventCategories.id],
+		}),
+		event: one(events, {
+			fields: [eventsToCategories.eventID],
+			references: [events.id],
+		}),
 	}),
-	event: one(events, {
-		fields: [eventsToCategories.eventID],
-		references: [events.id],
-	}),
-}));
+);
 
 export const checkins = pgTable(
 	"checkins",
 	{
-		eventID: text("event_id").notNull(),
-		userID: text("user_id").notNull(),
+		eventID: text("event_id")
+			.references(() => events.id, { onDelete: "cascade" })
+			.notNull(),
+		userID: integer("user_id")
+			.references(() => users.userID, { onDelete: "cascade" })
+			.notNull(),
 		time: timestamp("time").defaultNow().notNull(),
+		rating: integer("rating"),
+		adminID: text("admin_id"),
 		feedback: text("feedback"),
 	},
 	(table) => {
 		return {
 			id: primaryKey({ columns: [table.eventID, table.userID] }),
 		};
-	}
+	},
 );
 
 export const checkinRelations = relations(checkins, ({ one }) => ({
