@@ -35,7 +35,7 @@ export default async function Page() {
 						</p>
 					</div>
 					<div className="flex flex-col items-center justify-center gap-y-3 rounded-lg bg-primary text-white">
-						<p className="text-sm font-bold">
+						<p className="text-sm font-bold text-primary-foreground">
 							Had a portal (abc123 & email) account?
 						</p>
 						<Link href="/onboarding/migrate">

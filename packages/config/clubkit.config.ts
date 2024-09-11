@@ -1,5 +1,5 @@
 export default {
-	clubName: "ClubKit",
+	clubName: "ACM UTSA",
 	universityID: {
 		name: "ABC123",
 		maxLength: 6,
@@ -183,7 +183,3 @@ export const majors = [
 	"Webpage Design",
 	"Other",
 ] as const;
-
-
-	
-

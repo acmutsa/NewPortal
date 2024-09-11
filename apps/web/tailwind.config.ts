@@ -30,6 +30,7 @@ const config = {
 				title: ["12rem", ".60"],
 			},
 			colors: {
+				"acm-blue": "hsl(var(--acm-blue))",
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",

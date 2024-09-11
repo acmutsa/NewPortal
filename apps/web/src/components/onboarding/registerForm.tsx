@@ -185,10 +185,14 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		toast.loading("Creating Registration...");
 		if (resume) {
-			const resumeBlob = await upload(resume.name, resume, {
-				access: "public",
-				handleUploadUrl: "/api/upload/resume",
-			});
+			const resumeBlob = await upload(
+				`ACM Portal/resumes/${resume.name}`,
+				resume,
+				{
+					access: "public",
+					handleUploadUrl: "/api/upload/resume",
+				},
+			);
 			values.data.resume = resumeBlob.url;
 		} else {
 			values.data.resume = undefined;
@@ -346,7 +350,7 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 														</Button>
 													</FormControl>
 												</PopoverTrigger>
-												<PopoverContent className="no-scrollbar max-h-[400px] w-[250px] p-0">
+												<PopoverContent className="max-h-[400px] w-[250px] p-0 no-scrollbar">
 													<Command>
 														<CommandInput placeholder="Search major..." />
 														<CommandEmpty>

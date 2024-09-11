@@ -182,10 +182,14 @@ export default function NewEventForm({
 			? values.checkinEnd
 			: values.end;
 		if (thumbnail) {
-			const thumbnailBlob = await upload(thumbnail.name, thumbnail, {
-				access: "public",
-				handleUploadUrl: "/api/upload/thumbnail",
-			});
+			const thumbnailBlob = await upload(
+				`ACM Portal/events/thumbnails/${thumbnail.name}`,
+				thumbnail,
+				{
+					access: "public",
+					handleUploadUrl: "/api/upload/thumbnail",
+				},
+			);
 			runCreateEvent({
 				...values,
 				thumbnailUrl: thumbnailBlob.url,
