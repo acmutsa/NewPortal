@@ -63,6 +63,7 @@ export default {
 	maxCheckinDescriptionLength: 400,
 	icon: {
 		svg: "/img/logos/acm.svg",
+		ico: "/img/logos/acm.ico",
 	},
 	thumbnails: {
 		default: "/img/thumbnails/default.png",
