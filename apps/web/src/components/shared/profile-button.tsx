@@ -101,11 +101,11 @@ export default async function ProfileButton({
 				<DropdownMenuGroup>
 					<DropdownSwitcher />
 					{/* TODO: Replace with user.clubTag */}
-					<Link href={`/@${"<clubtag>"}`}>
+					{/* <Link href={`/@${"<clubtag>"}`}>
 						<DropdownMenuItem className="cursor-pointer">
 							Profile
 						</DropdownMenuItem>
-					</Link>
+					</Link> */}
 					<Link href={`mailto:team@acmutsa.org`}>
 						<DropdownMenuItem className="cursor-pointer">
 							Report a Bug
