@@ -1,4 +1,6 @@
 {
+  "id": "b1847142-4173-4554-8417-7a963093e142",
+  "prevId": "385607a8-4bc0-4009-929b-7097caae56b4",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -8,7 +10,7 @@
       "columns": {
         "event_id": {
           "name": "event_id",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
@@ -39,7 +41,7 @@
         },
         "feedback": {
           "name": "feedback",
-          "type": "text",
+          "type": "varchar(2000)",
           "primaryKey": false,
           "notNull": false
         }
@@ -49,30 +51,35 @@
         "checkins_event_id_events_id_fk": {
           "name": "checkins_event_id_events_id_fk",
           "tableFrom": "checkins",
+          "tableTo": "events",
           "columnsFrom": [
             "event_id"
           ],
-          "tableTo": "events",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
-        }
-      },
-      "compositePrimaryKeys": {
-        "checkins_event_id_user_id_pk": {
-          "name": "checkins_event_id_user_id_pk",
-          "columns": [
-            "event_id",
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "checkins_user_id_users_user_id_fk": {
+          "name": "checkins_user_id_users_user_id_fk",
+          "tableFrom": "checkins",
+          "tableTo": "users",
+          "columnsFrom": [
             "user_id"
-          ]
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.data": {
       "name": "data",
@@ -86,13 +93,13 @@
         },
         "major": {
           "name": "major",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
         "classification": {
           "name": "classification",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
@@ -116,62 +123,76 @@
         },
         "gender": {
           "name": "gender",
-          "type": "text[]",
+          "type": "varchar(255)[]",
           "primaryKey": false,
           "notNull": true
         },
         "ethnicity": {
           "name": "ethnicity",
-          "type": "text[]",
+          "type": "varchar(255)[]",
           "primaryKey": false,
           "notNull": true
         },
         "resume": {
           "name": "resume",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
         },
         "shirt_type": {
           "name": "shirt_type",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
         "shirt_size": {
           "name": "shirt_size",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
         "interested_event_types": {
           "name": "interested_event_types",
-          "type": "text[]",
+          "type": "varchar(255)[]",
           "primaryKey": false,
           "notNull": true
         },
-        "short_id": {
-          "name": "short_id",
-          "type": "text",
+        "university_id": {
+          "name": "university_id",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "data_user_id_users_user_id_fk": {
+          "name": "data_user_id_users_user_id_fk",
+          "tableFrom": "data",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "user_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "data_short_id_unique": {
-          "name": "data_short_id_unique",
+        "data_university_id_unique": {
+          "name": "data_university_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
-            "short_id"
-          ],
-          "nullsNotDistinct": false
+            "university_id"
+          ]
         }
       },
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.event_categories": {
       "name": "event_categories",
@@ -185,13 +206,13 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
         "color": {
           "name": "color",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         }
@@ -202,15 +223,15 @@
       "uniqueConstraints": {
         "event_categories_name_unique": {
           "name": "event_categories_name_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.events": {
       "name": "events",
@@ -218,13 +239,13 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": true,
           "notNull": true
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
@@ -234,9 +255,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "thumbnail_Url": {
-          "name": "thumbnail_Url",
-          "type": "text",
+        "thumbnail_url": {
+          "name": "thumbnail_url",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "default": "'/img/thumbnails/default.png'"
@@ -267,7 +288,7 @@
         },
         "location": {
           "name": "location",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
@@ -284,6 +305,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "points": {
+          "name": "points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
         }
       },
       "indexes": {},
@@ -291,8 +319,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.events_to_categories": {
       "name": "events_to_categories",
@@ -300,13 +328,13 @@
       "columns": {
         "event_id": {
           "name": "event_id",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
         "category_id": {
           "name": "category_id",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         }
@@ -316,35 +344,35 @@
         "events_to_categories_event_id_events_id_fk": {
           "name": "events_to_categories_event_id_events_id_fk",
           "tableFrom": "events_to_categories",
+          "tableTo": "events",
           "columnsFrom": [
             "event_id"
           ],
-          "tableTo": "events",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "events_to_categories_category_id_event_categories_id_fk": {
           "name": "events_to_categories_category_id_event_categories_id_fk",
           "tableFrom": "events_to_categories",
+          "tableTo": "event_categories",
           "columnsFrom": [
             "category_id"
           ],
-          "tableTo": "event_categories",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.users": {
       "name": "users",
@@ -358,85 +386,87 @@
         },
         "clerk_id": {
           "name": "clerk_id",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
         },
         "first_name": {
           "name": "first_name",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
         "last_name": {
           "name": "last_name",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
         "email": {
           "name": "email",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
         "role": {
           "name": "role",
-          "type": "text",
+          "type": "user_roles",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
           "default": "'member'"
+        },
+        "join_date": {
+          "name": "join_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "users_user_id_data_user_id_fk": {
-          "name": "users_user_id_data_user_id_fk",
-          "tableFrom": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "tableTo": "data",
-          "columnsTo": [
-            "user_id"
-          ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "users_clerk_id_unique": {
           "name": "users_clerk_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "clerk_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "users_email_unique": {
           "name": "users_email_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
-  "enums": {},
-  "schemas": {},
-  "_meta": {
-    "schemas": {},
-    "tables": {},
-    "columns": {}
+  "enums": {
+    "public.user_roles": {
+      "name": "user_roles",
+      "schema": "public",
+      "values": [
+        "member",
+        "admin",
+        "super_admin"
+      ]
+    }
   },
-  "id": "3cdf066e-e1ff-430c-8928-f3c153725374",
-  "prevId": "6ffefb56-7033-4917-ad3d-79846822b6d0",
+  "schemas": {},
   "sequences": {},
+  "roles": {},
   "policies": {},
   "views": {},
-  "roles": {}
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
 }

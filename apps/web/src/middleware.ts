@@ -9,7 +9,6 @@ export default clerkMiddleware(
 			auth().protect();
 		}
 	},
-	{ afterSignUpUrl: "/register" }
 );
 
 export const config = {
