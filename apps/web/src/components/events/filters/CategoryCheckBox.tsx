@@ -1,47 +1,48 @@
-"use client"
+"use client";
 import { Checkbox } from "@/components/ui/checkbox";
-import { usePathname,useSearchParams,useRouter } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import type { EventCategoryType } from "@/lib/types/events";
 import { EVENT_FILTERS } from "@/lib/constants/events";
 
-export default function CategoryCheckBox({category,checkBoxSet}:{category:EventCategoryType,checkBoxSet:Set<string>}){
-    const {
-        name,
-        color
-    } = category;
-    const { CATEGORIES} = EVENT_FILTERS
-    
-    
-    const searchParams = useSearchParams();
-    const {replace,refresh} = useRouter();
-    const pathname = usePathname();
-    const params = new URLSearchParams(searchParams);
+export default function CategoryCheckBox({
+	category,
+	checkBoxSet,
+}: {
+	category: EventCategoryType;
+	checkBoxSet: Set<string>;
+}) {
+	const { name, color } = category;
+	const { CATEGORIES } = EVENT_FILTERS;
+
+	const searchParams = useSearchParams();
+	const { replace, refresh } = useRouter();
+	const pathname = usePathname();
+	const params = new URLSearchParams(searchParams);
 	const checkedBoxes = params.get(CATEGORIES);
 
-    const [checked,setCheck] = useState(checkBoxSet.has(name));
-    
-    const handleCheck = (name:string)=>{
-        
-        if(checkedBoxes){
-            if(checkBoxSet.has(name)){
-                checkBoxSet.delete(name);
-                if (checkBoxSet.size <= 0 ){
-                    params.delete('categories');
-                    replace(`${pathname}?${params.toString()}`);
-                    return;
-                }
-            }else{
-                checkBoxSet.add(name);
-            }
-            params.set('categories',Array.from(checkBoxSet).join(','));
-        }else{
-            params.set('categories',name);
-        }
-        replace(`${pathname}?${params.toString()}`);
-        refresh();
-    }
-    return (
+	const [checked, setCheck] = useState(checkBoxSet.has(name));
+
+	const handleCheck = (name: string) => {
+		if (checkedBoxes) {
+			if (checkBoxSet.has(name)) {
+				checkBoxSet.delete(name);
+				if (checkBoxSet.size <= 0) {
+					params.delete("categories");
+					replace(`${pathname}?${params.toString()}`);
+					return;
+				}
+			} else {
+				checkBoxSet.add(name);
+			}
+			params.set("categories", Array.from(checkBoxSet).join(","));
+		} else {
+			params.set("categories", name);
+		}
+		replace(`${pathname}?${params.toString()}`);
+		refresh();
+	};
+	return (
 		<div
 			className="flex w-full justify-between gap-2"
 			onClick={() => {
@@ -68,6 +69,4 @@ export default function CategoryCheckBox({category,checkBoxSet}:{category:EventC
 			></div>
 		</div>
 	);
-
-
 }

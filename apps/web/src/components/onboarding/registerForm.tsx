@@ -88,7 +88,7 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 	const [resume, setResume] = useState<File | null>(null);
 	const router = useRouter();
 
-		const form = useForm<z.infer<typeof formSchema>>({
+	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			email: defaultEmail,
@@ -160,8 +160,6 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 		},
 	});
 
-
-
 	useEffect(() => {
 		if (Object.keys(form.formState.errors).length > 0) {
 			console.log("Errors: ", form.formState.errors);
@@ -171,12 +169,16 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		toast.loading("Creating Registration...");
 		if (resume) {
-			const resumeBlob = await upload(`${bucketBaseUrl}/${resume.name}`, resume, {
-				access: "public",
-				handleUploadUrl: "/api/upload/resume",
-			});
+			const resumeBlob = await upload(
+				`${bucketBaseUrl}/${resume.name}`,
+				resume,
+				{
+					access: "public",
+					handleUploadUrl: "/api/upload/resume",
+				},
+			);
 			values.data.resume = resumeBlob.url;
-		} 
+		}
 		runCreateRegistration(values);
 	}
 
@@ -193,9 +195,7 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 			setResume(null);
 			return false;
 		}
-		if (
-			!c.acceptedResumeMimeTypes.includes(file.type)
-		) {
+		if (!c.acceptedResumeMimeTypes.includes(file.type)) {
 			form.setError("data.resume", {
 				message: "Resume file must be a .pdf or .docx file.",
 			});
@@ -378,7 +378,9 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 																						"data.major",
 																						value,
 																					);
-																					form.clearErrors("data.major");
+																					form.clearErrors(
+																						"data.major",
+																					);
 																				}}
 																				className="cursor-pointer "
 																			>
@@ -403,7 +405,7 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 													</Command>
 												</PopoverContent>
 											</Popover>
-											<FormMessage/>
+											<FormMessage />
 										</FormItem>
 									)}
 								/>

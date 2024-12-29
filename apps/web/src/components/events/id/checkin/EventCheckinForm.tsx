@@ -37,15 +37,17 @@ export default function EventCheckinForm({
 	const [feedbackLengthMessage, setFeedbackLengthMessage] = useState<string>(
 		`0 / ${maxCheckinDescriptionLength} characters`,
 	);
-	const userCheckinForm = useForm<z.infer<typeof userCheckinSchemaFormified>>({
-		resolver: zodResolver(userCheckinSchemaFormified),
-		defaultValues: {
-			feedback: "",
-			rating: 0,
-			eventID,
-			userID,
+	const userCheckinForm = useForm<z.infer<typeof userCheckinSchemaFormified>>(
+		{
+			resolver: zodResolver(userCheckinSchemaFormified),
+			defaultValues: {
+				feedback: "",
+				rating: 0,
+				eventID,
+				userID,
+			},
 		},
-	});
+	);
 
 	const { push } = useRouter();
 
@@ -55,7 +57,7 @@ export default function EventCheckinForm({
 		result: checkInUserResult,
 		reset: resetCheckInUser,
 	} = useAction(checkInUserAction, {
-		onSuccess: async ({data}) => {
+		onSuccess: async ({ data }) => {
 			toast.dismiss();
 			const success = data?.success;
 			const code = data?.code;
@@ -78,7 +80,7 @@ export default function EventCheckinForm({
 				push("/dash");
 			}, 2500);
 		},
-		onError: async ({error:e}) => {
+		onError: async ({ error: e }) => {
 			toast.dismiss();
 			if (e.validationErrors) {
 				toast.error(`Please check your input. ${e.validationErrors}`, {
@@ -89,7 +91,7 @@ export default function EventCheckinForm({
 					},
 				});
 			} else {
-				console.log(e.serverError)
+				console.log(e.serverError);
 				toast.error(`Something went wrong checking in user.`, {
 					duration: Infinity,
 					cancel: {
@@ -102,9 +104,7 @@ export default function EventCheckinForm({
 		},
 	});
 
-	const onSubmit = async (
-		checkInValues: CheckInUserClientProps,
-	) => {
+	const onSubmit = async (checkInValues: CheckInUserClientProps) => {
 		toast.dismiss();
 		resetCheckInUser();
 
@@ -121,8 +121,7 @@ export default function EventCheckinForm({
 	const isError = checkInUserStatus === "hasErrored";
 	useEffect(() => {
 		console.log(userCheckinForm.formState.errors);
-	}
-	, [userCheckinForm.formState.errors]);
+	}, [userCheckinForm.formState.errors]);
 	return (
 		<>
 			<Form {...userCheckinForm}>
@@ -130,7 +129,7 @@ export default function EventCheckinForm({
 					onSubmit={userCheckinForm.handleSubmit(onSubmit)}
 					className="mx-5 flex h-full flex-row sm:mx-0 sm:justify-center"
 				>
-					<div className="flex w-full flex-col items-start justify-start 2xl:justify-center space-y-12 sm:w-3/4">
+					<div className="flex w-full flex-col items-start justify-start space-y-12 sm:w-3/4 2xl:justify-center">
 						<FormField
 							control={userCheckinForm.control}
 							name="rating"
@@ -161,7 +160,7 @@ export default function EventCheckinForm({
 									<FormControl>
 										<Textarea
 											{...field}
-											className="monitor:min-h-[300px] min-h-[120px] text-base lg:min-h-[150px] lg:w-full lg:text-lg xl:min-h-[200px] 2xl:min-h-[250px]"
+											className="min-h-[120px] text-base lg:min-h-[150px] lg:w-full lg:text-lg xl:min-h-[200px] 2xl:min-h-[250px] monitor:min-h-[300px]"
 											maxLength={
 												maxCheckinDescriptionLength
 											}
@@ -203,7 +202,3 @@ export default function EventCheckinForm({
 		</>
 	);
 }
-
-
-
-

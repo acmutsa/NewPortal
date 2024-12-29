@@ -27,13 +27,10 @@ import {
 } from "@/components/ui/accordion";
 
 export default function EventDetailsDefault(detailsProps: DetailsProps) {
-
 	const {
 		streamingLinks,
 		calendarLinks,
-		events: { 
-			checkingInInfo, aboutOrg 
-		},
+		events: { checkingInInfo, aboutOrg },
 	} = c;
 
 	const {

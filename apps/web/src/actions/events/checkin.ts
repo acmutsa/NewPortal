@@ -1,6 +1,10 @@
 "use server";
 
-import { authenticatedAction, userAction,adminAction } from "@/lib/safe-action";
+import {
+	authenticatedAction,
+	userAction,
+	adminAction,
+} from "@/lib/safe-action";
 import { userCheckinSchemaFormified } from "db/zod";
 import { UNIQUE_KEY_CONSTRAINT_VIOLATION_CODE } from "@/lib/constants/";
 import { checkInUserClient, checkInUserList } from "@/lib/queries/checkins";
@@ -9,8 +13,9 @@ import { CheckinResult } from "@/lib/types/events";
 
 const { ALREADY_CHECKED_IN, SUCCESS, FAILED, SOME_FAILED } = CheckinResult;
 
-export const checkInUserAction = userAction.schema(userCheckinSchemaFormified).action(
-	async ({parsedInput}) => {
+export const checkInUserAction = userAction
+	.schema(userCheckinSchemaFormified)
+	.action(async ({ parsedInput }) => {
 		try {
 			await checkInUserClient(parsedInput);
 		} catch (e) {
@@ -27,21 +32,16 @@ export const checkInUserAction = userAction.schema(userCheckinSchemaFormified).a
 			success: true,
 			code: SUCCESS,
 		};
-	},
-);
+	});
 
-export const adminCheckin = adminAction.schema(
-	adminCheckinSchema).action(
-	async ({ctx, parsedInput}) => {
+export const adminCheckin = adminAction
+	.schema(adminCheckinSchema)
+	.action(async ({ ctx, parsedInput }) => {
 		const { universityIDs, eventID } = parsedInput;
 		const { userID: adminID } = ctx;
 		try {
 			const idList = universityIDSplitter.parse(universityIDs);
-			const failedIDs = await checkInUserList(
-				eventID,
-				idList,
-				adminID,
-			);
+			const failedIDs = await checkInUserList(eventID, idList, adminID);
 
 			if (failedIDs.length == 0) {
 				return {
@@ -70,5 +70,4 @@ export const adminCheckin = adminAction.schema(
 				code: FAILED,
 			};
 		}
-	},
-);
+	});

@@ -160,8 +160,16 @@ export default function Migrator({ clerkEmail }: { clerkEmail: string }) {
 						Migrate Account
 					</Button>
 					{clerkEmail !== legacyEmail && (
-						<p className="text-xs w-full text-center">
-							⚠️The new email you signed in with (<span className="font-semibold">{clerkEmail}</span>) seems to differ from your legacy portal email (<span className="font-semibold">{legacyEmail}</span>). By clicking migrate account, you are acknowledging that the new portal account will be linked to <span className="font-semibold">{clerkEmail}</span>. ⚠️
+						<p className="w-full text-center text-xs">
+							⚠️The new email you signed in with (
+							<span className="font-semibold">{clerkEmail}</span>)
+							seems to differ from your legacy portal email (
+							<span className="font-semibold">{legacyEmail}</span>
+							). By clicking migrate account, you are
+							acknowledging that the new portal account will be
+							linked to{" "}
+							<span className="font-semibold">{clerkEmail}</span>.
+							⚠️
 						</p>
 					)}
 				</div>

@@ -12,9 +12,9 @@ const nanoid = customAlphabet(
 	c.events.idLength,
 );
 
-export const createEvent = adminAction.schema(
-	insertEventSchemaFormified).action(
-	async ({ parsedInput }) => {
+export const createEvent = adminAction
+	.schema(insertEventSchemaFormified)
+	.action(async ({ parsedInput }) => {
 		let res = {
 			success: true,
 			code: "success",
@@ -63,5 +63,4 @@ export const createEvent = adminAction.schema(
 		});
 
 		return res;
-	},
-);
+	});

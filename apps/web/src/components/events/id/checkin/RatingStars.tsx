@@ -2,7 +2,7 @@ import type { RatingFormAttributes } from "@/lib/types/events";
 import { useState } from "react";
 import RatingStar from "./RatingStar";
 
-export default function RatingStars (formAttributes: RatingFormAttributes) {
+export default function RatingStars(formAttributes: RatingFormAttributes) {
 	const { onChange, ref } = formAttributes;
 
 	const [rating, setRating] = useState<number>(0);
@@ -10,7 +10,7 @@ export default function RatingStars (formAttributes: RatingFormAttributes) {
 
 	return (
 		<div
-			className="flex w-full items-center justify-start space-x-2 cursor-pointer"
+			className="flex w-full cursor-pointer items-center justify-start space-x-2"
 			ref={ref}
 		>
 			{Array.from({ length: 5 }, (_, i) => {
@@ -23,17 +23,17 @@ export default function RatingStars (formAttributes: RatingFormAttributes) {
 							onChange={onChange}
 						/>
 					);
-				} 
+				}
 				return (
-						<RatingStar
-							starNumber={i + 1}
-							setStarRating={setRating}
-							color={ratingStyle}
-							key={i}
-							onChange={onChange}
-						/>
-					);
+					<RatingStar
+						starNumber={i + 1}
+						setStarRating={setRating}
+						color={ratingStyle}
+						key={i}
+						onChange={onChange}
+					/>
+				);
 			})}
 		</div>
 	);
-};
+}

@@ -1,11 +1,11 @@
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../../ui/accordion"
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "../../ui/accordion";
 export default function PortalMigrationExplainer() {
- return (
+	return (
 		<Accordion type="single" collapsible className="w-full">
 			<AccordionItem value="item-1">
 				<AccordionTrigger className="w-full">
@@ -19,6 +19,5 @@ export default function PortalMigrationExplainer() {
 				</AccordionContent>
 			</AccordionItem>
 		</Accordion>
- );
-
+	);
 }

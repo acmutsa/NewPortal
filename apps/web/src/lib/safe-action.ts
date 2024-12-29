@@ -1,13 +1,17 @@
-import { createSafeActionClient, DEFAULT_SERVER_ERROR_MESSAGE, returnValidationErrors } from "next-safe-action";
+import {
+	createSafeActionClient,
+	DEFAULT_SERVER_ERROR_MESSAGE,
+	returnValidationErrors,
+} from "next-safe-action";
 import { auth } from "@clerk/nextjs/server";
 import { db, eq } from "db";
 import { users } from "db/schema";
-import z from "zod"
+import z from "zod";
 
-class ActionError extends Error{}
+class ActionError extends Error {}
 
 export const actionClient = createSafeActionClient({
-	handleServerError:(e,utils) =>{
+	handleServerError: (e, utils) => {
 		// You can access these properties inside the `utils` object.
 		const { clientInput, bindArgsClientInputs, metadata, ctx } = utils;
 
@@ -16,55 +20,49 @@ export const actionClient = createSafeActionClient({
 
 		// Return generic message
 		return "Oh no, something went wrong!";
-	}
+	},
 });
 
-export const authenticatedAction = actionClient.use(
-	async ({ next, }) =>{
-		const { userId } = auth();
-		if (!userId)
-			returnValidationErrors(z.null(), {
-				_errors: ["Unauthorized (No User ID)"],
-			});
-		return next({ ctx: { userId } });
-	}
-);
-
-export const userAction = authenticatedAction.use(
-	async ({next, ctx})=>{
-		const {userId} = ctx;
-		const user = await db.query.users.findFirst({
-			where:eq(users.clerkID,userId)
+export const authenticatedAction = actionClient.use(async ({ next }) => {
+	const { userId } = auth();
+	if (!userId)
+		returnValidationErrors(z.null(), {
+			_errors: ["Unauthorized (No User ID)"],
 		});
+	return next({ ctx: { userId } });
+});
 
-		if (!user){
-			returnValidationErrors(z.null(),{
-				_errors:["Unauthorized (User Not Found)"]
-			});
-		}
+export const userAction = authenticatedAction.use(async ({ next, ctx }) => {
+	const { userId } = ctx;
+	const user = await db.query.users.findFirst({
+		where: eq(users.clerkID, userId),
+	});
 
-		return next({ctx:{userRole:user.role,userID:user.userID, clerkID:userId}});		
+	if (!user) {
+		returnValidationErrors(z.null(), {
+			_errors: ["Unauthorized (User Not Found)"],
+		});
 	}
-)
 
-export const adminAction = userAction.use(
-	async ({next,ctx})=>{
-		if (!(ctx.userRole === "admin" || ctx.userRole === "super_admin")){
-			returnValidationErrors(z.null(),{
-				_errors:["Unauthorized (Not Admin)"]
-			});
-		}
-		return next({ctx});
-	}
-)
+	return next({
+		ctx: { userRole: user.role, userID: user.userID, clerkID: userId },
+	});
+});
 
-export const executiveAction = userAction.use(
-	async ({next,ctx})=>{
-		if (ctx.userRole !== "super_admin"){
-			returnValidationErrors(z.null(),{
-				_errors:["Unauthorized (Not a super admin)"]
-			});
-		}
-		return next({ctx});
+export const adminAction = userAction.use(async ({ next, ctx }) => {
+	if (!(ctx.userRole === "admin" || ctx.userRole === "super_admin")) {
+		returnValidationErrors(z.null(), {
+			_errors: ["Unauthorized (Not Admin)"],
+		});
 	}
-)
+	return next({ ctx });
+});
+
+export const executiveAction = userAction.use(async ({ next, ctx }) => {
+	if (ctx.userRole !== "super_admin") {
+		returnValidationErrors(z.null(), {
+			_errors: ["Unauthorized (Not a super admin)"],
+		});
+	}
+	return next({ ctx });
+});

@@ -48,7 +48,6 @@ import { ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
 import { bucketEventThumbnailBaseUrl } from "config";
 import type { NewEventFormProps } from "@/lib/types/events";
 
-
 const formSchema = insertEventSchemaFormified;
 
 export default function NewEventForm({
@@ -64,8 +63,8 @@ export default function NewEventForm({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			name:"",
-			description:"",
+			name: "",
+			description: "",
 			start: defaultDate,
 			checkinStart: defaultDate,
 			end: new Date(defaultDate.getTime() + ONE_HOUR_IN_MILLISECONDS),
@@ -75,7 +74,7 @@ export default function NewEventForm({
 			thumbnailUrl: c.thumbnails.default,
 			categories: [],
 			isUserCheckinable: true,
-			points: 1
+			points: 1,
 		},
 	});
 	const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -124,10 +123,9 @@ export default function NewEventForm({
 		result: actionResult,
 		reset: resetAction,
 	} = useAction(createEvent, {
-		onSuccess: async ({data}) => {
-
+		onSuccess: async ({ data }) => {
 			toast.dismiss();
-			if (!data){
+			if (!data) {
 				toast.error(
 					`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
 				);
@@ -180,7 +178,7 @@ export default function NewEventForm({
 		const checkinEnd = hasDifferentCheckinTime
 			? values.checkinEnd
 			: values.end;
-			// Come back and make cleaner
+		// Come back and make cleaner
 		if (thumbnail) {
 			const thumbnailBlob = await upload(
 				`${bucketEventThumbnailBaseUrl}/${thumbnail.name}`,
@@ -210,8 +208,6 @@ export default function NewEventForm({
 			});
 		}
 	};
-
-	
 
 	return (
 		<>
@@ -522,12 +518,16 @@ export default function NewEventForm({
 												max={c.maxEventPoints}
 												{...field}
 												onChange={(e) => {
-													const parsedPoints = parseInt(
-														e.target.value,
-														10,
-													);
-														const points = (parsedPoints < 1) ? 1 : parsedPoints;
-														field.onChange(points);
+													const parsedPoints =
+														parseInt(
+															e.target.value,
+															10,
+														);
+													const points =
+														parsedPoints < 1
+															? 1
+															: parsedPoints;
+													field.onChange(points);
 												}}
 											/>
 										</FormControl>

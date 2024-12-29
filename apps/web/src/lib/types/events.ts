@@ -1,8 +1,4 @@
-import {
-	events,
-	eventsToCategories,
-	eventCategories,
-} from "db/schema";
+import { events, eventsToCategories, eventCategories } from "db/schema";
 
 import {
 	insertEventSchemaFormified,
@@ -32,17 +28,17 @@ export type EventAndCategoriesType = EventType & {
 	eventsToCategories: EventsToCategoriesWithCategoryType[];
 };
 
-export interface EventCalendarLink{
+export interface EventCalendarLink {
 	title: string;
 	description: string;
 	start: string;
 	end: string;
 	location: string;
-};
+}
 
 export interface EventCalendarName {
-	title:string;
-	titleOverride?:string;
+	title: string;
+	titleOverride?: string;
 }
 
 export interface DetailsProps {
@@ -56,7 +52,7 @@ export interface DetailsProps {
 	isEventPassed: boolean;
 	isCheckinAvailable: boolean;
 	isEventHappening: boolean;
-};
+}
 
 export interface CalendarDetails {
 	title: string;
@@ -64,7 +60,7 @@ export interface CalendarDetails {
 	start: string;
 	end: string;
 	location: string;
-};
+}
 
 export enum CheckinResult {
 	SUCCESS = "success",
@@ -77,9 +73,9 @@ export type iEvent = z.infer<typeof insertEventSchemaFormified>;
 export type uEvent = z.infer<typeof updateEventSchemaFormified>;
 export type sEvent = z.infer<typeof selectEventSchema>;
 
-export type EventImageProps = Omit<ImageProps, 'alt'> & {
-	alt?:string;
-}
+export type EventImageProps = Omit<ImageProps, "alt"> & {
+	alt?: string;
+};
 
 export type RatingFormAttributes = {
 	onChange: (...event: any[]) => void;

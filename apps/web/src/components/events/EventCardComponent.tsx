@@ -1,32 +1,46 @@
 import type { EventAndCategoriesType } from "@/lib/types/events";
 import Image from "next/image";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
 import clsx from "clsx";
 import EventCategories from "./EventCategories";
 import { Badge } from "../ui/badge";
 import { formatInTimeZone } from "date-fns-tz";
-import { EVENT_DATE_FORMAT_STRING, EVENT_TIME_FORMAT_STRING } from "@/lib/constants/events";
+import {
+	EVENT_DATE_FORMAT_STRING,
+	EVENT_TIME_FORMAT_STRING,
+} from "@/lib/constants/events";
 import EventImage from "./shared/EventImage";
-export default function EventCardComponent({ event,isPast,isEventCurrentlyHappening, isEventCheckinAllowed,clientTimezone }: { event: EventAndCategoriesType,isPast:boolean,isEventCurrentlyHappening:boolean,clientTimezone:string,isEventCheckinAllowed:boolean}) {
-	const {
-		thumbnailUrl,
-		start,
-		id,
-		points,
-	} = event;
+export default function EventCardComponent({
+	event,
+	isPast,
+	isEventCurrentlyHappening,
+	isEventCheckinAllowed,
+	clientTimezone,
+}: {
+	event: EventAndCategoriesType;
+	isPast: boolean;
+	isEventCurrentlyHappening: boolean;
+	clientTimezone: string;
+	isEventCheckinAllowed: boolean;
+}) {
+	const { thumbnailUrl, start, id, points } = event;
 
 	const eventDetailsLink = `/events/${id}`;
 	const eventCheckinLink = `/events/${id}/checkin`;
-	const startDateFormatted = formatInTimeZone(start,clientTimezone, `${EVENT_DATE_FORMAT_STRING} @ ${EVENT_TIME_FORMAT_STRING}`);
+	const startDateFormatted = formatInTimeZone(
+		start,
+		clientTimezone,
+		`${EVENT_DATE_FORMAT_STRING} @ ${EVENT_TIME_FORMAT_STRING}`,
+	);
 
-  return (
+	return (
 		<Card
 			className={`group relative flex h-full w-full flex-col transition duration-300 ease-in-out hover:shadow-lg hover:shadow-slate-400 md:hover:scale-105`}
 		>
@@ -100,5 +114,5 @@ export default function EventCardComponent({ event,isPast,isEventCurrentlyHappen
 				</Link>
 			</CardFooter>
 		</Card>
-  );
+	);
 }

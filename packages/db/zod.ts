@@ -29,14 +29,10 @@ const userDataFormified = z.object({
 		// Special Values
 		universityID: z.string().min(1).max(c.universityID.maxLength),
 		gender: z
-			.array(
-				z.enum(c.userIdentityOptions.gender),
-			)
+			.array(z.enum(c.userIdentityOptions.gender))
 			.min(1, "Required"),
 		ethnicity: z
-			.array(
-				z.enum(c.userIdentityOptions.ethnicity),
-			)
+			.array(z.enum(c.userIdentityOptions.ethnicity))
 			.min(1, "Required"),
 		graduationMonth: z
 			.number()
@@ -87,7 +83,7 @@ export const insertEventSchemaFormified = insertEventSchema
 				.string()
 				.array()
 				.min(1, "You must select one or more categories"),
-				points:z.number().min(c.minEventPoints).max(c.maxEventPoints)
+			points: z.number().min(c.minEventPoints).max(c.maxEventPoints),
 		}),
 	)
 	.omit({ id: true })
@@ -142,14 +138,13 @@ export const userCheckInSchema = createInsertSchema(checkins);
 export const userCheckinSchemaFormified = userCheckInSchema.merge(
 	z.object({
 		eventID: z.string().min(c.events.idLength),
-		feedback: z
-			.string()
-			.max(c.maxCheckinDescriptionLength, {
-				message: `Feedback must be ${c.maxCheckinDescriptionLength} characters or less.`,
-			}),
+		feedback: z.string().max(c.maxCheckinDescriptionLength, {
+			message: `Feedback must be ${c.maxCheckinDescriptionLength} characters or less.`,
+		}),
 		rating: z
 			.number()
 			.int()
 			.min(1, { message: "Please provide a rating." })
-			.max(5,{ message:"Rating must be between 1 and 5." }),
-}));
+			.max(5, { message: "Rating must be between 1 and 5." }),
+	}),
+);

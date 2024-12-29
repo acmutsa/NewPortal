@@ -80,7 +80,6 @@ const c = {
 
 export const defaultTheme = "light";
 
-
 const majors = [
 	"Computer Science",
 	"Accounting",
@@ -198,11 +197,4 @@ const majors = [
 const bucketBaseUrl = `${c.clubName}-${c.universityName}`;
 const bucketEventThumbnailBaseUrl = `${bucketBaseUrl}/event-thumbnails`;
 export default c;
-export {
-	majors,
-	bucketEventThumbnailBaseUrl,
-	bucketBaseUrl
-}
-
-	
-
+export { majors, bucketEventThumbnailBaseUrl, bucketBaseUrl };

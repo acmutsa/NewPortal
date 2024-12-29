@@ -1,15 +1,12 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-
 const isProtectedRoute = createRouteMatcher(["/dash(.*)", "/admin(.*)"]);
 
-export default clerkMiddleware(
-	(auth, req) => {
-		if (isProtectedRoute(req)) {
-			auth().protect();
-		}
-	},
-);
+export default clerkMiddleware((auth, req) => {
+	if (isProtectedRoute(req)) {
+		auth().protect();
+	}
+});
 
 export const config = {
 	// Protects all routes, including api/trpc.

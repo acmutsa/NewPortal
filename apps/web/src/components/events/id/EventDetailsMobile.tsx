@@ -29,10 +29,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 	const {
 		streamingLinks,
 		calendarLinks,
-		events: { 
-			checkingInInfo, 
-			aboutOrg 
-		},
+		events: { checkingInInfo, aboutOrg },
 	} = c;
 
 	const {
@@ -50,7 +47,7 @@ export default function EventDetailsMobile(detailsProps: DetailsProps) {
 
 	return (
 		<div className="flex flex-col space-y-4 lg:hidden">
-			<div className="w-full flex items-center justify-center">
+			<div className="flex w-full items-center justify-center">
 				<div className="relative">
 					<EventImage
 						src={event.thumbnailUrl}

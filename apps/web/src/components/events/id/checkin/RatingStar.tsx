@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Star } from 'lucide-react';
+import * as React from "react";
+import { Star } from "lucide-react";
 
-export default function RatingStar ({
+export default function RatingStar({
 	starNumber,
 	setStarRating,
 	color,
@@ -23,4 +23,4 @@ export default function RatingStar ({
 			enableBackground={color}
 		/>
 	);
-};
+}

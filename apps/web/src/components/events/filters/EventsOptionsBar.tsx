@@ -13,13 +13,10 @@ export default async function EventsOptionsBar({
 }) {
 	const { VIEW, CARD, SHOW_EVENTS, SHOW_UPCOMING_EVENTS } = EVENT_FILTERS;
 
-	const cardViewSelected = params.view
-		? CARD === params[VIEW] ?? CARD
-		: true;
+	const cardViewSelected = params.view ? CARD === params[VIEW] ?? CARD : true;
 
 	const showUpcomingEvents = params[SHOW_EVENTS]
-		? SHOW_UPCOMING_EVENTS === params[SHOW_EVENTS] ??
-			SHOW_UPCOMING_EVENTS
+		? SHOW_UPCOMING_EVENTS === params[SHOW_EVENTS] ?? SHOW_UPCOMING_EVENTS
 		: true;
 
 	const categories = await db.query.eventCategories.findMany();

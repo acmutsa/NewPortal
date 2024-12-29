@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useAction } from "next-safe-action/hooks";
 import React from "react";
-import { adminCheckinSchema,  } from "db/zod";
+import { adminCheckinSchema } from "db/zod";
 import { adminCheckin } from "@/actions/events/checkin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ import {
 	SelectItem,
 } from "@/components/ui/select";
 import c from "config";
-import z from "zod"
+import z from "zod";
 
 type Props = {
 	eventList: { id: string; name: string }[];
@@ -62,14 +62,14 @@ function AddCheckinDialogue({ eventList, ...props }: Props) {
 	} = useAction(adminCheckin, {
 		onSuccess: async ({ data }) => {
 			toast.dismiss();
-			if (!data){
+			if (!data) {
 				toast.error(
 					`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
 				);
 				resetAction();
 				return;
 			}
-			const { success, code, failedIDs} = data
+			const { success, code, failedIDs } = data;
 			if (!success) {
 				switch (code) {
 					case CheckinResult.FAILED:

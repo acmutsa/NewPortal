@@ -13,11 +13,7 @@ export default function CalendarLink({
 	calendarName: EventCalendarName;
 	calendarDetails: CalendarDetails;
 }) {
-
-	const {
-		title,
-		titleOverride
-	} = calendarName;
+	const { title, titleOverride } = calendarName;
 
 	const [src, setSrc] = useState(
 		`/img/logos/${title.toLocaleLowerCase()}-icon.svg`,
@@ -41,7 +37,7 @@ export default function CalendarLink({
 					setSrc(fallBackSrc);
 				}}
 			/>
-			<p className="md:text-base lg:text-lg 2xl:text-2xl text-primary">
+			<p className="text-primary md:text-base lg:text-lg 2xl:text-2xl">
 				{titleOverride ? titleOverride : capitalizeFirstLetter(title)}
 			</p>
 		</Link>

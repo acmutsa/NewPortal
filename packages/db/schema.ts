@@ -15,14 +15,18 @@ import c from "config";
 // pieces of this schema need to be revamped as a lot of them are lazily set as text instead of varchar with a hard limit
 /* USERS */
 
-export const userRoles = pgEnum("user_roles",["member","admin","super_admin"]);
+export const userRoles = pgEnum("user_roles", [
+	"member",
+	"admin",
+	"super_admin",
+]);
 
 export const users = pgTable("users", {
 	userID: serial("user_id").primaryKey(),
-	clerkID: varchar("clerk_id",{ length: 255 }).unique(),
-	firstName: varchar("first_name",{ length: 255 }).notNull(),
-	lastName: varchar("last_name",{ length: 255 }).notNull(),
-	email: varchar({length:255}).notNull().unique(),
+	clerkID: varchar("clerk_id", { length: 255 }).unique(),
+	firstName: varchar("first_name", { length: 255 }).notNull(),
+	lastName: varchar("last_name", { length: 255 }).notNull(),
+	email: varchar({ length: 255 }).notNull().unique(),
 	role: userRoles().default("member").notNull(),
 	joinDate: timestamp("join_date").defaultNow().notNull(),
 });
@@ -33,7 +37,9 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 }));
 
 export const data = pgTable("data", {
-	userID: integer("user_id").primaryKey().references(() => users.userID, { onDelete: "cascade" }),
+	userID: integer("user_id")
+		.primaryKey()
+		.references(() => users.userID, { onDelete: "cascade" }),
 	major: varchar({ length: 255 }).notNull(),
 	classification: varchar({ length: 255 }).notNull(),
 	graduationMonth: integer("graduation_month").notNull(),
@@ -42,17 +48,19 @@ export const data = pgTable("data", {
 	gender: varchar({ length: 255 }).array().notNull(),
 	ethnicity: varchar({ length: 255 }).array().notNull(),
 	resume: varchar({ length: 255 }),
-	shirtType: varchar("shirt_type",{ length: 255 }).notNull(),
-	shirtSize: varchar("shirt_size",{ length: 255 }).notNull(),
-	interestedEventTypes: varchar("interested_event_types",{ length: 255 }).array().notNull(),
-	universityID: varchar("university_id",{ length: 255 }).notNull().unique(),
+	shirtType: varchar("shirt_type", { length: 255 }).notNull(),
+	shirtSize: varchar("shirt_size", { length: 255 }).notNull(),
+	interestedEventTypes: varchar("interested_event_types", { length: 255 })
+		.array()
+		.notNull(),
+	universityID: varchar("university_id", { length: 255 }).notNull().unique(),
 });
 
 /* EVENTS */
 export const eventCategories = pgTable("event_categories", {
 	id: text("id").primaryKey(),
-	name: varchar({length:255}).notNull().unique(),
-	color: varchar({length:255}).notNull(),
+	name: varchar({ length: 255 }).notNull().unique(),
+	color: varchar({ length: 255 }).notNull(),
 });
 
 export const eventCategoriesRelations = relations(
@@ -66,12 +74,14 @@ export const events = pgTable("events", {
 	id: varchar({ length: 100 }).primaryKey(),
 	name: varchar({ length: 100 }).notNull(),
 	description: text("description").notNull(),
-	thumbnailUrl: varchar("thumbnail_url",{length:255}).default(c.thumbnails.default).notNull(),
+	thumbnailUrl: varchar("thumbnail_url", { length: 255 })
+		.default(c.thumbnails.default)
+		.notNull(),
 	start: timestamp("start").notNull(),
 	end: timestamp("end").notNull(),
 	checkinStart: timestamp("checkin_start").notNull(),
 	checkinEnd: timestamp("checkin_end").notNull(),
-	location: varchar({length:255}).notNull(),
+	location: varchar({ length: 255 }).notNull(),
 	isUserCheckinable: boolean("is_user_checkinable").notNull().default(true),
 	isHidden: boolean("is_hidden").notNull().default(false),
 	points: integer("points").notNull().default(1),
@@ -83,10 +93,10 @@ export const eventsRelations = relations(events, ({ many }) => ({
 }));
 
 export const eventsToCategories = pgTable("events_to_categories", {
-	eventID:varchar("event_id",{length:100})
+	eventID: varchar("event_id", { length: 100 })
 		.notNull()
 		.references(() => events.id, { onDelete: "cascade" }),
-	categoryID: varchar("category_id",{length:100})
+	categoryID: varchar("category_id", { length: 100 })
 		.notNull()
 		.references(() => eventCategories.id, { onDelete: "cascade" }),
 });
@@ -108,7 +118,7 @@ export const eventsToCategoriesRelations = relations(
 export const checkins = pgTable(
 	"checkins",
 	{
-		eventID: varchar("event_id",{ length: 100 })
+		eventID: varchar("event_id", { length: 100 })
 			.references(() => events.id, { onDelete: "cascade" })
 			.notNull(),
 		userID: integer("user_id")
@@ -120,9 +130,11 @@ export const checkins = pgTable(
 		feedback: varchar({ length: 2000 }),
 	},
 	(table) => {
-		return [{
-			id: primaryKey({ columns: [table.eventID, table.userID] }),
-		}]
+		return [
+			{
+				id: primaryKey({ columns: [table.eventID, table.userID] }),
+			},
+		];
 	},
 );
 

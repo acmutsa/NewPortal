@@ -128,9 +128,9 @@ export default function EditEventForm({
 		result: actionResult,
 		reset: resetAction,
 	} = useAction(updateEvent, {
-		onSuccess: async ({ data}) => {
+		onSuccess: async ({ data }) => {
 			toast.dismiss();
-			
+
 			if (!data?.success) {
 				const code = data?.code || "unknown";
 				switch (code) {
@@ -188,10 +188,14 @@ export default function EditEventForm({
 		);
 
 		if (thumbnail) {
-			const thumbnailBlob = await upload(`${bucketEventThumbnailBaseUrl}/${thumbnail.name}`, thumbnail, {
-				access: "public",
-				handleUploadUrl: "/api/upload/thumbnail",
-			});
+			const thumbnailBlob = await upload(
+				`${bucketEventThumbnailBaseUrl}/${thumbnail.name}`,
+				thumbnail,
+				{
+					access: "public",
+					handleUploadUrl: "/api/upload/thumbnail",
+				},
+			);
 			runUpdateEvent({
 				...values,
 				eventID,

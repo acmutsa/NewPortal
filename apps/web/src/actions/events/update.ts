@@ -5,8 +5,9 @@ import { updateEventSchema } from "db/zod";
 import { adminAction } from "@/lib/safe-action";
 import { events, eventsToCategories } from "db/schema";
 
-export const updateEvent = adminAction.schema(updateEventSchema).action(
-	async ({parsedInput}) => {
+export const updateEvent = adminAction
+	.schema(updateEventSchema)
+	.action(async ({ parsedInput }) => {
 		let res = {
 			success: true,
 			code: "success",
@@ -60,5 +61,4 @@ export const updateEvent = adminAction.schema(updateEventSchema).action(
 		await db.execute(sql`VACUUM events_to_categories`);
 
 		return res;
-	},
-);
+	});
