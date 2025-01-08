@@ -124,6 +124,11 @@ export function DataTable<TData, TValue>({
 			columnFilters,
 			globalFilter,
 		},
+		initialState: {
+			columnPinning: {
+				right: ["actions"],
+			},
+		},
 		globalFilterFn: "fuzzy",
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
@@ -131,6 +136,7 @@ export function DataTable<TData, TValue>({
 		getSortedRowModel: getSortedRowModel(),
 		onColumnFiltersChange: setColumnFilters,
 		getFilteredRowModel: getFilteredRowModel(),
+		enableColumnPinning: true,
 	});
 
 	useEffect(() => {
@@ -195,7 +201,21 @@ export function DataTable<TData, TValue>({
 											{row
 												.getVisibleCells()
 												.map((cell) => (
-													<TableCell key={cell.id}>
+													<TableCell
+														key={cell.id}
+														className="bg-background"
+														style={
+															cell.column.getIsPinned()
+																? {
+																		right: `${cell.column.getAfter("right")}px`,
+																		position:
+																			"sticky",
+																		width: cell.column.getSize(),
+																		zIndex: 1,
+																	}
+																: undefined
+														}
+													>
 														{flexRender(
 															cell.column
 																.columnDef.cell,
@@ -216,7 +236,21 @@ export function DataTable<TData, TValue>({
 										}
 									>
 										{row.getVisibleCells().map((cell) => (
-											<TableCell key={cell.id}>
+											<TableCell
+												key={cell.id}
+												className="bg-background"
+												style={
+													cell.column.getIsPinned()
+														? {
+																right: `${cell.column.getAfter("right")}px`,
+																position:
+																	"sticky",
+																width: cell.column.getSize(),
+																zIndex: 1,
+															}
+														: undefined
+												}
+											>
 												{flexRender(
 													cell.column.columnDef.cell,
 													cell.getContext(),

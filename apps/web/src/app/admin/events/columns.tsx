@@ -25,10 +25,12 @@ type EventWithCheckins = Partial<EventType> & { checkin_count: number };
 
 const timeFormatString = "eee, MMM dd yyyy HH:mm bb";
 
-const timeCell = ({ row }: { row: Row<EventWithCheckins> }) => {
-	const formattedDate = formatDate(row.getValue("start"), timeFormatString);
-	return <div>{formattedDate}</div>;
-};
+const timeCell =
+	(key: string) =>
+	({ row }: { row: Row<EventWithCheckins> }) => {
+		const formattedDate = formatDate(row.getValue(key), timeFormatString);
+		return <div>{formattedDate}</div>;
+	};
 
 export const columns: ColumnDef<EventWithCheckins>[] = [
 	{
@@ -84,7 +86,7 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 		header: ({ column }) => {
 			return <DataTableColumnHeader column={column} title="Date" />;
 		},
-		cell: timeCell,
+		cell: timeCell("start"),
 	},
 	// {
 	// 	accessorKey: "end",
@@ -100,7 +102,27 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 		},
 	},
 	{
+		accessorKey: "updatedAt",
+		header: ({ column }) => {
+			return (
+				<DataTableColumnHeader column={column} title="Last Updated" />
+			);
+		},
+		cell: timeCell("updatedAt"),
+	},
+	{
+		accessorKey: "createdAt",
+		header: ({ column }) => {
+			return <DataTableColumnHeader column={column} title="Created At" />;
+		},
+		cell: timeCell("createdAt"),
+	},
+	{
 		id: "actions",
+		enablePinning: true,
+		header: ({ column }) => {
+			// column.pin("right");
+		},
 		cell: ({ row }) => {
 			const data = row.original;
 			return (
