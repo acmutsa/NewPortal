@@ -1,5 +1,5 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { data, users, events, checkins, eventsToCategories } from "./schema";
+import { data, users, events, checkins, eventCategories } from "./schema";
 import { z } from "zod";
 import c from "config";
 
@@ -7,11 +7,12 @@ export const insertUserDataSchema = createInsertSchema(data);
 export const insertUserSchema = createInsertSchema(users);
 
 // Modified For Forms
+export const basicStringSchema = z.string().min(1).max(255);
 
 const userFormified = createInsertSchema(users, {
 	email: z.string().email().min(1),
-	firstName: z.string().min(1),
-	lastName: z.string().min(1),
+	firstName: basicStringSchema,
+	lastName: basicStringSchema,
 }).pick({
 	email: true,
 	firstName: true,
@@ -20,7 +21,7 @@ const userFormified = createInsertSchema(users, {
 
 const userDataFormified = z.object({
 	data: createInsertSchema(data, {
-		classification: z.string().min(1),
+		classification: z.string().min(1, "You must select a classification."),
 		major: z.string().min(1, "You must select a major."),
 		shirtSize: z.string().min(1).max(10),
 		shirtType: z.string().min(1).max(10),
@@ -28,29 +29,10 @@ const userDataFormified = z.object({
 		// Special Values
 		universityID: z.string().min(1).max(c.universityID.maxLength),
 		gender: z
-			.array(
-				z.enum([
-					"Male",
-					"Female",
-					"Non-Binary",
-					"Transgender",
-					"Intersex",
-					"Other",
-					"I prefer not to say",
-				]),
-			)
+			.array(z.enum(c.userIdentityOptions.gender))
 			.min(1, "Required"),
 		ethnicity: z
-			.array(
-				z.enum([
-					"African American or Black",
-					"Asian",
-					"Native American/Alaskan Native",
-					"Native Hawaiian or Pacific Islander",
-					"Hispanic / Latinx",
-					"White",
-				]),
-			)
+			.array(z.enum(c.userIdentityOptions.ethnicity))
 			.min(1, "Required"),
 		graduationMonth: z
 			.number()
@@ -92,15 +74,21 @@ export const selectUserWithDataSchema = z.object({
 });
 export type UserWithData = z.infer<typeof selectUserWithDataSchema>;
 
-// TODO: tighten insert schema constraints
+export const deleteEventSchema = z.string().min(c.events.idLength);
+
 export const insertEventSchema = createInsertSchema(events);
 export const insertEventSchemaFormified = insertEventSchema
+	.extend({
+		name: basicStringSchema,
+		location: basicStringSchema,
+	})
 	.merge(
 		z.object({
 			categories: z
 				.string()
 				.array()
 				.min(1, "You must select one or more categories"),
+			points: z.number().min(c.minEventPoints).max(c.maxEventPoints),
 		}),
 	)
 	.omit({ id: true })
@@ -137,7 +125,6 @@ export const updateEventSchema = insertEventSchema.merge(
 export const selectEventSchema = createSelectSchema(events);
 
 export const selectCheckinSchema = createSelectSchema(checkins);
-export type Checkin = z.infer<typeof selectCheckinSchema>;
 
 export const adminCheckinSchema = z.object({
 	universityIDs: z.string().regex(new RegExp(`(\\w+[,\\W]*)+`), {
@@ -145,9 +132,32 @@ export const adminCheckinSchema = z.object({
 	}),
 	eventID: z.string().min(c.events.idLength),
 });
-export type AdminCheckin = z.infer<typeof adminCheckinSchema>;
 export const universityIDSplitter = z
 	.string()
 	.transform((val) => val.split(/[,\W]+/));
 
 // Current events or events of the week
+
+export const userCheckInSchema = createInsertSchema(checkins);
+
+export const userCheckinSchemaFormified = userCheckInSchema.merge(
+	z.object({
+		eventID: z.string().min(c.events.idLength),
+		feedback: z.string().max(c.maxCheckinDescriptionLength, {
+			message: `Feedback must be ${c.maxCheckinDescriptionLength} characters or less.`,
+		}),
+		rating: z
+			.number()
+			.int()
+			.min(1, { message: "Please provide a rating." })
+			.max(5, { message: "Rating must be between 1 and 5." }),
+	}),
+);
+
+export const eventCategorySchema = createSelectSchema(eventCategories).extend({
+	id: z.string().length(c.events.categoryIDLength),
+	name: basicStringSchema,
+	color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+});
+
+export const createEventCategorySchema = eventCategorySchema.omit({ id: true });

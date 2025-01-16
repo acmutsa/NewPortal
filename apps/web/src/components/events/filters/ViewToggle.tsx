@@ -1,26 +1,26 @@
-'use client'
-import { useRouter,useSearchParams,usePathname } from "next/navigation"
+"use client";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { EVENT_FILTERS } from "@/lib/constants/events";
 import { Calendar, Grid2X2 } from "lucide-react";
 import clsx from "clsx";
 
-export default function ({cardViewSelected}:{cardViewSelected:boolean}){
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
-    const {replace} = useRouter();
-		const {CALENDAR, CARD} = EVENT_FILTERS;
+export default function ({ cardViewSelected }: { cardViewSelected: boolean }) {
+	const searchParams = useSearchParams();
+	const pathname = usePathname();
+	const { replace } = useRouter();
+	const { CALENDAR, CARD } = EVENT_FILTERS;
 
-    const handleFilterChange = (value:string)=>{
-        const params = new URLSearchParams(searchParams);
-        if (value !== CALENDAR){
-            params.delete('view');
-            replace(`${pathname}?${params.toString()}`);
-            return;
-        }
-        params.set('view',value);
-        replace(`${pathname}?${params.toString()}`);
-    }
-    return (
+	const handleFilterChange = (value: string) => {
+		const params = new URLSearchParams(searchParams);
+		if (value !== CALENDAR) {
+			params.delete("view");
+			replace(`${pathname}?${params.toString()}`);
+			return;
+		}
+		params.set("view", value);
+		replace(`${pathname}?${params.toString()}`);
+	};
+	return (
 		// Feature was not completed by deadline. Will be added later on - Christian
 		<div className="flex">
 			{/* <button

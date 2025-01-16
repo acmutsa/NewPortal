@@ -9,26 +9,30 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/ui/data-table";
 import type { EventType } from "@/lib/types/events";
-// import { Event } from "db/zod";
 import { formatDate } from "date-fns";
 import AddCheckinDialogue from "@/components/dash/shared/AddCheckinDialogue";
+import { useEffect, useState } from "react";
 import { Dialog } from "@radix-ui/react-dialog";
 import { DialogTrigger } from "@/components/ui/dialog";
+import DeleteEventDialog from "@/components/dash/admin/events/DeleteEventDialogue";
+import { toast } from "sonner";
+import { usePathname } from "next/navigation";
 
 type EventWithCheckins = Partial<EventType> & { checkin_count: number };
 
 const timeFormatString = "eee, MMM dd yyyy HH:mm bb";
 
-const timeCell = ({ row }: { row: Row<EventWithCheckins> }) => {
-	const formattedDate = formatDate(row.getValue("start"), timeFormatString);
-	return <div>{formattedDate}</div>;
-};
+const timeCell =
+	(key: string) =>
+	({ row }: { row: Row<EventWithCheckins> }) => {
+		const formattedDate = formatDate(row.getValue(key), timeFormatString);
+		return <div>{formattedDate}</div>;
+	};
 
 export const columns: ColumnDef<EventWithCheckins>[] = [
 	{
@@ -73,7 +77,6 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 						width={256}
 						height={32}
 						quality={5}
-						// fill
 					/>
 				</div>
 			);
@@ -84,15 +87,8 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 		header: ({ column }) => {
 			return <DataTableColumnHeader column={column} title="Date" />;
 		},
-		cell: timeCell,
+		cell: timeCell("start"),
 	},
-	// {
-	// 	accessorKey: "end",
-	// 	header: ({ column }) => {
-	// 		return <DataTableColumnHeader column={column} title="End" />;
-	// 	},
-	// 	cell: timeCell,
-	// },
 	{
 		accessorKey: "checkin_count",
 		header: ({ column }) => {
@@ -100,11 +96,36 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 		},
 	},
 	{
-		id: "actions",
-		cell: ({ row }) => {
-			const data = row.original;
+		accessorKey: "updatedAt",
+		header: ({ column }) => {
 			return (
-				<Dialog>
+				<DataTableColumnHeader column={column} title="Last Updated" />
+			);
+		},
+		cell: timeCell("updatedAt"),
+	},
+	{
+		accessorKey: "createdAt",
+		header: ({ column }) => {
+			return <DataTableColumnHeader column={column} title="Created At" />;
+		},
+		cell: timeCell("createdAt"),
+	},
+	{
+		id: "actions",
+		enablePinning: true,
+		header: ({ column }) => {},
+		cell: ({ row }) => {
+			const [showDelete, setShowDelete] = useState(false);
+			const [open, setOpen] = useState(false);
+			const data = row.original;
+			const [basePath, setBasePath] = useState("");
+			useEffect(() => {
+				setBasePath(window.location.host);
+			}, []);
+
+			return (
+				<Dialog open={open} onOpenChange={setOpen}>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button variant="ghost" className="h-8 w-8 p-0">
@@ -114,18 +135,31 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuItem>
-								<Link href={`/events/${data.id}`}>View</Link>
+								<Link
+									href={`/events/${data.id}`}
+									className="h-full w-full"
+								>
+									View
+								</Link>
 							</DropdownMenuItem>
 							<DropdownMenuItem>
 								<div
 									className="h-full w-full cursor-pointer"
 									onClick={async (e) => {
 										e.stopPropagation();
-										await navigator.clipboard.writeText(
-											`https://portal.acmutsa.org/events/${data.id}`,
+										toast.promise(
+											navigator.clipboard.writeText(
+												`${basePath}/${data.id}`,
+											),
+											{
+												loading: "Copying...",
+												success: () => {
+													return "Link copied!";
+												},
+												error: "Error",
+											},
 										);
 									}}
-									//TODO: set sonner to signify link copied
 								>
 									Copy link
 								</div>
@@ -142,26 +176,66 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 							<DropdownMenuItem asChild>
 								<DialogTrigger asChild>
 									<div
+										className="h-full w-full cursor-pointer text-red-500"
+										onClick={(e) => {
+											e.stopPropagation();
+											setShowDelete(true);
+										}}
+									>
+										Delete
+									</div>
+								</DialogTrigger>
+							</DropdownMenuItem>
+							<DropdownMenuItem asChild>
+								<DialogTrigger asChild>
+									<div
 										className="h-full w-full cursor-pointer"
-										onClick={(e) => e.stopPropagation()}
+										onClick={(e) => {
+											e.stopPropagation();
+											setShowDelete(false);
+										}}
 									>
 										Add Checkin
 									</div>
 								</DialogTrigger>
 							</DropdownMenuItem>
-							{/* TODO: Add delete button w/confirmation dialogue */}
 						</DropdownMenuContent>
 					</DropdownMenu>
-					<AddCheckinDialogue
-						eventList={[
-							{
-								id: row.original.id!,
-								name: row.original.name!,
-							},
-						]}
+					<EventColumnActions
+						setOpen={setOpen}
+						showDelete={showDelete}
+						id={row.original.id!}
+						name={row.original.name!}
 					/>
 				</Dialog>
 			);
 		},
 	},
 ];
+
+function EventColumnActions({
+	setOpen,
+	showDelete,
+	id,
+	name,
+}: {
+	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	showDelete: boolean;
+	id: string;
+	name: string;
+}) {
+	if (showDelete) {
+		return <DeleteEventDialog id={id} name={name} setOpen={setOpen} />;
+	}
+	return (
+		<AddCheckinDialogue
+			eventList={[
+				{
+					id,
+					name,
+				},
+			]}
+			setOpen={setOpen}
+		/>
+	);
+}

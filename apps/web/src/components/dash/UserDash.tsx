@@ -35,7 +35,7 @@ export default async function UserDash({
 	clientTimeZone,
 }: {
 	userId: string;
-	clientTimeZone:string;
+	clientTimeZone: string;
 }) {
 	// Cache this later
 	const queryResult = await db
@@ -141,7 +141,7 @@ export default async function UserDash({
 								<GraduationCapIcon className="mr-2 h-4 w-4" />
 								{`${userData.major}, ${userData.graduationYear}`}
 							</p>
-							<p className="mt-2 flex items-center text-balance text-base text-muted-foreground">
+							<p className="text-balance mt-2 flex items-center text-base text-muted-foreground">
 								{`Member since ${joinedDate}`}
 							</p>
 							{/* <Button
@@ -178,18 +178,19 @@ export default async function UserDash({
 						</div>
 					</CardHeader>
 					<CardContent>
-						{attendedEvents.length > 1 && (
+						{attendedEvents.length > 0 && (
 							<div className="flex flex-col space-y-2">
-							{slicedEvents?.map((event, index) => (
-								<Link
-									href={`events/${event.id}`}
-									key={index}
-									className="rounded-md border-b border-muted p-1 pb-4 hover:underline"
-								>
-									{event.name}
-								</Link>
-							))}
-						</div>)}
+								{slicedEvents?.map((event, index) => (
+									<Link
+										href={`events/${event.id}`}
+										key={index}
+										className="rounded-md border-b border-muted p-1 pb-4 hover:underline"
+									>
+										{event.name}
+									</Link>
+								))}
+							</div>
+						)}
 					</CardContent>
 				</Card>
 			</div>

@@ -6,20 +6,23 @@ import { insertEventSchemaFormified } from "db/zod";
 import { adminAction } from "@/lib/safe-action";
 import { events, eventsToCategories } from "db/schema";
 import c from "config";
+import { revalidatePath } from "next/cache";
+import { LOWER_ALPHANUM_CUSTOM_ALPHABET } from "@/lib/constants";
 
 const nanoid = customAlphabet(
-	"1234567890abcdefghijklmnopqrstuvwxyz",
+	LOWER_ALPHANUM_CUSTOM_ALPHABET,
 	c.events.idLength,
 );
 
-export const createEvent = adminAction(
-	insertEventSchemaFormified,
-	async ({ categories, ...e }) => {
+export const createEvent = adminAction
+	.schema(insertEventSchemaFormified)
+	.action(async ({ parsedInput }) => {
 		let res = {
 			success: true,
 			code: "success",
 			eventID: "",
 		};
+		const { categories, ...e } = parsedInput;
 		await db.transaction(async (tx) => {
 			const eventIDs = await tx
 				.insert(events)
@@ -60,7 +63,8 @@ export const createEvent = adminAction(
 
 			res.eventID = eventID;
 		});
+		revalidatePath("/admin/events");
+		revalidatePath("/events");
 
 		return res;
-	},
-);
+	});

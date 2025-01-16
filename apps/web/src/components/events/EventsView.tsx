@@ -8,26 +8,18 @@ import { unstable_noStore as noStore } from "next/cache";
 import PageError from "../shared/PageError";
 import { headers } from "next/headers";
 import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
-import { getClientTimeZone,getUTCDate } from "@/lib/utils";
+import { getClientTimeZone, getUTCDate } from "@/lib/utils";
 
 export default async function EventsView({ params }: { params: SearchParams }) {
-
-	const {
-		VIEW,
-		CARD,
-		SHOW_EVENTS,
-		SHOW_UPCOMING_EVENTS,
-		QUERY,
-		CATEGORIES
-	} = EVENT_FILTERS;
+	const { VIEW, CARD, SHOW_EVENTS, SHOW_UPCOMING_EVENTS, QUERY, CATEGORIES } =
+		EVENT_FILTERS;
 
 	const cardViewSelected = params[EVENT_FILTERS.VIEW]
 		? CARD === params[VIEW] ?? CARD
 		: true;
 
 	const showUpcomingEvents = params[SHOW_EVENTS]
-		? SHOW_UPCOMING_EVENTS === params[SHOW_EVENTS] ??
-			SHOW_UPCOMING_EVENTS
+		? SHOW_UPCOMING_EVENTS === params[SHOW_EVENTS] ?? SHOW_UPCOMING_EVENTS
 		: true;
 
 	const currentDateUTC = getUTCDate();
@@ -38,9 +30,7 @@ export default async function EventsView({ params }: { params: SearchParams }) {
 
 	const eventSearch = params[QUERY] ?? "";
 	const eventSearchQuery = ilike(events.name, `%${eventSearch}%`);
-	const categories = new Set(
-		params[CATEGORIES]?.split(",") ?? [],
-	);
+	const categories = new Set(params[CATEGORIES]?.split(",") ?? []);
 
 	// Currently written like this because of weirdness with the 'where' clause where it cannot be nested far down the 'with' clauses
 	noStore();
@@ -71,12 +61,16 @@ export default async function EventsView({ params }: { params: SearchParams }) {
 			}
 			return events;
 		});
-	
-
 
 	if (allEvents.length < 1) {
-		return <PageError href="/events" message="There are no events to display at this time for your desired
-				parameters. Please check back later or widen your filtering options." className="flex flex-auto w-full h-full justify-start items-start px-4" />;
+		return (
+			<PageError
+				href="/events"
+				message="There are no events to display at this time for your desired
+				parameters. Please check back later or widen your filtering options."
+				className="flex h-full w-full flex-auto items-start justify-start px-4"
+			/>
+		);
 	}
 
 	const clientHeaderTimezoneValue = headers().get(

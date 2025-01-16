@@ -1,6 +1,5 @@
 "use client";
 import c, { majors } from "config";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { insertUserWithDataSchemaFormified } from "db/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -72,27 +71,10 @@ import { createRegistration } from "@/actions/register/new";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
+import FormDisplayName from "../shared/FormDisplayName";
+import { bucketBaseUrl } from "config";
 
 const formSchema = insertUserWithDataSchemaFormified;
-
-// const genderOptions = [
-// 	"Male",
-// 	"Female",
-// 	"Non-Binary",
-// 	"Transgender",
-// 	"Intersex",
-// 	"Other",
-// 	"I prefer not to say",
-// ];
-
-// const ethnicityOptions: Option[] = [
-// 	{ label: "African American or Black", value: "African American or Black" },
-// 	{ label: "Asian", value: "Asian" },
-// 	{ label: "Native American/Alaskan Native", value: "Native American/Alaskan Native" },
-// 	{ label: "Native Hawaiian or Pacific Islander", value: "Native Hawaiian or Pacific Islander" },
-// 	{ label: "Hispanic / Latinx", value: "Hispanic / Latinx" },
-// 	{ label: "White", value: "White" },
-// ];
 
 interface RegisterFormProps {
 	defaultEmail: string;
@@ -105,60 +87,6 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 	} | null>(null);
 	const [resume, setResume] = useState<File | null>(null);
 	const router = useRouter();
-
-	const {
-		execute: runCreateRegistration,
-		status: actionStatus,
-		result: actionResult,
-		reset: resetAction,
-	} = useAction(createRegistration, {
-		onSuccess: async ({ success, code }) => {
-			toast.dismiss();
-			if (!success) {
-				switch (code) {
-					case "user_already_exists":
-						setError({
-							title: "User Already Exists",
-							description: `It would seem you have already registered. If you believe this is an error, please contact ${c.contactEmail}.`,
-						});
-						break;
-					case "email_already_exists":
-						setError({
-							title: "Email Already Exists",
-							description: `There is already an account with that email address. This could mean you have already registered, or that you have a unmigrated portal account. If you belive this is an error, please contact ${c.contactEmail}.`,
-						});
-						break;
-					case "university_id_already_exists":
-						setError({
-							title: `${c.universityID.name} Already Exists`,
-							description: `There is already an account with that ${c.universityID.name}. This could mean you have already registered, or that you have a unmigrated portal account. If you belive this is an error, please contact ${c.contactEmail}.`,
-						});
-						break;
-					default:
-						toast.error(
-							`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
-						);
-						break;
-				}
-				resetAction();
-				return;
-			}
-			toast.success("Registration successful!", {
-				description: "You'll be redirected shortly.",
-			});
-			setTimeout(() => {
-				router.push("/me");
-			}, 1500);
-		},
-		onError: async (error) => {
-			toast.dismiss();
-			toast.error(
-				`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
-			);
-			console.log("error: ", error);
-			resetAction();
-		},
-	});
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -176,6 +104,62 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 		},
 	});
 
+	const {
+		execute: runCreateRegistration,
+		status: actionStatus,
+		result: actionResult,
+		reset: resetAction,
+	} = useAction(createRegistration, {
+		onSuccess: async ({ data }) => {
+			toast.dismiss();
+
+			if (!data?.success) {
+				const code = data?.code || "unknown";
+				switch (code) {
+					case "user_already_exists":
+						setError({
+							title: "User Already Exists",
+							description: `It would seem you have already registered. If you believe this is an error, please contact ${c.contactEmail}.`,
+						});
+						break;
+					case "email_already_exists":
+						setError({
+							title: "Email Already Exists",
+							description: `${form.getValues().email} There is already an account with that email address. This could mean you have already registered, or that you have a legacy portal account that needs to be connected. If you belive this is an error, please contact ${c.contactEmail}.`,
+						});
+						break;
+					case "university_id_already_exists":
+						setError({
+							title: `${c.universityID.name} Already Exists`,
+							description: `There is already an account with the ${c.universityID.name} of ${form.getValues().data.universityID}. This could mean you have already registered, or that you have a legacy portal account that needs to be connected. If you belive this is an error, please contact ${c.contactEmail}.`,
+						});
+						break;
+					default:
+						toast.error(
+							`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
+						);
+						break;
+				}
+				resetAction();
+				return;
+			}
+			toast.success("Registration successful!", {
+				description: "You'll be redirected shortly.",
+			});
+			setTimeout(() => {
+				router.push("/dash");
+			}, 1500);
+		},
+		onError: async (error) => {
+			toast.dismiss();
+			toast.error(
+				`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
+			);
+			console.log("error: ", error);
+			resetAction();
+		},
+	});
+
 	useEffect(() => {
 		if (Object.keys(form.formState.errors).length > 0) {
 			console.log("Errors: ", form.formState.errors);
@@ -186,7 +170,7 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 		toast.loading("Creating Registration...");
 		if (resume) {
 			const resumeBlob = await upload(
-				`ACM Portal/resumes/${resume.name}`,
+				`${bucketBaseUrl}/${resume.name}`,
 				resume,
 				{
 					access: "public",
@@ -194,8 +178,6 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 				},
 			);
 			values.data.resume = resumeBlob.url;
-		} else {
-			values.data.resume = undefined;
 		}
 		runCreateRegistration(values);
 	}
@@ -213,12 +195,7 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 			setResume(null);
 			return false;
 		}
-		if (
-			![
-				"application/pdf",
-				"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-			].includes(file.type)
-		) {
+		if (!c.acceptedResumeMimeTypes.includes(file.type)) {
 			form.setError("data.resume", {
 				message: "Resume file must be a .pdf or .docx file.",
 			});
@@ -249,7 +226,7 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
-			<div className="mt-20">
+			<div className="mt-12">
 				{/* <div className="bg-red-500 flex items-center py-3 rounded mb-5 text-white px-4 gap-x-2">
 				<TriangleAlert />
 				<p>Error Creating Registration: </p>
@@ -260,13 +237,20 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 						onSubmit={form.handleSubmit(onSubmit)}
 					>
 						<FormGroupWrapper title="Basic Info">
-							<div className="grid grid-cols-3 gap-4">
+							<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 								<FormField
 									control={form.control}
 									name="firstName"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>First Name</FormLabel>
+											<FormDisplayName
+												displayName="First Name"
+												required={
+													formSchema.shape[
+														field.name
+													].isOptional() ?? false
+												}
+											/>
 											<FormControl>
 												<Input {...field} />
 											</FormControl>
@@ -279,7 +263,14 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									name="lastName"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Last Name</FormLabel>
+											<FormDisplayName
+												displayName="Last Name"
+												required={
+													formSchema.shape[
+														field.name
+													].isOptional() ?? false
+												}
+											/>
 											<FormControl>
 												<Input {...field} />
 											</FormControl>
@@ -292,25 +283,37 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									name="email"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Email</FormLabel>
+											<FormDisplayName
+												displayName="Email"
+												required={
+													formSchema.shape[
+														field.name
+													].isOptional() ?? false
+												}
+											/>
 											<FormControl>
-												<Input {...field} />
+												<Input {...field} disabled />
 											</FormControl>
+											<p className="text-xs text-muted-foreground">
+												This field is immutable to keep
+												synced with your authentication
+												for the site
+											</p>
 											<FormMessage />
 										</FormItem>
 									)}
 								/>
 							</div>
 						</FormGroupWrapper>
-						<FormGroupWrapper title="College Information">
-							<div className="grid grid-cols-6 gap-4">
+						<FormGroupWrapper title="University Information">
+							<div className="grid grid-cols-3 gap-4 md:grid-cols-6">
 								<FormField
 									control={form.control}
 									name="data.universityID"
 									render={({ field }) => (
-										<FormItem>
+										<FormItem className="col-span-3 md:col-span-2">
 											<FormLabel>
-												{c.universityID.name}
+												{`${c.universityID.name} *`}
 											</FormLabel>
 											<FormControl>
 												<Input {...field} />
@@ -323,8 +326,8 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									control={form.control}
 									name="data.major"
 									render={({ field }) => (
-										<FormItem className="col-span-2">
-											<FormLabel>Major</FormLabel>
+										<FormItem className="col-span-3 md:col-span-2">
+											<FormLabel>Major *</FormLabel>
 											<Popover>
 												<PopoverTrigger asChild>
 													<FormControl>
@@ -375,6 +378,9 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 																						"data.major",
 																						value,
 																					);
+																					form.clearErrors(
+																						"data.major",
+																					);
 																				}}
 																				className="cursor-pointer "
 																			>
@@ -407,9 +413,9 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									control={form.control}
 									name="data.classification"
 									render={({ field }) => (
-										<FormItem>
+										<FormItem className="col-span-3 md:col-span-2">
 											<FormLabel>
-												Classification
+												Classification *
 											</FormLabel>
 											<Select
 												onValueChange={field.onChange}
@@ -455,9 +461,9 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									control={form.control}
 									name="data.graduationMonth"
 									render={({ field }) => (
-										<FormItem>
+										<FormItem className="col-span-3">
 											<FormLabel>
-												Graduation Month
+												Graduation Month *
 											</FormLabel>
 											<Select
 												onValueChange={field.onChange}
@@ -551,9 +557,9 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									control={form.control}
 									name="data.graduationYear"
 									render={({ field }) => (
-										<FormItem>
+										<FormItem className="col-span-3">
 											<FormLabel className="w-full">
-												Graduation Year
+												Graduation Year *
 											</FormLabel>
 											<Select
 												onValueChange={field.onChange}
@@ -587,12 +593,12 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 							</div>
 						</FormGroupWrapper>
 						<FormGroupWrapper title="Personal Information">
-							<div className="grid grid-cols-3 gap-4">
+							<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 								<FormField
 									control={form.control}
 									name="data.birthday"
 									render={({ field }) => (
-										<FormItem className="flex flex-col justify-end gap-y-1">
+										<FormItem className="flex flex-col space-y-1">
 											<FormLabel>Birthday</FormLabel>
 											<Popover>
 												<PopoverTrigger asChild>
@@ -650,7 +656,6 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 													/>
 												</PopoverContent>
 											</Popover>
-
 											<FormMessage />
 										</FormItem>
 									)}
@@ -661,7 +666,7 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									render={({ field }) => {
 										return (
 											<FormItem className="flex flex-col justify-between gap-y-1">
-												<FormLabel>Gender</FormLabel>
+												<FormLabel>Gender *</FormLabel>
 												<MultiSelector
 													onValuesChange={
 														field.onChange
@@ -723,6 +728,7 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 														</MultiSelectorList>
 													</MultiSelectorContent>
 												</MultiSelector>
+												<FormMessage />
 											</FormItem>
 										);
 									}}
@@ -734,7 +740,9 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									render={({ field }) => {
 										return (
 											<FormItem className="flex flex-col justify-between gap-y-1">
-												<FormLabel>Ethnicity</FormLabel>
+												<FormLabel>
+													Ethnicity *
+												</FormLabel>
 												<MultiSelector
 													onValuesChange={
 														field.onChange
@@ -750,51 +758,27 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 													</MultiSelectorTrigger>
 													<MultiSelectorContent>
 														<MultiSelectorList>
-															<MultiSelectorItem
-																key="African American or Black"
-																value="African American or Black"
-															>
-																African American
-																or Black
-															</MultiSelectorItem>
-															<MultiSelectorItem
-																key="Asian"
-																value="Asian"
-															>
-																Asian
-															</MultiSelectorItem>
-															<MultiSelectorItem
-																key="Native American/Alaskan Native"
-																value="Native American/Alaskan Native"
-															>
-																Native
-																American/Alaskan
-																Native
-															</MultiSelectorItem>
-															<MultiSelectorItem
-																key="Native Hawaiian or Pacific Islander"
-																value="Native Hawaiian or Pacific Islander"
-															>
-																Native Hawaiian
-																or Pacific
-																Islander
-															</MultiSelectorItem>
-															<MultiSelectorItem
-																key="Hispanic / Latinx"
-																value="Hispanic / Latinx"
-															>
-																Hispanic /
-																Latinx
-															</MultiSelectorItem>
-															<MultiSelectorItem
-																key="White"
-																value="White"
-															>
-																White
-															</MultiSelectorItem>
+															{c.userIdentityOptions.ethnicity.map(
+																(
+																	value,
+																	index,
+																) => (
+																	<MultiSelectorItem
+																		key={
+																			value
+																		}
+																		value={
+																			value
+																		}
+																	>
+																		{value}
+																	</MultiSelectorItem>
+																),
+															)}
 														</MultiSelectorList>
 													</MultiSelectorContent>
 												</MultiSelector>
+												<FormMessage />
 											</FormItem>
 										);
 									}}
@@ -807,8 +791,8 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									control={form.control}
 									name="data.shirtSize"
 									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Shirt Size</FormLabel>
+										<FormItem className="col-span-3 md:col-span-1">
+											<FormLabel>Shirt Size *</FormLabel>
 											<Select
 												onValueChange={field.onChange}
 												defaultValue={field.value?.toString()}
@@ -865,8 +849,8 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 									control={form.control}
 									name="data.shirtType"
 									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Shirt Type</FormLabel>
+										<FormItem className="col-span-3 md:col-span-1">
+											<FormLabel>Shirt Type * </FormLabel>
 											<Select
 												onValueChange={field.onChange}
 												defaultValue={field.value?.toString()}
@@ -905,13 +889,13 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 											...fieldProps
 										},
 									}) => (
-										<FormItem>
+										<FormItem className="col-span-3 md:col-span-1">
 											<FormLabel>Resume</FormLabel>
 											<FormControl>
 												<Input
 													{...fieldProps}
 													type="file"
-													accept="image/jpeg,image/png,image/gif,image/webp,image/avif,image/svg+xml"
+													accept={c.acceptedResumeMimeTypes.toLocaleString()}
 													onChange={(event) => {
 														const success =
 															validateAndSetResume(

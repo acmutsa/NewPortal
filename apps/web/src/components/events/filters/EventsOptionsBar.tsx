@@ -6,6 +6,7 @@ import type { SearchParams } from "@/lib/types/shared";
 import { db } from "db";
 import clsx from "clsx";
 import { EVENT_FILTERS } from "@/lib/constants/events";
+import { getAllCategories } from "@/lib/queries/categories";
 export default async function EventsOptionsBar({
 	params,
 }: {
@@ -13,16 +14,13 @@ export default async function EventsOptionsBar({
 }) {
 	const { VIEW, CARD, SHOW_EVENTS, SHOW_UPCOMING_EVENTS } = EVENT_FILTERS;
 
-	const cardViewSelected = params.view
-		? CARD === params[VIEW] ?? CARD
-		: true;
+	const cardViewSelected = params.view ? CARD === params[VIEW] ?? CARD : true;
 
 	const showUpcomingEvents = params[SHOW_EVENTS]
-		? SHOW_UPCOMING_EVENTS === params[SHOW_EVENTS] ??
-			SHOW_UPCOMING_EVENTS
+		? SHOW_UPCOMING_EVENTS === params[SHOW_EVENTS] ?? SHOW_UPCOMING_EVENTS
 		: true;
 
-	const categories = await db.query.eventCategories.findMany();
+	const categories = await getAllCategories();
 
 	return (
 		<div className="mt-2 flex w-[98%] flex-row justify-between rounded-lg border-2 border-muted sm:w-[90%] md:mt-4">

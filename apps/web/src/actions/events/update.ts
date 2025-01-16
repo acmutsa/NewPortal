@@ -3,19 +3,20 @@
 import { and, db, eq, inArray, sql } from "db";
 import { updateEventSchema } from "db/zod";
 import { adminAction } from "@/lib/safe-action";
-import { eventCategories, events, eventsToCategories } from "db/schema";
+import { events, eventsToCategories } from "db/schema";
 
-export const updateEvent = adminAction(
-	updateEventSchema,
-	async ({ eventID, oldCategories, categories, ...e }) => {
+export const updateEvent = adminAction
+	.schema(updateEventSchema)
+	.action(async ({ parsedInput }) => {
 		let res = {
 			success: true,
 			code: "success",
 		};
+		const { eventID, oldCategories, categories, ...e } = parsedInput;
 		await db.transaction(async (tx) => {
 			const ids = await tx
 				.update(events)
-				.set(e)
+				.set({ ...e, updatedAt: sql`NOW()` })
 				.where(eq(events.id, eventID))
 				.returning({ eventID: events.id });
 
@@ -41,8 +42,9 @@ export const updateEvent = adminAction(
 				eventID,
 				categoryID: cat,
 			}));
+      
+			if (insertVal.length !== 0) {
 
-			if (insertVal.length != 0) {
 				await tx.insert(eventsToCategories).values(insertVal);
 			}
 
@@ -64,5 +66,4 @@ export const updateEvent = adminAction(
 		await db.execute(sql`VACUUM events_to_categories`);
 
 		return res;
-	},
-);
+	});

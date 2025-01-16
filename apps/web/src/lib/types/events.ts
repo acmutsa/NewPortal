@@ -1,9 +1,4 @@
-import {
-	events,
-	eventsToCategories,
-	eventCategories,
-	eventsToCategoriesRelations,
-} from "db/schema";
+import { events, eventsToCategories, eventCategories } from "db/schema";
 
 import {
 	insertEventSchemaFormified,
@@ -12,13 +7,16 @@ import {
 } from "db/zod";
 import { z } from "zod";
 
+import type { Noop, RefCallBack } from "react-hook-form";
+
+import type { ImageProps } from "next/image";
+
 export type EventToCategoriesType = typeof eventsToCategories.$inferSelect;
 
 export type EventCategoryType = typeof eventCategories.$inferSelect;
 
 export type EventsToCategoriesWithCategoryType = EventToCategoriesType & {
 	category: {
-		// id?: string;
 		name: string;
 		color: string;
 	};
@@ -30,17 +28,17 @@ export type EventAndCategoriesType = EventType & {
 	eventsToCategories: EventsToCategoriesWithCategoryType[];
 };
 
-export interface EventCalendarLink{
+export interface EventCalendarLink {
 	title: string;
 	description: string;
 	start: string;
 	end: string;
 	location: string;
-};
+}
 
 export interface EventCalendarName {
-	title:string;
-	titleOverride?:string;
+	title: string;
+	titleOverride?: string;
 }
 
 export interface DetailsProps {
@@ -54,7 +52,7 @@ export interface DetailsProps {
 	isEventPassed: boolean;
 	isCheckinAvailable: boolean;
 	isEventHappening: boolean;
-};
+}
 
 export interface CalendarDetails {
 	title: string;
@@ -62,7 +60,7 @@ export interface CalendarDetails {
 	start: string;
 	end: string;
 	location: string;
-};
+}
 
 export enum CheckinResult {
 	SUCCESS = "success",
@@ -74,3 +72,21 @@ export enum CheckinResult {
 export type iEvent = z.infer<typeof insertEventSchemaFormified>;
 export type uEvent = z.infer<typeof updateEventSchemaFormified>;
 export type sEvent = z.infer<typeof selectEventSchema>;
+
+export type EventImageProps = Omit<ImageProps, "alt"> & {
+	alt?: string;
+};
+
+export type RatingFormAttributes = {
+	onChange: (...event: any[]) => void;
+	onBlur: Noop;
+	value: number;
+	disabled?: boolean | undefined;
+	name: string;
+	ref: RefCallBack;
+};
+
+export type NewEventFormProps = {
+	defaultDate: Date;
+	categoryOptions: { [key: string]: string };
+};

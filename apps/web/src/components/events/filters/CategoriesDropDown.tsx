@@ -1,15 +1,23 @@
-
 import CategoryCheckBox from "./CategoryCheckBox";
-import { Popover,PopoverTrigger,PopoverContent } from "../../ui/popover";
+import { Popover, PopoverTrigger, PopoverContent } from "../../ui/popover";
 import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import type { SearchParams } from "@/lib/types/shared";
 import type { EventCategoryType } from "@/lib/types/events";
 
-export default function CategoriesDropDown({cardViewSelected,categories,searchParams}:{cardViewSelected:boolean,categories:Array<EventCategoryType>,searchParams:SearchParams}){
-    
-    const checkBoxSet = new Set(searchParams.categories ? searchParams.categories.split(",") : []);
-    return (
+export default function CategoriesDropDown({
+	cardViewSelected,
+	categories,
+	searchParams,
+}: {
+	cardViewSelected: boolean;
+	categories: Array<EventCategoryType>;
+	searchParams: SearchParams;
+}) {
+	const checkBoxSet = new Set(
+		searchParams.categories ? searchParams.categories.split(",") : [],
+	);
+	return (
 		<div
 			className={clsx("flex justify-end", {
 				"w-full justify-between": !cardViewSelected,
@@ -49,5 +57,3 @@ export default function CategoriesDropDown({cardViewSelected,categories,searchPa
 		</div>
 	);
 }
-
-

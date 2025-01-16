@@ -1,25 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-	Dialog,
-	DialogTrigger,
 	DialogTitle,
 	DialogContent,
 	DialogHeader,
 	DialogFooter,
-	DialogClose,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
@@ -32,12 +17,11 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { CheckinResult } from "@/lib/types/events";
-import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useAction } from "next-safe-action/hooks";
-import React, { ReactNode } from "react";
-import { AdminCheckin, adminCheckinSchema, universityIDSplitter } from "db/zod";
-import { adminCheckin } from "@/actions/events/checkin";
+import React from "react";
+import { adminCheckinSchema } from "db/zod";
+import { adminCheckin } from "@/actions/checkin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,20 +32,21 @@ import {
 	SelectContent,
 	SelectItem,
 } from "@/components/ui/select";
-
 import c from "config";
+import z from "zod";
 
 type Props = {
-	// trigger: ReactNode;
 	eventList: { id: string; name: string }[];
+	setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 	default?: {
 		eventID?: string;
 		universityIDs?: string;
 	};
 };
+type AdminCheckinProps = z.infer<typeof adminCheckinSchema>;
 
-async function AddCheckinDialogue({ eventList, ...props }: Props) {
-	const form = useForm<AdminCheckin>({
+function AddCheckinDialogue({ eventList, ...props }: Props) {
+	const form = useForm<AdminCheckinProps>({
 		resolver: zodResolver(adminCheckinSchema),
 		defaultValues: {
 			eventID: props.default?.eventID || eventList[0].id,
@@ -75,8 +60,17 @@ async function AddCheckinDialogue({ eventList, ...props }: Props) {
 		result: actionResult,
 		reset: resetAction,
 	} = useAction(adminCheckin, {
-		onSuccess: async ({ success, code, failedIDs }) => {
+		onSuccess: async ({ data }) => {
+			if (props.setOpen) props.setOpen(false);
 			toast.dismiss();
+			if (!data) {
+				toast.error(
+					`An unknown error occurred. Please try again or contact ${c.contactEmail}.`,
+				);
+				resetAction();
+				return;
+			}
+			const { success, code, failedIDs } = data;
 			if (!success) {
 				switch (code) {
 					case CheckinResult.FAILED:
@@ -84,7 +78,7 @@ async function AddCheckinDialogue({ eventList, ...props }: Props) {
 						break;
 					case CheckinResult.SOME_FAILED:
 						toast.warning(
-							`The following checkins failed: ${failedIDs.join()}`,
+							`The following checkins failed: ${failedIDs?.join()}`,
 						);
 						break;
 					default:
@@ -108,7 +102,7 @@ async function AddCheckinDialogue({ eventList, ...props }: Props) {
 		},
 	});
 
-	async function onSubmit(data: AdminCheckin, evt: any) {
+	function onSubmit(data: AdminCheckinProps, evt: any) {
 		evt.preventDefault();
 		toast.loading("Creating Checkins...");
 		runAddCheckin(data);
@@ -147,6 +141,7 @@ async function AddCheckinDialogue({ eventList, ...props }: Props) {
 												{eventList.map((event) => (
 													<SelectItem
 														value={event.id}
+														key={event.id}
 													>
 														{event.name}
 													</SelectItem>
