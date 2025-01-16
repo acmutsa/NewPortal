@@ -95,7 +95,7 @@ export default async function ProfileButton({
 				<DropdownMenuLabel className="font-normal">
 					<div className="flex flex-col space-y-1">
 						<p className="text-sm font-medium leading-none">{`${user.firstName} ${user.lastName}`}</p>
-						<p className="text-xs leading-none text-muted-foreground"></p>
+<!-- 						<p className="text-xs leading-none text-muted-foreground"></p> -->
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
@@ -107,16 +107,16 @@ export default async function ProfileButton({
 							Edit Profile
 						</DropdownMenuItem>
 					</Link>
-					<Link href={`/bug-report`}>
+					<Link href={`mailto:team@acmutsa.org`}>
 						<DropdownMenuItem className="cursor-pointer">
 							Report a Bug
 						</DropdownMenuItem>
 					</Link>
-					<Link href={"/settings"}>
+					{/* <Link href={"/settings"}>
 						<DropdownMenuItem className="cursor-pointer">
 							Settings
 						</DropdownMenuItem>
-					</Link>
+					</Link> */}
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
 				<SignOutButton redirectUrl="/">
