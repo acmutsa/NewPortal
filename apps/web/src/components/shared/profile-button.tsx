@@ -95,7 +95,7 @@ export default async function ProfileButton({
 				<DropdownMenuLabel className="font-normal">
 					<div className="flex flex-col space-y-1">
 						<p className="text-sm font-medium leading-none">{`${user.firstName} ${user.lastName}`}</p>
-<!-- 						<p className="text-xs leading-none text-muted-foreground"></p> -->
+						{/* <p className="text-xs leading-none text-muted-foreground"></p> */}
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
