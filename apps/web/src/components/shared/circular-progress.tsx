@@ -18,8 +18,6 @@ import {
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
-
-
 const chartConfig = {
 	visitors: {
 		label: "Visitors",
@@ -31,28 +29,31 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 interface RadialChartProgressProps {
-	titleText?:string;
-	descriptionText?:string;
-	footerText?:string;
-	current:number;
-	total:number;
-	fill?:string;
+	titleText?: string;
+	descriptionText?: string;
+	footerText?: string;
+	current: number;
+	total: number;
+	fill?: string;
 	className?: string;
 }
 
-export function RadialChartProgress(props:RadialChartProgressProps) {
-
-	const { 
-		titleText, 
-		descriptionText, 
-		footerText, 
-		current, 
-		total, 
-		className 
+export function RadialChartProgress(props: RadialChartProgressProps) {
+	const {
+		titleText,
+		descriptionText,
+		footerText,
+		current,
+		total,
+		className,
 	} = props;
 
 	const chartData = [
-		{ browser: "safari", visitors: current, fill: props.fill ?? "var(--color-safari)" },
+		{
+			browser: "safari",
+			visitors: current,
+			fill: props.fill ?? "var(--color-safari)",
+		},
 	];
 
 	const isTitleOrDescriptionPresent = titleText || descriptionText;
@@ -62,10 +63,12 @@ export function RadialChartProgress(props:RadialChartProgressProps) {
 		<Card className={`flex flex-col ${className}`}>
 			{isTitleOrDescriptionPresent && (
 				<CardHeader className="items-center pb-0">
-				{titleText && <CardTitle>{titleText}</CardTitle>}
-				{descriptionText && <CardDescription>{descriptionText}</CardDescription>}
-			</CardHeader>)
-			}
+					{titleText && <CardTitle>{titleText}</CardTitle>}
+					{descriptionText && (
+						<CardDescription>{descriptionText}</CardDescription>
+					)}
+				</CardHeader>
+			)}
 			<CardContent className="flex-1 pb-0">
 				<ChartContainer
 					config={chartConfig}
@@ -75,7 +78,9 @@ export function RadialChartProgress(props:RadialChartProgressProps) {
 						data={chartData}
 						startAngle={startAngle}
 						// We need to add the start angle here to make the chart start from the top and accomodate the 90 degree offset
-						endAngle={Math.min(360, (current / total) * 360)+startAngle}
+						endAngle={
+							Math.min(360, (current / total) * 360) + startAngle
+						}
 						innerRadius={80}
 						outerRadius={110}
 					>
@@ -114,7 +119,7 @@ export function RadialChartProgress(props:RadialChartProgressProps) {
 													x={viewBox.cx}
 													y={viewBox.cy}
 													className="fill-foreground text-4xl font-bold"
-												>{`${current >= total ? `${current}`:`${current} / ${total}`}`}</tspan>
+												>{`${current >= total ? `${current}` : `${current} / ${total}`}`}</tspan>
 												<tspan
 													x={viewBox.cx}
 													y={(viewBox.cy || 0) + 24}
@@ -133,10 +138,10 @@ export function RadialChartProgress(props:RadialChartProgressProps) {
 			</CardContent>
 			{footerText && (
 				<CardFooter>
-				<p className="mt-2 text-sm text-muted-foreground text-center w-full">
-					{footerText}
-				</p>
-			</CardFooter>
+					<p className="mt-2 w-full text-center text-sm text-muted-foreground">
+						{footerText}
+					</p>
+				</CardFooter>
 			)}
 		</Card>
 	);

@@ -10,7 +10,7 @@ interface DashNavItemProps {
 
 export default function DashNavItem({ name, path }: DashNavItemProps) {
 	const currPath = usePathname();
-	
+
 	return (
 		<Link href={path}>
 			<button

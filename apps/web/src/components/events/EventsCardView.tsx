@@ -2,9 +2,16 @@ import type { EventAndCategoriesType } from "@/lib/types/events";
 import EventCardComponent from "./EventCardComponent";
 import { ScrollArea } from "../ui/scroll-area";
 import { isAfter } from "date-fns";
-import { isEventCurrentlyHappening,isEventCheckinAllowed } from "@/lib/utils";
-export default function EventsCardView({events,clientTimeZone,currentDateUTC}: {events: Array<EventAndCategoriesType>,clientTimeZone: string,currentDateUTC: Date}) {
-
+import { isEventCurrentlyHappening, isEventCheckinAllowed } from "@/lib/utils";
+export default function EventsCardView({
+	events,
+	clientTimeZone,
+	currentDateUTC,
+}: {
+	events: Array<EventAndCategoriesType>;
+	clientTimeZone: string;
+	currentDateUTC: Date;
+}) {
 	return (
 		<div className="flex w-full flex-1 flex-col items-center no-scrollbar">
 			<ScrollArea className="flex max-h-[75dvh] w-[95%]  no-scrollbar monitor:h-[90dvh]">
@@ -19,7 +26,7 @@ export default function EventsCardView({events,clientTimeZone,currentDateUTC}: {
 								event.start,
 								event.end,
 							)}
-							isEventCheckinAllowed= {isEventCheckinAllowed(
+							isEventCheckinAllowed={isEventCheckinAllowed(
 								currentDateUTC,
 								event.checkinStart,
 								event.checkinEnd,

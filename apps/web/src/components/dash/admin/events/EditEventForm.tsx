@@ -49,6 +49,7 @@ import { useAction } from "next-safe-action/hooks";
 import { upload } from "@vercel/blob/client";
 import { updateEvent } from "@/actions/events/update";
 import { iEvent, uEvent } from "@/lib/types/events";
+import { bucketEventThumbnailBaseUrl } from "config";
 
 type EditEventFormProps = {
 	eventID: string;
@@ -127,9 +128,11 @@ export default function EditEventForm({
 		result: actionResult,
 		reset: resetAction,
 	} = useAction(updateEvent, {
-		onSuccess: async ({ success, code }) => {
+		onSuccess: async ({ data }) => {
 			toast.dismiss();
-			if (!success) {
+
+			if (!data?.success) {
+				const code = data?.code || "unknown";
 				switch (code) {
 					case "update_event_failed":
 						setError({
@@ -169,7 +172,7 @@ export default function EditEventForm({
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submit: ", values);
-		toast.loading("Creating Event...");
+		toast.loading("Updating Event...");
 		const checkinStart = hasDifferentCheckinTime
 			? values.checkinStart
 			: values.start;
@@ -185,10 +188,14 @@ export default function EditEventForm({
 		);
 
 		if (thumbnail) {
-			const thumbnailBlob = await upload(thumbnail.name, thumbnail, {
-				access: "public",
-				handleUploadUrl: "/api/upload/thumbnail",
-			});
+			const thumbnailBlob = await upload(
+				`${bucketEventThumbnailBaseUrl}/${thumbnail.name}`,
+				thumbnail,
+				{
+					access: "public",
+					handleUploadUrl: "/api/upload/thumbnail",
+				},
+			);
 			runUpdateEvent({
 				...values,
 				eventID,

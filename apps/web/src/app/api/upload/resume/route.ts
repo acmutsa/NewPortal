@@ -10,7 +10,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 			body,
 			request,
 			onBeforeGenerateToken: async (
-				pathname
+				pathname,
 				/* clientPayload */
 			) => {
 				// Generate a client token for the browser to upload the file
@@ -53,7 +53,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 	} catch (error) {
 		return NextResponse.json(
 			{ error: (error as Error).message },
-			{ status: 400 } // The webhook will retry 5 times waiting for a 200
+			{ status: 400 }, // The webhook will retry 5 times waiting for a 200
 		);
 	}
 }

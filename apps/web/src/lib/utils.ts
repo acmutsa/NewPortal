@@ -36,17 +36,25 @@ export function createCalendarLink(
 
 export function getClientTimeZone(vercelIPTimeZone?: string | null) {
 	return vercelIPTimeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
-};
+}
 
 export function getUTCDate() {
 	const currentDate = new Date();
 	return new Date(currentDate.toUTCString());
 }
 
-export function isEventCurrentlyHappening(currentDateUTC:Date,eventStart: Date, eventEnd: Date){
+export function isEventCurrentlyHappening(
+	currentDateUTC: Date,
+	eventStart: Date,
+	eventEnd: Date,
+) {
 	return currentDateUTC >= eventStart && currentDateUTC <= eventEnd;
 }
 
-export function isEventCheckinAllowed(currentDateUTC:Date,checkinStart:Date,checkinEnd:Date){
+export function isEventCheckinAllowed(
+	currentDateUTC: Date,
+	checkinStart: Date,
+	checkinEnd: Date,
+) {
 	return currentDateUTC >= checkinStart && currentDateUTC <= checkinEnd;
 }
