@@ -9,7 +9,7 @@ import {
 import { updateEventCategory } from "@/actions/categories";
 import { useAction } from "next-safe-action/hooks";
 import { Input } from "@/components/ui/input";
-import { SetStateAction, useState } from "react";
+import { FormEvent, SetStateAction, useEffect, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { useForm } from "react-hook-form";
 import { eventCategorySchema } from "db/zod";
@@ -29,19 +29,29 @@ import { Button } from "@/components/ui/button";
 
 type EditCategoryProps = {
 	eventCategory: z.infer<typeof eventCategorySchema>;
+	open: boolean;
 	setOpen: React.Dispatch<SetStateAction<boolean>>;
 };
 
 export default function EditCategoryDialogue(
 	editCategoryProps: EditCategoryProps,
 ) {
-	const { eventCategory: inputProps, setOpen } = editCategoryProps;
+	const { eventCategory: inputProps, setOpen, open } = editCategoryProps;
 	const form = useForm<z.infer<typeof eventCategorySchema>>({
 		resolver: zodResolver(eventCategorySchema),
 		defaultValues: {
 			...inputProps,
 		},
 	});
+
+	// this is required here in order to reset the dialog as router.refresh / revalidatePath will not properly make the change
+	useEffect(() => {
+		if (open) {
+			form.reset({
+				...inputProps,
+			});
+		}
+	}, [open]);
 
 	const { execute: runUpdateEventCategory, status } = useAction(
 		updateEventCategory,
@@ -53,6 +63,9 @@ export default function EditCategoryDialogue(
 						`Event category ${form.getValues("name")} already exists`,
 					);
 				}
+				// form.reset({
+				// 	...inputProps,
+				// })
 				setOpen(false);
 				toast.success("Event category created successfully");
 			},
@@ -63,6 +76,15 @@ export default function EditCategoryDialogue(
 		},
 	);
 	const isLoading = status === "executing";
+	useEffect(() => {
+		console.log("form dirty", form.formState.isDirty);
+	}, [form.formState.isDirty]);
+	function onSubmit(data: z.infer<typeof eventCategorySchema>) {
+		if (!form.formState.isDirty) {
+			return toast.error("No changes made");
+		}
+		runUpdateEventCategory(data);
+	}
 	return (
 		<>
 			<DialogContent>
@@ -71,7 +93,7 @@ export default function EditCategoryDialogue(
 				</DialogHeader>
 				<Form {...form}>
 					<form
-						onSubmit={form.handleSubmit(runUpdateEventCategory)}
+						onSubmit={form.handleSubmit(onSubmit)}
 						className="space-y-4"
 					>
 						<FormField
@@ -104,6 +126,9 @@ export default function EditCategoryDialogue(
 													form.setValue(
 														"color",
 														color,
+														{
+															shouldDirty: true,
+														},
 													)
 												}
 												style={{

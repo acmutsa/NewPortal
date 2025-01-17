@@ -59,7 +59,10 @@ export default async function ProfileButton({
 								Complete Registration
 							</DropdownMenuItem>
 						</Link>
-						<Link href={`/bug-report`}>
+						<Link
+							href={`https://tally.so/r/wbKXN1`}
+							target="_blank"
+						>
 							<DropdownMenuItem className="cursor-pointer">
 								Report a Bug
 							</DropdownMenuItem>
@@ -107,7 +110,7 @@ export default async function ProfileButton({
 							Edit Profile
 						</DropdownMenuItem>
 					</Link>
-					<Link href={`/bug-report`}>
+					<Link href={`https://tally.so/r/wbKXN1`} target="_blank">
 						<DropdownMenuItem className="cursor-pointer">
 							Report a Bug
 						</DropdownMenuItem>
