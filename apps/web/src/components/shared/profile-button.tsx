@@ -106,7 +106,7 @@ export default async function ProfileButton({
 						<DropdownMenuItem className="cursor-pointer">
 							Edit Profile
 						</DropdownMenuItem>
-					</Link> */}
+					</Link>
 					<Link href={`mailto:team@acmutsa.org`}>
 						<DropdownMenuItem className="cursor-pointer">
 							Report a Bug
