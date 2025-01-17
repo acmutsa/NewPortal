@@ -49,7 +49,7 @@ function AddCheckinDialogue({ eventList, ...props }: Props) {
 	const form = useForm<AdminCheckinProps>({
 		resolver: zodResolver(adminCheckinSchema),
 		defaultValues: {
-			eventID: props.default?.eventID || eventList[0].id,
+			eventID: props.default?.eventID || eventList[0]?.id || undefined,
 			universityIDs: props.default?.universityIDs || "",
 		},
 	});
