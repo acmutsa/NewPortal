@@ -5,14 +5,12 @@ import { insertUserWithDataSchemaFormified } from "db/zod";
 import { db } from "db";
 import { eq, or } from "db/drizzle";
 import { users, data } from "db/schema";
-import type { UserWithDataSchemaType } from "db/types";
 
 export const createRegistration = authenticatedAction
 	.schema(insertUserWithDataSchemaFormified)
 	.action(async ({ parsedInput: registerFormInputs, ctx: { clerkID } }) => {
 		const { data: dataSchemaInputs, ...usersSchemaInputs } =
 			registerFormInputs;
-		// I think we can stll do db.query on this
 		const existingUser = await db
 			.select()
 			.from(users)
