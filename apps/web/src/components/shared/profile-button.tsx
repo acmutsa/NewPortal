@@ -59,7 +59,10 @@ export default async function ProfileButton({
 								Complete Registration
 							</DropdownMenuItem>
 						</Link>
-						<Link href={`/bug-report`}>
+						<Link
+							href={`https://tally.so/r/wbKXN1`}
+							target="_blank"
+						>
 							<DropdownMenuItem className="cursor-pointer">
 								Report a Bug
 							</DropdownMenuItem>
@@ -101,22 +104,17 @@ export default async function ProfileButton({
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
 					<DropdownSwitcher />
-					{/* TODO: Replace with user.clubTag */}
-					<Link href={`/profile`}>
-						<DropdownMenuItem className="cursor-pointer">
-							Edit Profile
-						</DropdownMenuItem>
-					</Link>
-					<Link href={`mailto:team@acmutsa.org`}>
+
+					<Link href={`https://tally.so/r/wbKXN1`} target="_blank">
 						<DropdownMenuItem className="cursor-pointer">
 							Report a Bug
 						</DropdownMenuItem>
 					</Link>
-					{/* <Link href={"/settings"}>
+					<Link href={"/settings"}>
 						<DropdownMenuItem className="cursor-pointer">
 							Settings
 						</DropdownMenuItem>
-					</Link> */}
+					</Link>
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
 				<SignOutButton redirectUrl="/">

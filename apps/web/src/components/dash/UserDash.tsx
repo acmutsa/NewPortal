@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, GraduationCapIcon, MapPinIcon } from "lucide-react";
 import Link from "next/link";
 import { formatInTimeZone } from "date-fns-tz";
+import { getCurrentSemester } from "@/lib/queries/semesters";
 
 interface AttendedEvents {
 	id: string;
@@ -31,62 +32,60 @@ interface AttendedEvents {
 }
 
 export default async function UserDash({
-	userId,
+	clerkID,
 	clientTimeZone,
 }: {
-	userId: string;
+	clerkID: string;
 	clientTimeZone: string;
 }) {
-	// Cache this later
+	//TODO: can probably add a conditional check here to either compare by the event ID or use the between clause if it is pulling from the config
+	const currentSemester = (await getCurrentSemester()) ?? c.semesters.current;
+
 	const queryResult = await db
 		.select({
 			user: users,
 			userData: data,
-			attendedEvents: sql<
-				Array<AttendedEvents>
-			>`JSONB_AGG(JSONB_BUILD_OBJECT(
+			attendedEvents:
+				sql<Array<AttendedEvents> | null>`JSONB_AGG(JSONB_BUILD_OBJECT(
 			'id', ${events.id},
 			'name', ${events.name},
 			'points', ${events.points},
-			'start', ${events.start}) ORDER BY ${events.start} DESC)`.as("attendedEvents"),
-			// Still do not think the dates are working right here
-			currentSemesterPoints:
-				sql`SUM(${events.points}) FILTER (WHERE ${checkins.time} BETWEEN ${c.semesters.current.startDate} AND ${c.semesters.current.endDate})`.mapWith(
-					Number,
+			'start', ${events.start}) ORDER BY ${events.start} DESC) FILTER (WHERE ${events.start} BETWEEN SYMMETRIC ${currentSemester.startDate} AND ${currentSemester.endDate} OR ${events.checkinStart} BETWEEN SYMMETRIC ${currentSemester.startDate} AND ${currentSemester.endDate})`.as(
+					"attendedEvents",
 				),
-			totalPoints: sum(events.points),
-			currentSemesterEventsAttended: count(
-				between(
-					checkins.time,
-					c.semesters.current.startDate,
-					c.semesters.current.endDate,
-				),
+			currentSemesterPoints: sql<
+				number | null
+			>`SUM(${events.points}) FILTER (WHERE ${events.start} BETWEEN SYMMETRIC ${currentSemester.startDate} AND ${currentSemester.endDate} OR ${events.checkinStart} BETWEEN SYMMETRIC ${currentSemester.startDate} AND ${currentSemester.endDate})`.mapWith(
+				Number,
+			),
+			// totalPoints: sum(events.points),
+			currentSemesterEventsAttended: sql<
+				number | null
+			>`COUNT(${events.id}) FILTER (WHERE ${events.start} BETWEEN SYMMETRIC ${currentSemester.startDate} AND ${currentSemester.endDate} OR ${events.checkinStart} BETWEEN SYMMETRIC ${currentSemester.startDate} AND ${currentSemester.endDate})`.mapWith(
+				Number,
 			),
 			totalEventsAttended: count(checkins.userID),
-			userCheckins: sql`ARRAY_AGG(${checkins.eventID})`,
+			// userCheckins: sql`ARRAY_AGG(${checkins.eventID})`,
 		})
 		.from(users)
 		.innerJoin(data, eq(users.userID, data.userID))
 		.leftJoin(checkins, eq(users.userID, checkins.userID))
 		.leftJoin(events, eq(events.id, checkins.eventID))
 		.groupBy(users.userID, data.userID)
-		.where(eq(users.clerkID, userId));
+		.where(eq(users.clerkID, clerkID));
 
 	if (queryResult.length === 0) {
 		return redirect("/sign-in");
 	}
 
 	const userDashResult = queryResult[0];
-
 	const {
 		user,
 		userData,
 		currentSemesterPoints,
-		totalPoints,
 		currentSemesterEventsAttended,
 		totalEventsAttended,
 		attendedEvents,
-		// checkins,
 	} = userDashResult;
 
 	const clientHeaderTimezoneValue = headers().get(
@@ -100,20 +99,19 @@ export default async function UserDash({
 	);
 
 	const hasUserMetRequiredPoints =
-		currentSemesterPoints >= c.semesters.current.pointsRequired;
+		currentSemesterPoints >= currentSemester.pointsRequired;
 
 	const radialChartProgressProps = {
 		titleText: "Attendance Points",
-		descriptionText: c.semesters.current.title,
+		descriptionText: currentSemester.name,
 		current: currentSemesterPoints ?? 0,
-		total: c.semesters.current.pointsRequired,
+		total: currentSemester.pointsRequired,
 		footerText: hasUserMetRequiredPoints
-			? `Way to go! You have gained enough points to attend our ${c.semesters.current.title} banquet 🎉`
+			? `Way to go! You have gained enough points to attend our ${currentSemester.name} banquet 🎉`
 			: `Keep attending events to earn more points!`,
 		fill: "#3b82f6",
 	};
-
-	const slicedEvents = attendedEvents.slice(0, 5);
+	const slicedEvents = attendedEvents?.slice(0, 5) ?? [];
 
 	return (
 		<div className="flex flex-col">
@@ -144,12 +142,6 @@ export default async function UserDash({
 							<p className="text-balance mt-2 flex items-center text-base text-muted-foreground">
 								{`Member since ${joinedDate}`}
 							</p>
-							{/* <Button
-									variant="outline"
-									size="sm"
-									className="mt-2 opacity-0">
-									Edit Profile
-								</Button> */}
 						</div>
 					</CardContent>
 				</Card>
@@ -158,27 +150,24 @@ export default async function UserDash({
 
 				<Card className="md:col-span-2 xl:col-span-1">
 					<CardHeader className="pb-3 md:pb-6">
-						<CardTitle> Recent Activity </CardTitle>
-						{/* md:flex-row md:items-center */}
+						<CardTitle className=""> Activity </CardTitle>
 						<div className="flex w-full flex-col items-start justify-between gap-y-[2px] border-b border-muted py-2 text-muted-foreground   md:justify-between md:gap-6 md:gap-y-0">
-							{/* md:flex */}
-							<p className=" flex-col items-center justify-center">
-								<span className="font-semibold text-primary">
-									{currentSemesterEventsAttended}
-								</span>{" "}
-								Events attended this semester
-							</p>
-							{/* md:flex */}
 							<p className="flex-col items-center justify-center ">
 								<span className="font-semibold text-primary">
 									{totalEventsAttended}
 								</span>{" "}
-								Total events attented
+								Total event(s) attented
+							</p>
+							<p className=" flex-col items-center justify-center">
+								<span className="font-semibold text-primary">
+									{currentSemesterEventsAttended}
+								</span>{" "}
+								Event(s) attended this semester
 							</p>
 						</div>
 					</CardHeader>
 					<CardContent>
-						{attendedEvents.length > 0 && (
+						{slicedEvents.length > 0 && (
 							<div className="flex flex-col space-y-2">
 								{slicedEvents?.map((event, index) => (
 									<Link
