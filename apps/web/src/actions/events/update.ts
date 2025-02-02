@@ -4,6 +4,7 @@ import { and, db, eq, inArray, sql } from "db";
 import { updateEventSchema } from "db/zod";
 import { adminAction } from "@/lib/safe-action";
 import { events, eventsToCategories } from "db/schema";
+import { revalidatePath } from "next/cache";
 
 export const updateEvent = adminAction
 	.schema(updateEventSchema)
@@ -63,6 +64,8 @@ export const updateEvent = adminAction
 		});
 
 		await db.execute(sql`VACUUM events_to_categories`);
+		revalidatePath("/admin/events");
+		revalidatePath("/events");
 
 		return res;
 	});
