@@ -12,22 +12,25 @@ export default function EventImage(props: EventImageProps) {
 	const combinedProps = {
 		alt: "Event Image",
 		priority: true,
-		width: 0,
-		height: 0,
+		width: imageProps.width || 0,
+		height: imageProps.height || 0,
 		quality: 100,
 		sizes: "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
 		...imageProps,
 	};
 
 	return (
-		<>
-			<span className={clsx("relative flex items-center justify-center w-fit", { "live-glow":isLive })}>
+		<div className="relative h-full w-full">
+			<span
+				className={clsx(
+					"relative flex w-full items-center justify-center",
+					{ "live-glow": isLive },
+				)}
+			>
 				<Image
 					{...combinedProps}
 					onLoad={() => setLoaded(true)}
 					hidden={!loaded}
-					
-					alt={"some alt text"}
 				/>
 			</span>
 
@@ -35,6 +38,6 @@ export default function EventImage(props: EventImageProps) {
 				className={`${loaded ? "hidden" : `h-[${props.width || "300"}px] w-full`}`}
 				hidden={loaded}
 			/>
-		</>
+		</div>
 	);
 }

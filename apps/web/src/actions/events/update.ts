@@ -42,9 +42,8 @@ export const updateEvent = adminAction
 				eventID,
 				categoryID: cat,
 			}));
-      
-			if (insertVal.length !== 0) {
 
+			if (insertVal.length !== 0) {
 				await tx.insert(eventsToCategories).values(insertVal);
 			}
 

@@ -60,7 +60,7 @@ export default function EventCardComponent({
 				<EventCategories
 					event={event}
 					isPast={isPast}
-					className="pb-3 pt-3"
+					className="px-4 py-3"
 				/>
 				<div className="flex w-full flex-col items-center justify-center gap-3 px-2 text-gray-600 md:px-6">
 					<p className="text-primary">

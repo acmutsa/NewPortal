@@ -7,7 +7,7 @@ export default function Hero() {
 		<section className="bg-hero h-screen w-full">
 			<div className="flex h-full flex-col items-center gap-y-20">
 				<div className="mt-20 px-8">
-					<h1 className="font-acm lg:text-title text-center text-7xl font-bold leading-9 text-white">
+					<h1 className="text-center font-acm text-7xl font-bold leading-9 text-white lg:text-title">
 						ACM
 						<br />
 						<span className="text-4xl font-[400] text-white lg:text-8xl">

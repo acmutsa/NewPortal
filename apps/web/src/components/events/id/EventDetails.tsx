@@ -141,10 +141,10 @@ export default async function EventDetails({
 			</h1>
 			<div className="mx-auto flex w-5/6 items-center">
 				<div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:py-4">
-					<div className="flex w-full items-center justify-center md:justify-start">
+					<div className="flex w-fit items-center justify-center md:justify-start">
 						<EventImage
 							src={thumbnailUrl}
-							className="w-full rounded-md"
+							className="rounded-md"
 							isLive={isEventHappening}
 							width={width}
 							height={height}
@@ -157,7 +157,7 @@ export default async function EventDetails({
 									Description
 								</h2>
 								<p
-									className={`w-full text-pretty text-lg 2xl:text-2xl `}
+									className={`text-pretty w-full text-lg 2xl:text-2xl `}
 								>
 									{description}
 								</p>
