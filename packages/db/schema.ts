@@ -8,6 +8,7 @@ import {
 	primaryKey,
 	pgTable,
 	serial,
+	date,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import c from "config";
@@ -15,11 +16,7 @@ import c from "config";
 // pieces of this schema need to be revamped as a lot of them are lazily set as text instead of varchar with a hard limit
 /* USERS */
 
-export const userRoles = pgEnum("user_roles", [
-	"member",
-	"admin",
-	"super_admin",
-]);
+export const userRoles = pgEnum("user_roles", c.memberRoles);
 
 export const users = pgTable("users", {
 	userID: serial("user_id").primaryKey(),
@@ -87,11 +84,18 @@ export const events = pgTable("events", {
 	points: integer("points").notNull().default(1),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	semesterID: integer("semester_id").references(() => semesters.semesterID, {
+		onDelete: "set null",
+	}),
 });
 
-export const eventsRelations = relations(events, ({ many }) => ({
+export const eventsRelations = relations(events, ({ many, one }) => ({
 	eventsToCategories: many(eventsToCategories),
 	checkins: many(checkins),
+	semester: one(semesters, {
+		fields: [events.semesterID],
+		references: [semesters.semesterID],
+	}),
 }));
 
 export const eventsToCategories = pgTable("events_to_categories", {
@@ -149,4 +153,17 @@ export const checkinRelations = relations(checkins, ({ one }) => ({
 		fields: [checkins.eventID],
 		references: [events.id],
 	}),
+}));
+
+export const semesters = pgTable("semesters", {
+	semesterID: serial("semester_id").primaryKey(),
+	name: varchar("name", { length: 255 }).notNull().unique(),
+	startDate: timestamp("start_date").notNull(),
+	endDate: timestamp("end_date").notNull(),
+	pointsRequired: integer("points_required").notNull(),
+	isCurrent: boolean("is_current").notNull().default(false),
+});
+
+export const semestersRelations = relations(semesters, ({ many }) => ({
+	events: many(events),
 }));

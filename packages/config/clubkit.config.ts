@@ -4,12 +4,13 @@ const c = {
 	universityID: {
 		name: "ABC123",
 		maxLength: 6,
+		universityIDRegex: new RegExp("\\b[a-zA-Z]{3}\\d{3}\\b"),
 	},
 	semesters: {
 		current: {
-			title: "Fall 2024",
-			startDate: new Date("2024-08-24"),
-			endDate: new Date("2024-12-31"),
+			name: "Spring 2025",
+			startDate: new Date("2025-01-24"),
+			endDate: new Date("2025-05-31"),
 			pointsRequired: 7,
 		},
 	},
@@ -43,11 +44,21 @@ const c = {
 			"Other",
 			"I prefer not to say",
 		],
+		classification: [
+			"Freshman",
+			"Sophomore",
+			"Junior",
+			"Senior",
+			"Graduate",
+			"Other",
+		],
+		shirtSize: ["XS", "S", "M", "L", "XL", "XXL"],
+		shirtType: ["Unisex", "Women's"],
 	},
 	calendarLinks: [
-		{ title: "google" },
-		{ title: "outlook" },
-		{ title: "ics", titleOverride: "iCal" },
+		{ title: "Google", functionKey: "google" },
+		{ title: "Outlook", functionKey: "outlookMobile" },
+		// { title: "iCal", functionKey: "ics" },
 	],
 	streamingLinks: [
 		{ title: "twitch", href: "https://www.twitch.tv/acmutsa" },
@@ -66,6 +77,7 @@ const c = {
 			Events: "/admin/events",
 			Checkins: "/admin/checkins",
 			Categories: "/admin/categories",
+			Semesters: "/admin/semesters",
 		},
 	},
 	maxCheckinDescriptionLength: 400,
@@ -79,9 +91,13 @@ const c = {
 		default: "/img/thumbnails/default.png",
 		maxSizeInBytes: 500000,
 	},
+	memberRoles: ["member", "admin", "super_admin"] as const,
 } as const;
 
 export const defaultTheme = "light";
+
+const bucketBaseUrl = `${c.clubName}-${c.universityName}`;
+const bucketEventThumbnailBaseUrl = `${bucketBaseUrl}/event-thumbnails`;
 
 const majors = [
 	"Computer Science",
@@ -197,7 +213,5 @@ const majors = [
 	"Other",
 ] as const;
 
-const bucketBaseUrl = `${c.clubName}-${c.universityName}`;
-const bucketEventThumbnailBaseUrl = `${bucketBaseUrl}/event-thumbnails`;
 export default c;
 export { majors, bucketEventThumbnailBaseUrl, bucketBaseUrl };

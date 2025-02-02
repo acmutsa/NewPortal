@@ -67,8 +67,8 @@ export const eventCategoryColumns: ColumnDef<EventCategoryType>[] = [
 		header: ({}) => {},
 		cell: ({ row }) => {
 			const [open, setOpen] = useState(false);
-			const data = row.original;
 
+			const data = row.original;
 			return (
 				<AlertDialog>
 					<Dialog open={open} onOpenChange={setOpen}>
@@ -125,7 +125,11 @@ export const eventCategoryColumns: ColumnDef<EventCategoryType>[] = [
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
-						<EditCategory eventCategory={data} setOpen={setOpen} />
+						<EditCategory
+							eventCategory={data}
+							open={open}
+							setOpen={setOpen}
+						/>
 					</Dialog>
 					<DeleteCategoryDialogue
 						categoryID={data.id}
