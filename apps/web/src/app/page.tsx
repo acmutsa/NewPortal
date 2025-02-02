@@ -7,7 +7,7 @@ export default function Home() {
 			<header>
 				<Navbar />
 			</header>
-			<main className="h-full w-full" >
+			<main className="h-full w-full">
 				<Hero />
 			</main>
 		</div>
