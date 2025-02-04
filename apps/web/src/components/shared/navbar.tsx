@@ -147,6 +147,13 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 											: "Complete Registration"}
 									</Button>
 								</Link>
+								{registrationComplete && (
+									<Link href={"/settings"}>
+										<Button variant={"ghost"}>
+											Settings
+										</Button>
+									</Link>
+								)}
 								<Link href={"/events"}>
 									<Button variant={"ghost"}>Events</Button>
 								</Link>
