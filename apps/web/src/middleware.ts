@@ -16,7 +16,6 @@ const isAdminAPIRoute = createRouteMatcher(["/api/admin(.*)"]);
 
 // come back and check if this is valid
 export default clerkMiddleware(async (auth, req) => {
-	console.log(req.url)
 	if (req.url.includes('register')){
 		return NextResponse.redirect(new URL('/onboarding', req.url))
 	}
