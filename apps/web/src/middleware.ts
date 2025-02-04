@@ -5,6 +5,7 @@ import {
 } from "@clerk/nextjs/server";
 import { getAdminUser } from "./lib/queries/users";
 import { NextResponse } from "next/server";
+import { redirect } from "next/navigation";
 
 const isProtectedRoute = createRouteMatcher([
 	"/dash(.*)",
@@ -15,7 +16,11 @@ const isAdminAPIRoute = createRouteMatcher(["/api/admin(.*)"]);
 
 // come back and check if this is valid
 export default clerkMiddleware(async (auth, req) => {
-	const { protect, userId } = auth();
+	console.log(req.url)
+	if (req.url.includes('register')){
+		return NextResponse.redirect(new URL('/onboarding', req.url))
+	}
+	const { protect, userId, } = auth();
 
 	if (isProtectedRoute(req)) {
 		protect();
