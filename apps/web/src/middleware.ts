@@ -16,10 +16,10 @@ const isAdminAPIRoute = createRouteMatcher(["/api/admin(.*)"]);
 
 // come back and check if this is valid
 export default clerkMiddleware(async (auth, req) => {
-	if (req.url.includes('register')){
-		return NextResponse.redirect(new URL('/onboarding', req.url))
+	if (req.url.includes("register")) {
+		return NextResponse.redirect(new URL("/onboarding", req.url));
 	}
-	const { protect, userId, } = auth();
+	const { protect, userId } = auth();
 
 	if (isProtectedRoute(req)) {
 		protect();
