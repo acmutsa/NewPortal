@@ -84,11 +84,21 @@ export const getEventCheckins = async (id: string) => {
 export const getEventsWithCheckins = async () => {
 	return (
 		await db
-			.select({ events: events, checkin_count: count(checkins.eventID) })
+			.select({
+				events: events,
+				checkin_count: count(checkins.eventID),
+				avg_rating: sql<number>`AVG(${checkins.rating})`.mapWith(
+					Number,
+				),
+			})
 			.from(checkins)
 			.rightJoin(events, eq(events.id, checkins.eventID))
 			.groupBy(checkins.eventID, events.id)
-	).map(({ events, checkin_count }) => ({ checkin_count, ...events }));
+	).map(({ events, checkin_count, avg_rating }) => ({
+		checkin_count,
+		avg_rating,
+		...events,
+	}));
 };
 
 export const getEventDetails = async (id: string) => {
