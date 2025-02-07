@@ -16,12 +16,11 @@ export const doPortalLookupCheck = authenticatedAction
 		const lookup = await db
 			.select()
 			.from(users)
-			.innerJoin(data, eq(users.userID, data.userID))
 			.where(
 				and(
-					eq(users.email, email),
+					eq(users.email, email.toLowerCase()),
 					isNull(users.clerkID),
-					eq(data.universityID, universityID),
+					eq(users.universityID, universityID.toLowerCase()),
 				),
 			)
 			.limit(1);
@@ -29,8 +28,7 @@ export const doPortalLookupCheck = authenticatedAction
 		if (lookup[0]) {
 			return {
 				success: true,
-				name:
-					lookup[0].users.firstName + " " + lookup[0].users.lastName,
+				name: lookup[0].firstName + " " + lookup[0].lastName,
 			};
 		} else {
 			return {
@@ -46,16 +44,14 @@ export const doPortalLink = authenticatedAction
 	)
 	.action(
 		async ({ ctx: { clerkID }, parsedInput: { email, universityID } }) => {
-			// why we do we care about their inner join data?
 			const lookup = await db
 				.select()
 				.from(users)
-				.innerJoin(data, eq(users.userID, data.userID))
 				.where(
 					and(
-						eq(users.email, email),
+						eq(users.email, email.toLowerCase()),
 						isNull(users.clerkID),
-						eq(data.universityID, universityID),
+						eq(users.universityID, universityID.toLowerCase()),
 					),
 				)
 				.limit(1);
@@ -65,13 +61,12 @@ export const doPortalLink = authenticatedAction
 					success: false,
 				};
 			}
-			// we set these when connected in order to keep clerk in sync
 			const userEmail = currUser.emailAddresses[0].emailAddress;
 			if (lookup[0]) {
 				await db
 					.update(users)
-					.set({ clerkID: clerkID, email: userEmail })
-					.where(eq(users.userID, lookup[0].users.userID));
+					.set({ clerkID, email: userEmail })
+					.where(eq(users.userID, lookup[0].userID));
 				return {
 					success: true,
 				};

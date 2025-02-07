@@ -26,6 +26,7 @@ export const users = pgTable("users", {
 	email: varchar({ length: 255 }).notNull().unique(),
 	role: userRoles().default("member").notNull(),
 	joinDate: timestamp("join_date").defaultNow().notNull(),
+	universityID: varchar("university_id", { length: 255 }).notNull().unique(),
 });
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -50,7 +51,6 @@ export const data = pgTable("data", {
 	interestedEventTypes: varchar("interested_event_types", { length: 255 })
 		.array()
 		.notNull(),
-	universityID: varchar("university_id", { length: 255 }).notNull().unique(),
 });
 
 /* EVENTS */
