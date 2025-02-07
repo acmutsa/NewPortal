@@ -83,82 +83,105 @@ async function move() {
 			);
 			const m = validatedMember.data;
 			await db.transaction(async (tx) => {
-				const newUserRecordResult = await tx
-					.insert(users)
-					.values({
-						email: m.email,
-						joinDate: m.joinDate,
-						universityID: m.id,
-						firstName: m.name
-							.split(" ")
-							.slice(0, -1)
-							.join(" ")
-							.trim(),
-						lastName: m.name
-							.split(" ")
-							[m.name.split(" ").length - 1].trim(),
-					})
-					.returning({ id: users.userID });
-				if (
-					newUserRecordResult.length !== 1 ||
-					!newUserRecordResult[0]
-				) {
-					await tx.rollback();
-					console.error(
-						`User creation failed for user (${m.id} / ${m.email})`,
-					);
-					return;
+				try {
+					const newUserRecordResult = await tx
+						.insert(users)
+						.values({
+							email: m.email,
+							joinDate: m.joinDate,
+							universityID: m.id,
+							firstName: m.name
+								.split(" ")
+								.slice(0, -1)
+								.join(" ")
+								.trim(),
+							lastName: m.name
+								.split(" ")
+								[m.name.split(" ").length - 1].trim(),
+						})
+						.returning({ id: users.userID });
+					if (
+						newUserRecordResult.length !== 1 ||
+						!newUserRecordResult[0]
+					) {
+						tx.rollback();
+						console.error(
+							`User creation failed for user (${m.id} / ${m.email})`,
+						);
+						return;
+					}
+					const newUserRecord = newUserRecordResult[0];
+					const gender = [
+						m.data.isMale ? "Male" : null,
+						m.data.isFemale ? "Female" : null,
+						m.data.isNonBinary ? "Non-binary" : null,
+						m.data.isTransgender ? "Transgender" : null,
+						m.data.isIntersex ? "Intersex" : null,
+						m.data.doesNotIdentify ? "Prefer not to say" : null,
+						m.data.otherIdentity ? "Other" : null,
+					].filter((x) => x !== null) as string[];
+
+					const ethnicity = [
+						m.data.isBlackorAA ? "Black or African American" : null,
+						m.data.isAsian ? "Asian" : null,
+						m.data.isNAorAN
+							? "American Indian or Alaska Native"
+							: null,
+						m.data.isNHorPI
+							? "Native Hawaiian or Other Pacific Islander"
+							: null,
+						m.data.isHispanicorLatinx ? "Hispanic or Latino" : null,
+						m.data.isWhite ? "White" : null,
+					].filter((x) => x !== null) as string[];
+
+					let gradYear = 0;
+					let gradMonth = 0;
+
+					if (m.data.graduationDate.includes("-")) {
+						gradYear = parseInt(
+							m.data.graduationDate.split("-")[0],
+						);
+						gradMonth = parseInt(
+							m.data.graduationDate.split("-")[1],
+						);
+					} else if (m.data.graduationDate.includes("/")) {
+						gradYear = parseInt(
+							m.data.graduationDate.split("/")[0],
+						);
+						gradMonth = parseInt(
+							m.data.graduationDate.split("/")[1],
+						);
+					}
+
+					await tx.insert(data).values({
+						userID: newUserRecord.id,
+						major: m.data.major,
+
+						classification: m.data.classification,
+						graduationMonth: gradMonth,
+						graduationYear: gradYear,
+						birthday: m.data.Birthday
+							? new Date(m.data.Birthday)
+							: null,
+						gender: gender,
+						ethnicity: ethnicity,
+						resume: null,
+						shirtType: m.data.shirtIsUnisex ? "Unisex" : "Women's",
+						shirtSize: m.data.shirtSize,
+						interestedEventTypes: [],
+					});
+				} catch (e) {
+					if (e.code === "23505") {
+						console.error(
+							`User already exists for user (${m.id} / ${m.email})`,
+						);
+					} else {
+						console.error(
+							`Error occurred for user (${m.id} / ${m.email})\n`,
+							e,
+						);
+					}
 				}
-				const newUserRecord = newUserRecordResult[0];
-				const gender = [
-					m.data.isMale ? "Male" : null,
-					m.data.isFemale ? "Female" : null,
-					m.data.isNonBinary ? "Non-binary" : null,
-					m.data.isTransgender ? "Transgender" : null,
-					m.data.isIntersex ? "Intersex" : null,
-					m.data.doesNotIdentify ? "Prefer not to say" : null,
-					m.data.otherIdentity ? "Other" : null,
-				].filter((x) => x !== null) as string[];
-
-				const ethnicity = [
-					m.data.isBlackorAA ? "Black or African American" : null,
-					m.data.isAsian ? "Asian" : null,
-					m.data.isNAorAN ? "American Indian or Alaska Native" : null,
-					m.data.isNHorPI
-						? "Native Hawaiian or Other Pacific Islander"
-						: null,
-					m.data.isHispanicorLatinx ? "Hispanic or Latino" : null,
-					m.data.isWhite ? "White" : null,
-				].filter((x) => x !== null) as string[];
-
-				let gradYear = 0;
-				let gradMonth = 0;
-
-				if (m.data.graduationDate.includes("-")) {
-					gradYear = parseInt(m.data.graduationDate.split("-")[0]);
-					gradMonth = parseInt(m.data.graduationDate.split("-")[1]);
-				} else if (m.data.graduationDate.includes("/")) {
-					gradYear = parseInt(m.data.graduationDate.split("/")[0]);
-					gradMonth = parseInt(m.data.graduationDate.split("/")[1]);
-				}
-
-				await tx.insert(data).values({
-					userID: newUserRecord.id,
-					major: m.data.major,
-
-					classification: m.data.classification,
-					graduationMonth: gradMonth,
-					graduationYear: gradYear,
-					birthday: m.data.Birthday
-						? new Date(m.data.Birthday)
-						: null,
-					gender: gender,
-					ethnicity: ethnicity,
-					resume: null,
-					shirtType: m.data.shirtIsUnisex ? "Unisex" : "Women's",
-					shirtSize: m.data.shirtSize,
-					interestedEventTypes: [],
-				});
 			});
 		} else {
 			console.error("Member is invalid: ", member.id);
