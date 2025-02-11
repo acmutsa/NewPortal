@@ -97,7 +97,11 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 		cell: ({ row }) => {
 			const rating: number | string =
 				row.getValue("avg_rating") || "unrated";
-			return <div className="text-center">{rating}</div>;
+			return (
+				<div className="text-center">
+					{typeof rating === "string" ? rating : rating.toFixed(2)}
+				</div>
+			);
 		},
 	},
 	{
