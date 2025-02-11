@@ -25,7 +25,10 @@ import { usePathname } from "next/navigation";
 import ViewQRCode from "@/components/dash/admin/events/ViewQRCode";
 import { useBasePath } from "@/lib/hooks/useBasePath";
 
-type EventWithCheckins = Partial<EventType> & { checkin_count: number };
+type EventWithCheckins = Partial<EventType> & {
+	checkin_count: number;
+	avg_rating: number;
+};
 
 const timeFormatString = "eee, MMM dd yyyy HH:mm bb";
 
@@ -82,6 +85,19 @@ export const columns: ColumnDef<EventWithCheckins>[] = [
 					/>
 				</div>
 			);
+		},
+	},
+	{
+		accessorKey: "avg_rating",
+		header: ({ column }) => {
+			return (
+				<DataTableColumnHeader column={column} title="Avg. Rating" />
+			);
+		},
+		cell: ({ row }) => {
+			const rating: number | string =
+				row.getValue("avg_rating") || "unrated";
+			return <div className="text-center">{rating}</div>;
 		},
 	},
 	{
