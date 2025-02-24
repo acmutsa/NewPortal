@@ -69,7 +69,8 @@ async function MonthlyRegistrationChart({ registrations }: Props) {
 							dataKey="month"
 							tickLine={false}
 							axisLine={false}
-							tickMargin={4}
+							padding={{ left: 25, right: 25 }}
+							interval={0}
 							tickFormatter={(value) =>
 								monthList[value - 1].slice(0, 3)
 							}

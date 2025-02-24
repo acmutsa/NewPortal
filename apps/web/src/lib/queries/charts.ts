@@ -2,17 +2,30 @@ import { db, count, sql } from "db";
 import { data, users } from "db/schema";
 
 export async function getRegistrationsByMonth() {
-	return await db
+	const monthlyRegistrations = await db
 		.select({
 			month: sql`EXTRACT(MONTH FROM ${users.joinDate})`.mapWith(Number),
 			count: count(),
 		})
 		.from(users)
 		.where(
-			sql`${users.joinDate} > NOW() - INTERVAL '1 year' AND ${users.joinDate} < NOW()`,
+			sql`EXTRACT(YEAR FROM ${users.joinDate}) = EXTRACT(YEAR FROM NOW()) AND ${users.joinDate} < NOW()`,
 		)
 		.groupBy(sql`EXTRACT(MONTH FROM ${users.joinDate})`)
 		.orderBy(sql`EXTRACT(MONTH FROM ${users.joinDate})`);
+
+	// Create array of all months with count 0
+	const allMonths = Array.from({ length: 12 }, (_, i) => ({
+		month: i + 1,
+		count: 0,
+	}));
+
+	// Merge in actual registration counts
+	monthlyRegistrations.forEach((reg) => {
+		allMonths[reg.month - 1].count = reg.count;
+	});
+
+	return allMonths;
 }
 
 export async function getUserClassifications() {

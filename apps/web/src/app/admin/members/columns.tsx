@@ -126,6 +126,14 @@ export const columns: ColumnDef<UserWithData>[] = [
 		},
 	},
 	{
+		accessorKey: "user.joinDate",
+		id: "joinDate",
+		header: ({ column }) => {
+			return <DataTableColumnHeader column={column} title="Join Date" />;
+		},
+		cell: (cellData) => timeCell(cellData),
+	},
+	{
 		id: "actions",
 		enablePinning: true,
 		header: ({ column }) => {},
