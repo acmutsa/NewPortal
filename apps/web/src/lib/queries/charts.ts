@@ -1,5 +1,5 @@
 import { db, count, sql } from "db";
-import { data, users } from "db/schema";
+import { data, users, checkins } from "db/schema";
 
 export async function getRegistrationsByMonth() {
 	const monthlyRegistrations = await db
@@ -23,6 +23,38 @@ export async function getRegistrationsByMonth() {
 	// Merge in actual registration counts
 	monthlyRegistrations.forEach((reg) => {
 		allMonths[reg.month - 1].count = reg.count;
+	});
+
+	return allMonths;
+}
+
+// Checkins by month
+export async function getCheckinsByMonth() {
+	const monthlyCheckins = await db
+		.select({
+			month: sql`EXTRACT(MONTH FROM ${checkins.time})`.mapWith(Number),
+			year: sql`EXTRACT(YEAR FROM ${checkins.time})`.mapWith(Number),
+			count: count(),
+		})
+		.from(checkins)
+		.where(
+			sql`EXTRACT(YEAR FROM ${checkins.time}) = EXTRACT(YEAR FROM NOW()) AND ${checkins.time} < NOW()`,
+		)
+		.groupBy(
+			sql`EXTRACT(MONTH FROM ${checkins.time})`,
+			sql`EXTRACT(YEAR FROM ${checkins.time})`,
+		)
+		.orderBy(sql`EXTRACT(MONTH FROM ${checkins.time})`);
+
+	// Create array of all months with count 0
+	const allMonths = Array.from({ length: 12 }, (_, i) => ({
+		month: i + 1,
+		count: 0,
+	}));
+
+	// Merge in actual checkin counts
+	monthlyCheckins.forEach((checkin) => {
+		allMonths[checkin.month - 1].count = checkin.count;
 	});
 
 	return allMonths;

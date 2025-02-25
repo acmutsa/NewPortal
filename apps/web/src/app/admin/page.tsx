@@ -1,14 +1,17 @@
 import DemographicsStats from "@/components/dash/admin/overview/DemographicsStats";
 import MonthlyRegistrationChart from "@/components/dash/admin/overview/MonthlyRegistrationChart";
+import MonthlyCheckinChart from "@/components/dash/admin/overview/MonthlyCheckinChart";
 import { Separator } from "@/components/ui/separator";
 import {
 	getRegistrationsByMonth,
 	getUserClassifications,
+	getCheckinsByMonth,
 } from "@/lib/queries/charts";
 import { Suspense } from "react";
 
 export default async function Page() {
 	const monthlyRegistrations = await getRegistrationsByMonth();
+	const monthlyCheckins = await getCheckinsByMonth();
 	const classifications = await getUserClassifications();
 	return (
 		<div className="mx-auto max-w-6xl pt-4 text-foreground">
@@ -17,7 +20,7 @@ export default async function Page() {
 					Trends
 				</h1>
 			</div>
-			<div className="grid grid-flow-col grid-cols-12">
+			<div className="grid grid-flow-col grid-cols-12 gap-4">
 				<div className="col-span-4">
 					<Suspense
 						fallback={
@@ -29,6 +32,17 @@ export default async function Page() {
 						<MonthlyRegistrationChart
 							registrations={monthlyRegistrations}
 						/>
+					</Suspense>
+				</div>
+				<div className="col-span-4">
+					<Suspense
+						fallback={
+							<div className="text-foreground">
+								Retrieving checkin chart. One sec...
+							</div>
+						}
+					>
+						<MonthlyCheckinChart checkins={monthlyCheckins} />
 					</Suspense>
 				</div>
 			</div>

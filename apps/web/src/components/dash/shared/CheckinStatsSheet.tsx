@@ -16,20 +16,6 @@ async function CheckinStatsSheet({}: Props) {
 					{stats.total_checkins}
 				</span>
 			</div>
-			{/* <Separator orientation="vertical" />
-			<div className="flex flex-col p-1">
-				<span className="text-xs text-muted-foreground">This Week</span>
-				<span className="text-lg font-semibold">{stats.thisWeek}</span>
-			</div>
-			<Separator orientation="vertical" />
-			<div className="flex flex-col p-1">
-				<span className="text-xs text-muted-foreground">
-					Past Events
-				</span>
-				<span className="text-lg font-semibold">
-					{stats.pastEvents}
-				</span>
-			</div> */}
 		</div>
 	);
 }
