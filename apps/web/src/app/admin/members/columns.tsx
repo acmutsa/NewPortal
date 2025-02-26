@@ -22,7 +22,10 @@ import UpdateRoleDialogue from "@/components/dash/shared/UpdateRoleDialogue";
 const timeFormatString = "eee, MMM dd yyyy HH:mm bb";
 
 const timeCell = ({ row }: { row: Row<UserWithData> }) => {
-	const formattedDate = formatDate(row.getValue(""), timeFormatString);
+	const formattedDate = formatDate(
+		row.getValue("joinDate"),
+		timeFormatString,
+	);
 	return <div>{formattedDate}</div>;
 };
 
@@ -131,7 +134,7 @@ export const columns: ColumnDef<UserWithData>[] = [
 		header: ({ column }) => {
 			return <DataTableColumnHeader column={column} title="Join Date" />;
 		},
-		cell: (cellData) => timeCell(cellData),
+		cell: ({ row }) => timeCell({ row }),
 	},
 	{
 		id: "actions",
