@@ -19,13 +19,13 @@ import {
 
 export default function EngagementSection() {
 	return (
-		<div className="space-y-4">
+		<div className="space-y-3 sm:space-y-4">
 			<div className="flex items-center justify-between">
-				<h2 className="text-xl font-semibold tracking-tight">
+				<h2 className="text-lg font-semibold tracking-tight sm:text-xl">
 					Engagement Metrics
 				</h2>
 			</div>
-			<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+			<div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
 				<Suspense
 					fallback={
 						<LoadingCard
@@ -70,12 +70,14 @@ function LoadingCard({
 }) {
 	return (
 		<Card>
-			<CardHeader className="pb-3">
-				<CardTitle className="text-lg">{title}</CardTitle>
-				<CardDescription>{description}</CardDescription>
+			<CardHeader className="pb-2 sm:pb-3">
+				<CardTitle className="text-sm sm:text-lg">{title}</CardTitle>
+				<CardDescription className="text-xs sm:text-sm">
+					{description}
+				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<div className="flex h-[150px] items-center justify-center">
+				<div className="flex h-[120px] items-center justify-center sm:h-[150px]">
 					Loading...
 				</div>
 			</CardContent>
