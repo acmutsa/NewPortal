@@ -5,6 +5,7 @@ import {
 } from "@/lib/queries/charts";
 import MonthlyRegistrationChart from "./MonthlyRegistrationChart";
 import MonthlyCheckinChart from "./MonthlyCheckinChart";
+import { ChartSkeleton } from "@/components/ui/skeleton-loaders";
 
 export default async function MembershipTrends() {
 	return (
@@ -17,8 +18,8 @@ export default async function MembershipTrends() {
 			<div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
 				<Suspense
 					fallback={
-						<div className="flex h-[200px] items-center justify-center sm:h-[300px]">
-							Loading registration data...
+						<div className="h-[200px] sm:h-[300px]">
+							<ChartSkeleton height="h-[200px] sm:h-[300px]" />
 						</div>
 					}
 				>
@@ -26,8 +27,8 @@ export default async function MembershipTrends() {
 				</Suspense>
 				<Suspense
 					fallback={
-						<div className="flex h-[200px] items-center justify-center sm:h-[300px]">
-							Loading check-in data...
+						<div className="h-[200px] sm:h-[300px]">
+							<ChartSkeleton height="h-[200px] sm:h-[300px]" />
 						</div>
 					}
 				>

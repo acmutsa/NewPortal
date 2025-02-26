@@ -1,6 +1,6 @@
-import AdminCategoryView from "@/components/dash/admin/categories/CategoryView";
+import { TableSkeleton } from "@/components/ui/skeleton-loaders";
 
-export default function Page() {
+export default function Loading() {
 	return (
 		<div className="mx-auto max-w-6xl pt-4 text-foreground">
 			<div className="mb-5 grid grid-cols-2 px-5">
@@ -9,7 +9,7 @@ export default function Page() {
 				</h1>
 			</div>
 			<div className="px-5">
-				<AdminCategoryView />
+				<TableSkeleton rows={8} />
 			</div>
 		</div>
 	);
