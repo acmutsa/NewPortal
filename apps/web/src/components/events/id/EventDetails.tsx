@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import {
 	VERCEL_IP_TIMEZONE_HEADER_KEY,
 	TWENTY_FOUR_HOURS,
+	ONE_HOUR_IN_MILLISECONDS,
 } from "@/lib/constants";
 import c from "config";
 import {
@@ -89,8 +90,8 @@ export default async function EventDetails({
 		clientTimeZone,
 		`${EVENT_DATE_FORMAT_STRING}`,
 	);
-
-	const rawEventDuration = differenceInHours(end, start);
+	const rawEventDuration =
+		(end.getTime() - start.getTime()) / ONE_HOUR_IN_MILLISECONDS;
 
 	const isEventLongerThanADay = rawEventDuration > TWENTY_FOUR_HOURS;
 

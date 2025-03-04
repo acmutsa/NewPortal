@@ -147,7 +147,9 @@ export const checkins = sqliteTable(
 		userID: integer("user_id")
 			.references(() => users.userID, { onDelete: "cascade" })
 			.notNull(),
-		time: integer("time", { mode: "timestamp_ms" }).defaultNow().notNull(),
+		time: integer("time", { mode: "timestamp_ms" })
+			.notNull()
+			.default(sql`(current_timestamp)`),
 		rating: integer("rating"),
 		adminID: integer("admin_id"),
 		feedback: text({ length: 2000 }),
