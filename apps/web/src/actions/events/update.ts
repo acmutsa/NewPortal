@@ -17,7 +17,7 @@ export const updateEvent = adminAction
 		await db.transaction(async (tx) => {
 			const ids = await tx
 				.update(events)
-				.set({ ...e, updatedAt: sql`NOW()` })
+				.set({ ...e })
 				.where(eq(events.id, eventID))
 				.returning({ eventID: events.id });
 
@@ -62,8 +62,8 @@ export const updateEvent = adminAction
 					);
 			}
 		});
-
-		await db.execute(sql`VACUUM events_to_categories`);
+		// VACUUM is handled by Libsql according to: https://discord.com/channels/933071162680958986/1200296371484368956
+		// await db.run(sql`PRAGMA VACUUM`);
 		revalidatePath("/admin/events");
 		revalidatePath("/events");
 
