@@ -2,11 +2,7 @@ import { getEventDetails } from "@/lib/queries/events";
 import PageError from "../../shared/PageError";
 import EventImage from "../shared/EventImage";
 import { headers } from "next/headers";
-import {
-	VERCEL_IP_TIMEZONE_HEADER_KEY,
-	TWENTY_FOUR_HOURS,
-	ONE_HOUR_IN_MILLISECONDS,
-} from "@/lib/constants";
+import { TWENTY_FOUR_HOURS, ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
 import c from "config";
 import {
 	getClientTimeZone,
@@ -63,8 +59,6 @@ export default async function EventDetails({
 	id: string;
 	isBroswerSafari: boolean;
 }) {
-	const headerTimeZone = headers().get(VERCEL_IP_TIMEZONE_HEADER_KEY);
-	const clientTimeZone = getClientTimeZone(headerTimeZone);
 	const event = await getEventDetails(id);
 
 	if (!event) {
@@ -81,13 +75,13 @@ export default async function EventDetails({
 
 	const startTime = formatInTimeZone(
 		start,
-		clientTimeZone,
+		"CST",
 		`${EVENT_TIME_FORMAT_STRING}`,
 	);
 
 	const startDateFormatted = formatInTimeZone(
 		start,
-		clientTimeZone,
+		"CST",
 		`${EVENT_DATE_FORMAT_STRING}`,
 	);
 	const rawEventDuration =
@@ -108,7 +102,7 @@ export default async function EventDetails({
 		? "Ready to check-in? Click here!"
 		: isEventPassed
 			? "Check-in is closed"
-			: `Check-in starts on ${formatInTimeZone(start, clientTimeZone, `${EVENT_TIME_FORMAT_STRING} @${EVENT_DATE_FORMAT_STRING}`)}`;
+			: `Check-in starts on ${formatInTimeZone(start, "CST", `${EVENT_TIME_FORMAT_STRING} @${EVENT_DATE_FORMAT_STRING}`)}`;
 
 	const eventCalendarLink = {
 		title: event.name,
@@ -158,7 +152,7 @@ export default async function EventDetails({
 									Description
 								</h2>
 								<p
-									className={`text-pretty w-full text-lg 2xl:text-2xl `}
+									className={`w-full text-pretty text-lg 2xl:text-2xl `}
 								>
 									{description}
 								</p>

@@ -7,8 +7,6 @@ import c from "config";
 import { RadialChartProgress } from "@/components/shared/circular-progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
-import { getClientTimeZone } from "@/lib/utils";
 import { headers } from "next/headers";
 import {
 	Card,
@@ -26,13 +24,7 @@ import { getCurrentSemester } from "@/lib/queries/semesters";
 import { dashEventSchema } from "db/zod";
 import z from "zod";
 
-export default async function UserDash({
-	clerkID,
-	clientTimeZone,
-}: {
-	clerkID: string;
-	clientTimeZone: string;
-}) {
+export default async function UserDash({ clerkID }: { clerkID: string }) {
 	const currentSemester = (await getCurrentSemester()) ?? c.semesters.current;
 
 	const queryResult = await db
@@ -95,11 +87,7 @@ export default async function UserDash({
 		userEvents = userEventsParseResult.data;
 	}
 
-	const joinedDate = formatInTimeZone(
-		user.joinDate,
-		clientTimeZone,
-		"MMMM dd, yyyy",
-	);
+	const joinedDate = formatInTimeZone(user.joinDate, "CST", "MMMM dd, yyyy");
 
 	const hasUserMetRequiredPoints =
 		currentSemesterPoints >= currentSemester.pointsRequired;
