@@ -34,8 +34,8 @@ export function createCalendarLink(
 	return CalendarLinks.office365Mobile(eventCalendarLink);
 }
 
-export function getClientTimeZone(vercelIPTimeZone?: string | null) {
-	return vercelIPTimeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+export function getClientTimeZone() {
+	return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
 export function getUTCDate() {

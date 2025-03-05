@@ -3,7 +3,6 @@ import c from "config";
 import { NextRequest, NextResponse } from "next/server";
 import { ExportNames } from "@/lib/types/shared";
 import { getClientTimeZone } from "@/lib/utils";
-import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
 import { formatInTimeZone } from "date-fns-tz";
 import { getEventsWithCheckins } from "@/lib/queries/events";
 import { getCheckinLog } from "@/lib/queries/checkins";
@@ -145,9 +144,7 @@ export async function GET(request: NextRequest) {
 			{ status: 400 },
 		);
 	}
-	const clientTimeZone = getClientTimeZone(
-		request.headers.get(VERCEL_IP_TIMEZONE_HEADER_KEY),
-	);
+	const clientTimeZone = getClientTimeZone();
 	const flattendedResults = await hanldExportRequest(
 		exportName as ExportNames,
 		clientTimeZone,

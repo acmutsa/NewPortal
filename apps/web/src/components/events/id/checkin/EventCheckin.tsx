@@ -3,8 +3,6 @@ import { getEventById } from "@/lib/queries/events";
 import { getUserDataAndCheckin } from "@/lib/queries/users";
 import EventCheckinForm from "./EventCheckinForm";
 import { getClientTimeZone } from "@/lib/utils";
-import { headers } from "next/headers";
-import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
 import { formatInTimeZone } from "date-fns-tz";
 import { isAfter } from "date-fns";
 import {
@@ -23,9 +21,7 @@ export default async function EventCheckin({
 }) {
 	const event = await getEventById(eventID);
 
-	const headerTimeZone = headers().get(VERCEL_IP_TIMEZONE_HEADER_KEY);
-	const clientTimeZone = getClientTimeZone(headerTimeZone);
-	// This query is going to be way too expensive. We should break this up into two queries
+	const clientTimeZone = getClientTimeZone();
 
 	if (!event) {
 		return <PageError message="Event Not Found" href={"/events"} />;
