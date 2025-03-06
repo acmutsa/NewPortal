@@ -58,7 +58,7 @@ const userDataFormified = z.object({
 					.max(new Date().getFullYear() + 10)
 					.int(),
 			),
-		resume: z.string().url().optional(),
+		resume: z.string().optional(),
 	}).omit({
 		interestedEventTypes: true,
 		userID: true,

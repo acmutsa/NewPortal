@@ -4,7 +4,7 @@ import { userAction } from "@/lib/safe-action";
 import { db, eq } from "db";
 import { data, users } from "db/schema";
 import { revalidatePath } from "next/cache";
-import { del } from "@vercel/blob";
+import { del } from "@/lib/server/file-upload";
 import {
 	editAccountSettingsSchema,
 	editAcademicSettingsSchema,

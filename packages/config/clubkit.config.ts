@@ -220,5 +220,12 @@ const majors = [
 	"Other",
 ] as const;
 
+const staticUploads = {
+	bucketName: "acm-userdata",
+	bucketHost: "/api/upload/view",
+	bucketResumeBaseUploadUrl: `${c.clubName}-${c.universityName}/resume`,
+	bucketEventThumbnailBaseUrl,
+} as const;
+
 export default c;
-export { majors, bucketEventThumbnailBaseUrl, bucketBaseUrl };
+export { majors, staticUploads, bucketEventThumbnailBaseUrl, bucketBaseUrl };
