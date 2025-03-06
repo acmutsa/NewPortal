@@ -135,3 +135,4 @@ export default async function UserSettingsProfilePage() {
 		</div>
 	);
 }
+export const runtime = 'edge'

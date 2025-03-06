@@ -44,3 +44,4 @@ export default async function Page({ params: { id } }: IDParamProp) {
 		</div>
 	);
 }
+export const runtime = 'edge'
