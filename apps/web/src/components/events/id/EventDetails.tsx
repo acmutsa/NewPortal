@@ -75,13 +75,13 @@ export default async function EventDetails({
 
 	const startTime = formatInTimeZone(
 		start,
-		"CST",
+		"America/Chicago",
 		`${EVENT_TIME_FORMAT_STRING}`,
 	);
 
 	const startDateFormatted = formatInTimeZone(
 		start,
-		"CST",
+		"America/Chicago",
 		`${EVENT_DATE_FORMAT_STRING}`,
 	);
 	const rawEventDuration =
@@ -102,7 +102,7 @@ export default async function EventDetails({
 		? "Ready to check-in? Click here!"
 		: isEventPassed
 			? "Check-in is closed"
-			: `Check-in starts on ${formatInTimeZone(start, "CST", `${EVENT_TIME_FORMAT_STRING} @${EVENT_DATE_FORMAT_STRING}`)}`;
+			: `Check-in starts on ${formatInTimeZone(start, "America/Chicago", `${EVENT_TIME_FORMAT_STRING} @${EVENT_DATE_FORMAT_STRING}`)}`;
 
 	const eventCalendarLink = {
 		title: event.name,

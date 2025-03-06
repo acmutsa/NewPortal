@@ -87,7 +87,7 @@ export default async function UserDash({ clerkID }: { clerkID: string }) {
 		userEvents = userEventsParseResult.data;
 	}
 
-	const joinedDate = formatInTimeZone(user.joinDate, "CST", "MMMM dd, yyyy");
+	const joinedDate = formatInTimeZone(user.joinDate, "America/Chicago", "MMMM dd, yyyy");
 
 	const hasUserMetRequiredPoints =
 		currentSemesterPoints >= currentSemester.pointsRequired;
