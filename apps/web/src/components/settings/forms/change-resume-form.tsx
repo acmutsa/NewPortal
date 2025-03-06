@@ -20,8 +20,9 @@ import { toast } from "sonner";
 import { FileInput } from "@/components/shared/file-input";
 import { Button } from "@/components/ui/button";
 import c, { bucketBaseUrl } from "config";
-import { upload } from "@vercel/blob/client";
 import { formatBlobUrl } from "@/lib/utils";
+import { staticUploads } from "config";
+import { put } from "@/lib/client/file-upload";
 
 interface ChangeResumeFormProps {
 	resume?: string;
@@ -69,21 +70,15 @@ export function ChangeResumeForm({ resume }: ChangeResumeFormProps) {
 				}
 
 				try {
-					const uploadResult = await upload(
-						`${bucketBaseUrl}/resume/${data.resume.name}`,
+					const uploadedFileUrl = await put(
+						staticUploads.bucketResumeBaseUploadUrl,
 						data.resume,
 						{
-							access: "public",
-							handleUploadUrl: "/api/upload/resume",
+							presignHandlerUrl: "/api/upload/resume",
 						},
 					);
 
-					if (!uploadResult) {
-						toast.error("Failed to upload resume");
-						return;
-					}
-
-					execute({ resume: uploadResult.url, oldResume: resume });
+					execute({ resume: uploadedFileUrl, oldResume: resume });
 				} catch (e) {
 					toast.error("Failed to upload resume");
 					console.error(e);

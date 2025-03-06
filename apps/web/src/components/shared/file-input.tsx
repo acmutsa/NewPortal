@@ -58,6 +58,7 @@ export function FileInput({
 								{currentLink ? (
 									<a
 										href={currentLink}
+										target="_blank"
 										className={cn(
 											"ml-2 block min-w-max text-muted-foreground underline",
 											oldFileInvalidated &&
