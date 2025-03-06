@@ -35,7 +35,8 @@ export function createCalendarLink(
 }
 
 export function getClientTimeZone(vercelIPTimeZone?: string | null) {
-	return vercelIPTimeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+	// return vercelIPTimeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+	return "America/Chicago";
 }
 
 export function getUTCDate() {
