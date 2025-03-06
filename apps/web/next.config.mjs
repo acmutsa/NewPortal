@@ -8,8 +8,7 @@ jiti("./src/env");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	images: {
-		loader: "custom",
-		loaderFile: "./image-loader.ts",
+		// unoptimized:true,
 		remotePatterns: [
 			{
 				protocol: "https",
