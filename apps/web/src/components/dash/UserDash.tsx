@@ -7,8 +7,6 @@ import c from "config";
 import { RadialChartProgress } from "@/components/shared/circular-progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
-import { getClientTimeZone } from "@/lib/utils";
 import { headers } from "next/headers";
 import {
 	Card,
@@ -142,13 +140,10 @@ export default async function UserDash({
 								<GraduationCapIcon className="mr-2 h-4 w-4" />
 								{`${userData.major}, ${userData.graduationYear}`}
 							</p>
-							<p className="mt-2 flex items-center text-balance text-base text-muted-foreground">
+							<p className="text-balance mt-2 flex items-center text-base text-muted-foreground">
 								{`Member since ${joinedDate}`}
 							</p>
 							{/* come back and configure wrangler json */}
-							<p className="mt-2 flex items-center text-balance text-base text-muted-foreground">
-								{`User timezone: ${clientTimeZone}`}
-							</p>
 						</div>
 					</CardContent>
 				</Card>

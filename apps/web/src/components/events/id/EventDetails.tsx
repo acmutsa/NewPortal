@@ -2,11 +2,7 @@ import { getEventDetails } from "@/lib/queries/events";
 import PageError from "../../shared/PageError";
 import EventImage from "../shared/EventImage";
 import { headers } from "next/headers";
-import {
-	VERCEL_IP_TIMEZONE_HEADER_KEY,
-	TWENTY_FOUR_HOURS,
-	ONE_HOUR_IN_MILLISECONDS,
-} from "@/lib/constants";
+import { TWENTY_FOUR_HOURS, ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
 import c from "config";
 import {
 	getClientTimeZone,
@@ -55,6 +51,7 @@ const {
 import iCalIcon from "../../../../public/img/logos/ical-icon.svg";
 import Image from "next/image";
 import { ics } from "calendar-link";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export default async function EventDetails({
 	id,
@@ -63,8 +60,7 @@ export default async function EventDetails({
 	id: string;
 	isBroswerSafari: boolean;
 }) {
-	const headerTimeZone = headers().get(VERCEL_IP_TIMEZONE_HEADER_KEY);
-	const clientTimeZone = getClientTimeZone(headerTimeZone);
+	const clientTimeZone = getClientTimeZone(getRequestContext().cf.timezone);
 	const event = await getEventDetails(id);
 
 	if (!event) {

@@ -7,8 +7,8 @@ import { EVENT_FILTERS } from "@/lib/constants/events";
 import { unstable_noStore as noStore } from "next/cache";
 import PageError from "../shared/PageError";
 import { headers } from "next/headers";
-import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
 import { getClientTimeZone, getUTCDate } from "@/lib/utils";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export default async function EventsView({ params }: { params: SearchParams }) {
 	const { VIEW, CARD, SHOW_EVENTS, SHOW_UPCOMING_EVENTS, QUERY, CATEGORIES } =
@@ -73,11 +73,7 @@ export default async function EventsView({ params }: { params: SearchParams }) {
 		);
 	}
 
-	const clientHeaderTimezoneValue = headers().get(
-		VERCEL_IP_TIMEZONE_HEADER_KEY,
-	);
-
-	const clientTimeZone = getClientTimeZone(clientHeaderTimezoneValue);
+	const clientTimeZone = getClientTimeZone(getRequestContext().cf.timezone);
 
 	return (
 		<div className="flex w-full flex-1 overflow-x-hidden no-scrollbar">

@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
 import UserDash from "@/components/dash/UserDash";
 import { headers } from "next/headers";
 import { getClientTimeZone } from "@/lib/utils";
@@ -12,10 +11,13 @@ export default function Page() {
 	const { userId: clerkID } = auth();
 
 	if (!clerkID) return redirect("/sign-in");
-	const { env, cf, ctx } = getRequestContext();
-	const clientTimeZoneValue = cf.timezone
-	const clientTimeZone = getClientTimeZone(clientTimeZoneValue);
-	
+
+	const {
+		cf: { timezone },
+	} = getRequestContext();
+
+	const clientTimeZone = getClientTimeZone(timezone);
+
 	return (
 		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center overflow-x-hidden px-4 py-4 md:px-5 ">
 			<Suspense
