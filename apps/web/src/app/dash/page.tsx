@@ -6,14 +6,16 @@ import { headers } from "next/headers";
 import { getClientTimeZone } from "@/lib/utils";
 import { Suspense } from "react";
 import { LoaderCircle } from "lucide-react";
+import { getRequestContext } from "@cloudflare/next-on-pages";
+
 export default function Page() {
 	const { userId: clerkID } = auth();
 
 	if (!clerkID) return redirect("/sign-in");
-
-	const clientTimeZoneValue = headers().get(VERCEL_IP_TIMEZONE_HEADER_KEY);
+	const { env, cf, ctx } = getRequestContext();
+	const clientTimeZoneValue = cf.timezone
 	const clientTimeZone = getClientTimeZone(clientTimeZoneValue);
-
+	
 	return (
 		<main className="flex min-h-[calc(100vh-4rem)] w-screen items-center justify-center overflow-x-hidden px-4 py-4 md:px-5 ">
 			<Suspense
