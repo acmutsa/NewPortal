@@ -95,10 +95,6 @@ export default async function UserDash({
 		userEvents = userEventsParseResult.data;
 	}
 
-	const clientHeaderTimezoneValue = headers().get(
-		VERCEL_IP_TIMEZONE_HEADER_KEY,
-	);
-
 	const joinedDate = formatInTimeZone(
 		user.joinDate,
 		clientTimeZone,
@@ -149,6 +145,7 @@ export default async function UserDash({
 							<p className="mt-2 flex items-center text-balance text-base text-muted-foreground">
 								{`Member since ${joinedDate}`}
 							</p>
+							{/* come back and configure wrangler json */}
 							<p className="mt-2 flex items-center text-balance text-base text-muted-foreground">
 								{`User timezone: ${clientTimeZone}`}
 							</p>
