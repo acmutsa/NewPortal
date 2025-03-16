@@ -23,6 +23,7 @@ import c, { bucketBaseUrl } from "config";
 import { formatBlobUrl } from "@/lib/utils";
 import { staticUploads } from "config";
 import { put } from "@/lib/client/file-upload";
+import { useRouter } from "next/navigation";
 
 interface ChangeResumeFormProps {
 	resume?: string;
@@ -37,12 +38,13 @@ export function ChangeResumeForm({ resume }: ChangeResumeFormProps) {
 			resume: undefined,
 		},
 	});
-
+	const { refresh } = useRouter();
 	const { execute } = useAction(editResumeUrl, {
 		onSettled: () => setSubmitting(false),
 		onSuccess: () => {
 			toast.success("Account settings updated successfully");
 			form.reset({ resume: undefined });
+			refresh();
 		},
 		onError: (error) => {
 			toast.error("Failed to update name");

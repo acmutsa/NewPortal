@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 type EditCategoryProps = {
 	eventCategory: z.infer<typeof eventCategorySchema>;
@@ -43,7 +44,7 @@ export default function EditCategoryDialogue(
 			...inputProps,
 		},
 	});
-
+	const { refresh } = useRouter();
 	// this is required here in order to reset the dialog as router.refresh / revalidatePath will not properly make the change
 	useEffect(() => {
 		if (open) {
@@ -68,6 +69,7 @@ export default function EditCategoryDialogue(
 				// })
 				setOpen(false);
 				toast.success("Event category created successfully");
+				refresh();
 			},
 			onError: (e) => {
 				toast.dismiss();

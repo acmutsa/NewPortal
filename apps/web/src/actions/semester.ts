@@ -55,7 +55,7 @@ export const createNewSemester = executiveAction
 			console.log(e);
 			throw e;
 		}
-		revalidatePath("/admin/semesters");
+		// revalidatePath("/admin/semesters");
 		return {
 			success: true,
 		};
@@ -93,7 +93,7 @@ export const updateSemester = executiveAction
 			}
 			throw e;
 		}
-		revalidatePath("/admin/semesters");
+		// revalidatePath("/admin/semesters");
 		return {
 			success: true,
 		};
