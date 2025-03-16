@@ -9,7 +9,8 @@ jiti("./src/env");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	images: {
-		unoptimized: true,
+		// fix image optmization 
+		// unoptimized: true,
 		remotePatterns: [
 			{
 				protocol: "https",
