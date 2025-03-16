@@ -10,5 +10,5 @@ export const deleteEventAction = adminAction
 	.schema(deleteEventSchema)
 	.action(async ({ parsedInput: id }) => {
 		await db.delete(events).where(eq(events.id, id));
-		redirect("/admin/events");
+		// redirect("/admin/events");
 	});

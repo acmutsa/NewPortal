@@ -30,6 +30,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import c from "config";
 import { useState, useCallback } from "react";
 import { GenderType, EthnicityType } from "@/lib/types/shared";
+import { useRouter } from "next/navigation";
 
 interface AccountInfoProps {
 	firstName: string;
@@ -58,13 +59,14 @@ export function AccountSettingsForm({
 			birthday,
 		},
 	});
-
+	const { refresh } = useRouter();
 	const { execute } = useAction(editAccountSettings, {
 		onExecute: () => setSubmitting(true),
 		onSettled: () => setSubmitting(false),
 		onSuccess: ({ input }) => {
 			toast.success("Account settings updated successfully");
 			form.reset(input);
+			refresh();
 		},
 		onError: (error) => {
 			toast.error("Failed to update name");

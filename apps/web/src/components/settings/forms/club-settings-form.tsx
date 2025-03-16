@@ -21,7 +21,7 @@ import { useState, useCallback } from "react";
 import { PopoverSelect } from "@/components/shared/popover-select";
 import { ShirtSizeType, ShirtType } from "@/lib/types/shared";
 import c from "config";
-
+import { useRouter } from "next/navigation";
 interface OrganizationSettingsPageProps {
 	shirtType: ShirtType;
 	shirtSize: ShirtSizeType;
@@ -33,7 +33,7 @@ export function ClubSettingsForm({
 	shirtType,
 }: OrganizationSettingsPageProps) {
 	const [submitting, setSubmitting] = useState(false);
-
+	const { refresh } = useRouter();
 	const form = useForm<z.infer<typeof editClubSettingsSchema>>({
 		resolver: zodResolver(editClubSettingsSchema),
 		defaultValues: {
@@ -48,6 +48,7 @@ export function ClubSettingsForm({
 		onSuccess: () => {
 			toast.success("Organization settings updated");
 			form.reset(form.getValues());
+			refresh();
 		},
 		onError: (error) => {
 			toast.error("Failed to update organization settings");

@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/select";
 import c from "config";
 import z from "zod";
+import { useRouter } from "next/navigation";
 
 type Props = {
 	eventList: { id: string; name: string }[];
@@ -55,7 +56,7 @@ function AddCheckinDialogue({ eventList, ...props }: Props) {
 			universityIDs: props.default?.universityIDs || "",
 		},
 	});
-
+	const {refresh} = useRouter();
 	const {
 		execute: runAddCheckin,
 		status: actionStatus,
@@ -93,6 +94,7 @@ function AddCheckinDialogue({ eventList, ...props }: Props) {
 			}
 			toast.success("Checkins Successfully Added!");
 			resetAction();
+			refresh();
 		},
 		onError: async (error) => {
 			toast.dismiss();

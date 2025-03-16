@@ -35,7 +35,7 @@ export const createEventCategory = adminAction
 			}
 			throw e;
 		}
-		revalidatePath("/admin/categories");
+		// revalidatePath("/admin/categories");
 		return {
 			success: true,
 			message: "category_created",
@@ -61,7 +61,7 @@ export const updateEventCategory = adminAction
 			}
 			throw e;
 		}
-		revalidatePath("/admin/categories");
+		// revalidatePath("/admin/categories");
 		return {
 			success: true,
 			message: "category_updated",
@@ -74,7 +74,7 @@ export const deleteEventCategory = adminAction
 		await db
 			.delete(eventCategories)
 			.where(eq(eventCategories.id, categoryID));
-		revalidatePath("/admin/categories");
+		// revalidatePath("/admin/categories");
 		return {
 			success: true,
 			message: "category_deleted",

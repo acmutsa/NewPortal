@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CreateCategoryDialogue() {
 	const [open, setOpen] = useState(false);
@@ -39,7 +40,7 @@ export default function CreateCategoryDialogue() {
 			name: "",
 		},
 	});
-
+	const { refresh} = useRouter();
 	const { execute: runCreateEventCategory, status } = useAction(
 		createEventCategory,
 		{
@@ -53,6 +54,7 @@ export default function CreateCategoryDialogue() {
 				form.reset();
 				setOpen(false);
 				toast.success("Event category created successfully");
+				refresh();
 			},
 			onError: (e) => {
 				toast.dismiss();
