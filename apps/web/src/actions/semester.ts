@@ -113,7 +113,7 @@ export const toggleCurrentSemester = executiveAction
 			})
 			.where(eq(semesters.semesterID, semesterID));
 
-		revalidatePath("/admin/semesters");
+		// revalidatePath("/admin/semesters");
 
 		return {
 			success: true,
@@ -124,7 +124,7 @@ export const deleteSemester = executiveAction
 	.schema(z.number().int())
 	.action(async ({ parsedInput: semesterID }) => {
 		await db.delete(semesters).where(eq(semesters.semesterID, semesterID));
-		revalidatePath("/admin/semesters");
+		// revalidatePath("/admin/semesters");
 		return {
 			success: true,
 		};
