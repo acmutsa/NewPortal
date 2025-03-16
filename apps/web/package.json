@@ -8,9 +8,9 @@
     "start": "pnpm with-env next start",
     "lint": "next lint",
     "with-env": "dotenv -e ../../.env --",
-    "pages:build": "npx @cloudflare/next-on-pages",
-    "preview": "npm run pages:build && wrangler pages dev",
-    "deploy": "npm run pages:build && wrangler pages deploy"
+    "pages:build": "pnpm dlx @cloudflare/next-on-pages",
+    "preview": "pnpm run pages:build && wrangler pages dev",
+    "deploy": "pnpm run pages:build && wrangler pages deploy"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.758.0",
