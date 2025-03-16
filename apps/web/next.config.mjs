@@ -10,7 +10,7 @@ jiti("./src/env");
 const nextConfig = {
 	images: {
 		// fix image optmization 
-		// unoptimized: true,
+		unoptimized: true,
 		remotePatterns: [
 			{
 				protocol: "https",
