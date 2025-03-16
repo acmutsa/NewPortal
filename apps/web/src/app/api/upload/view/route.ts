@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function GET(request: Request) {
 	const { userId } = auth();
+
 	if (!userId) {
 		return new Response("You must be logged in to access this resource", {
 			status: 401,
@@ -22,6 +23,7 @@ export async function GET(request: Request) {
 	}
 
 	const decodedKey = decodeURIComponent(key);
+
 
 	// Presign the url and return redirect to it.
 	const presignedViewingUrl = await getPresignedViewingUrl(

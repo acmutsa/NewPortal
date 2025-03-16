@@ -7,7 +7,10 @@
     "build": "pnpm with-env next build",
     "start": "pnpm with-env next start",
     "lint": "next lint",
-    "with-env": "dotenv -e ../../.env --"
+    "with-env": "dotenv -e ../../.env --",
+    "pages:build": "npx @cloudflare/next-on-pages",
+    "preview": "npm run pages:build && wrangler pages dev",
+    "deploy": "npm run pages:build && wrangler pages deploy"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.758.0",
@@ -65,6 +68,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.10",
+    "@cloudflare/workers-types": "^4.20250313.0",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@types/node": "^20",
     "@types/react": "^18",

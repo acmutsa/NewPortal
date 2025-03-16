@@ -128,13 +128,13 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 					<SheetContent className="flex max-w-[40%] flex-col-reverse items-center justify-center gap-y-1">
 						{userId ? (
 							<>
-							{
-								registrationComplete && (
+								{registrationComplete && (
 									<Link href="/settings">
-										<Button variant="ghost">Settings</Button>
+										<Button variant="ghost">
+											Settings
+										</Button>
 									</Link>
-								)
-							}
+								)}
 								<Link
 									href={
 										registrationComplete
