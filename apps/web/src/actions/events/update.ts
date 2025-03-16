@@ -64,8 +64,8 @@ export const updateEvent = adminAction
 		});
 		// VACUUM is handled by Libsql according to: https://discord.com/channels/933071162680958986/1200296371484368956
 		// await db.run(sql`PRAGMA VACUUM`);
-		revalidatePath("/admin/events");
-		revalidatePath("/events");
+		// revalidatePath("/admin/events");
+		// revalidatePath("/events");
 
 		return res;
 	});
