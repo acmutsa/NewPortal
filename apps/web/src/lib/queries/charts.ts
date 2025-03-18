@@ -9,10 +9,10 @@ export async function getRegistrationsByMonth() {
 		})
 		.from(users)
 		.where(
-			sql`EXTRACT(YEAR FROM ${users.joinDate}) = EXTRACT(YEAR FROM NOW()) AND ${users.joinDate} < NOW()`,
+			sql`strftime('%Y', ${users.joinDate}) = strftime('%Y', datetime('now')) AND ${users.joinDate} < datetime('now')`,
 		)
-		.groupBy(sql`EXTRACT(MONTH FROM ${users.joinDate})`)
-		.orderBy(sql`EXTRACT(MONTH FROM ${users.joinDate})`);
+		.groupBy(sql`strftime('%m', ${users.joinDate})`)
+		.orderBy(sql`strftime('%m', ${users.joinDate})`);
 
 	// Create array of all months with count 0
 	const allMonths = Array.from({ length: 12 }, (_, i) => ({
@@ -32,19 +32,19 @@ export async function getRegistrationsByMonth() {
 export async function getCheckinsByMonth() {
 	const monthlyCheckins = await db
 		.select({
-			month: sql`EXTRACT(MONTH FROM ${checkins.time})`.mapWith(Number),
-			year: sql`EXTRACT(YEAR FROM ${checkins.time})`.mapWith(Number),
+			month: sql`strftime('%m', ${checkins.time})`.mapWith(Number),
+			year: sql`strftime('%Y', ${checkins.time})`.mapWith(Number),
 			count: count(),
 		})
 		.from(checkins)
 		.where(
-			sql`EXTRACT(YEAR FROM ${checkins.time}) = EXTRACT(YEAR FROM NOW()) AND ${checkins.time} < NOW()`,
+			sql`strftime('%Y', ${checkins.time}) = strftime('%Y', datetime('now')) AND ${checkins.time} < datetime('now')`,
 		)
 		.groupBy(
-			sql`EXTRACT(MONTH FROM ${checkins.time})`,
-			sql`EXTRACT(YEAR FROM ${checkins.time})`,
+			sql`strftime('%m', ${checkins.time})`,
+			sql`strftime('%Y', ${checkins.time})`,
 		)
-		.orderBy(sql`EXTRACT(MONTH FROM ${checkins.time})`);
+		.orderBy(sql`strftime('%m', ${checkins.time})`);
 
 	// Create array of all months with count 0
 	const allMonths = Array.from({ length: 12 }, (_, i) => ({
@@ -79,19 +79,23 @@ export async function getUserClassifications() {
 
 // Get gender distribution of members
 export async function getGenderDistribution() {
-	// Query the unnested gender array to count each gender
+	// Query using JSON functions to handle arrays
 	const result = await db
 		.select({
-			gender: sql`LOWER(unnest(${data.gender}))`.mapWith(String),
-			fill: sql`CONCAT('var(--color-',LOWER(REPLACE(unnest(${data.gender}), ' ', '-')),')')`.mapWith(
+			gender: sql`LOWER(json_each.value)`.mapWith(String),
+			fill: sql`CONCAT('var(--color-',LOWER(REPLACE(json_each.value, ' ', '-')),')')`.mapWith(
 				String,
 			),
 			count: count(),
 		})
 		.from(data)
+		.innerJoin(
+			sql`json_each(${data.gender})`,
+			sql`1=1`, // Join condition (always true)
+		)
 		.groupBy(
-			sql`LOWER(unnest(${data.gender}))`,
-			sql`LOWER(REPLACE(unnest(${data.gender}), ' ', '-'))`,
+			sql`LOWER(json_each.value)`,
+			sql`LOWER(REPLACE(json_each.value, ' ', '-'))`,
 		)
 		.orderBy(desc(count()));
 
@@ -102,16 +106,20 @@ export async function getGenderDistribution() {
 export async function getRaceDistribution() {
 	const result = await db
 		.select({
-			race: sql`LOWER(unnest(${data.ethnicity}))`.mapWith(String),
+			race: sql`LOWER(json_each.value)`.mapWith(String),
 			count: count(),
-			fill: sql`CONCAT('var(--color-',LOWER(REPLACE(unnest(${data.ethnicity}), ' ', '-')),')')`.mapWith(
+			fill: sql`CONCAT('var(--color-',LOWER(REPLACE(json_each.value, ' ', '-')),')')`.mapWith(
 				String,
 			),
 		})
 		.from(data)
+		.innerJoin(
+			sql`json_each(${data.ethnicity})`,
+			sql`1=1`, // Join condition (always true)
+		)
 		.groupBy(
-			sql`LOWER(unnest(${data.ethnicity}))`,
-			sql`LOWER(REPLACE(unnest(${data.ethnicity}), ' ', '-'))`,
+			sql`LOWER(json_each.value)`,
+			sql`LOWER(REPLACE(json_each.value, ' ', '-'))`,
 		)
 		.orderBy(desc(count()));
 
@@ -128,7 +136,7 @@ export async function getActiveMembers() {
 			activeMembers: count(sql`DISTINCT ${checkins.userID}`),
 		})
 		.from(checkins)
-		.where(sql`${checkins.time} >= NOW() - INTERVAL '30 days'`);
+		.where(sql`${checkins.time} >= datetime('now', '-30 days')`);
 
 	return result[0]?.activeMembers || 0;
 }
@@ -142,7 +150,7 @@ export async function getRetentionRate() {
 		})
 		.from(checkins)
 		.where(
-			sql`${checkins.time} >= NOW() - INTERVAL '60 days' AND ${checkins.time} < NOW() - INTERVAL '30 days'`,
+			sql`${checkins.time} >= datetime('now', '-60 days') AND ${checkins.time} < datetime('now', '-30 days')`,
 		)
 		.groupBy(checkins.userID);
 
@@ -152,7 +160,7 @@ export async function getRetentionRate() {
 			userID: checkins.userID,
 		})
 		.from(checkins)
-		.where(sql`${checkins.time} >= NOW() - INTERVAL '30 days'`)
+		.where(sql`${checkins.time} >= datetime('now', '-30 days')`)
 		.groupBy(checkins.userID);
 
 	const lastMonthUserIds = lastMonthActiveUsers.map((u) => u.userID);
@@ -178,7 +186,7 @@ export async function getGrowthRate() {
 		})
 		.from(users)
 		.where(
-			sql`${users.joinDate} >= DATE_TRUNC('month', NOW()) AND ${users.joinDate} < NOW()`,
+			sql`${users.joinDate} >= date(datetime('now', 'start of month')) AND ${users.joinDate} < datetime('now')`,
 		);
 
 	// Previous month signups
@@ -188,7 +196,7 @@ export async function getGrowthRate() {
 		})
 		.from(users)
 		.where(
-			sql`${users.joinDate} >= DATE_TRUNC('month', NOW() - INTERVAL '1 month') AND ${users.joinDate} < DATE_TRUNC('month', NOW())`,
+			sql`${users.joinDate} >= date(datetime('now', '-1 month', 'start of month')) AND ${users.joinDate} < date(datetime('now', 'start of month'))`,
 		);
 
 	const currentMonthCount = currentMonthResult[0]?.count || 0;
@@ -206,16 +214,16 @@ export async function getGrowthRate() {
 export async function getActivityByDayOfWeek() {
 	const result = await db
 		.select({
-			day: sql`TO_CHAR(${checkins.time}, 'Dy')`.mapWith(String),
+			day: sql`strftime('%a', ${checkins.time})`.mapWith(String),
 			count: count(),
 		})
 		.from(checkins)
-		.where(sql`${checkins.time} >= NOW() - INTERVAL '90 days'`)
+		.where(sql`${checkins.time} >= datetime('now', '-90 days')`)
 		.groupBy(
-			sql`TO_CHAR(${checkins.time}, 'Dy')`,
-			sql`TO_CHAR(${checkins.time}, 'ID')`,
+			sql`strftime('%a', ${checkins.time})`,
+			sql`strftime('%w', ${checkins.time})`,
 		)
-		.orderBy(sql`TO_CHAR(${checkins.time}, 'ID')`); // Order by day number (Mon=1, Sun=7)
+		.orderBy(sql`strftime('%w', ${checkins.time})`); // Order by day number (Sun=0, Sat=6)
 
 	return result;
 }
@@ -224,16 +232,16 @@ export async function getActivityByDayOfWeek() {
 export async function getMostActiveDay() {
 	const result = await db
 		.select({
-			day: sql`TO_CHAR(${checkins.time}, 'Day')`.mapWith(String),
+			day: sql`strftime('%A', ${checkins.time})`.mapWith(String),
 			count: count(),
 		})
 		.from(checkins)
-		.where(sql`${checkins.time} >= NOW() - INTERVAL '90 days'`)
-		.groupBy(sql`TO_CHAR(${checkins.time}, 'Day')`)
+		.where(sql`${checkins.time} >= datetime('now', '-90 days')`)
+		.groupBy(sql`strftime('%A', ${checkins.time})`)
 		.orderBy(desc(count()))
 		.limit(1);
 
-	return result[0]?.day.trim() || "Wednesday";
+	return result[0]?.day || "Wednesday";
 }
 
 // Get activity by time of day
@@ -257,7 +265,7 @@ export async function getActivityByTimeOfDay() {
 			})
 			.from(checkins)
 			.where(
-				sql`${checkins.time} >= NOW() - INTERVAL '90 days' AND EXTRACT(HOUR FROM ${checkins.time}) >= ${slot.start} AND EXTRACT(HOUR FROM ${checkins.time}) < ${slot.end}`,
+				sql`${checkins.time} >= datetime('now', '-90 days') AND cast(strftime('%H', ${checkins.time}) as integer) >= ${slot.start} AND cast(strftime('%H', ${checkins.time}) as integer) < ${slot.end}`,
 			);
 
 		results.push({
@@ -283,9 +291,9 @@ export async function getMembershipStatus() {
 	const result = await db
 		.select({
 			status: sql`CASE 
-                WHEN ${users.joinDate} >= NOW() - INTERVAL '7 days' THEN 'Trial'
-                WHEN ${users.joinDate} >= NOW() - INTERVAL '90 days' THEN 'Active'
-                WHEN ${users.joinDate} >= NOW() - INTERVAL '180 days' THEN 'Expired'
+                WHEN ${users.joinDate} >= datetime('now', '-7 days') THEN 'Trial'
+                WHEN ${users.joinDate} >= datetime('now', '-90 days') THEN 'Active'
+                WHEN ${users.joinDate} >= datetime('now', '-180 days') THEN 'Expired'
                 ELSE 'Inactive'
               END`.mapWith(String),
 			count: count(),
@@ -293,9 +301,9 @@ export async function getMembershipStatus() {
 		.from(users)
 		.groupBy(
 			sql`CASE 
-            WHEN ${users.joinDate} >= NOW() - INTERVAL '7 days' THEN 'Trial'
-            WHEN ${users.joinDate} >= NOW() - INTERVAL '90 days' THEN 'Active'
-            WHEN ${users.joinDate} >= NOW() - INTERVAL '180 days' THEN 'Expired'
+            WHEN ${users.joinDate} >= datetime('now', '-7 days') THEN 'Trial'
+            WHEN ${users.joinDate} >= datetime('now', '-90 days') THEN 'Active'
+            WHEN ${users.joinDate} >= datetime('now', '-180 days') THEN 'Expired'
             ELSE 'Inactive'
           END`,
 		)
