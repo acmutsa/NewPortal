@@ -45,15 +45,17 @@ export const createNewSemester = executiveAction
 		} catch (e) {
 			/// @ts-expect-error could not find the type of the error and the status code is the next most accurate way of telling an issue
 			if (e.code === UNIQUE_KEY_CONSTRAINT_VIOLATION_CODE) {
+				console.log(e);
 				return {
 					success: false,
 					code: SEMESTER_NAME_EXISTS,
 					semesterName: parsedInput.name,
 				};
 			}
+			console.log(e);
 			throw e;
 		}
-		revalidatePath("/admin/semesters");
+		// revalidatePath("/admin/semesters");
 		return {
 			success: true,
 		};
@@ -91,7 +93,7 @@ export const updateSemester = executiveAction
 			}
 			throw e;
 		}
-		revalidatePath("/admin/semesters");
+		// revalidatePath("/admin/semesters");
 		return {
 			success: true,
 		};
@@ -111,7 +113,7 @@ export const toggleCurrentSemester = executiveAction
 			})
 			.where(eq(semesters.semesterID, semesterID));
 
-		revalidatePath("/admin/semesters");
+		// revalidatePath("/admin/semesters");
 
 		return {
 			success: true,
@@ -122,7 +124,7 @@ export const deleteSemester = executiveAction
 	.schema(z.number().int())
 	.action(async ({ parsedInput: semesterID }) => {
 		await db.delete(semesters).where(eq(semesters.semesterID, semesterID));
-		revalidatePath("/admin/semesters");
+		// revalidatePath("/admin/semesters");
 		return {
 			success: true,
 		};

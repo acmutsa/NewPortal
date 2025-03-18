@@ -11,6 +11,7 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { deleteEventCategory } from "@/actions/categories";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 export default function DeleteCategoryDialogue({
 	name,
 	categoryID,
@@ -18,12 +19,14 @@ export default function DeleteCategoryDialogue({
 	name: string;
 	categoryID: string;
 }) {
+	const { refresh } = useRouter();
 	const { execute: runDeleteEventCategory, status } = useAction(
 		deleteEventCategory,
 		{
 			onSuccess: () => {
 				toast.dismiss();
 				toast.success("Event category deleted successfully");
+				refresh();
 			},
 			onError: () => {
 				toast.dismiss();

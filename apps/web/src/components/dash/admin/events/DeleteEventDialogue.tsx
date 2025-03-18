@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useAction } from "next-safe-action/hooks";
 import { deleteEventAction } from "@/actions/events/delete";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 export default function DeleteEventDialog({
 	id,
 	name,
@@ -19,6 +20,8 @@ export default function DeleteEventDialog({
 	name: string;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+
+	const {refresh} = useRouter();
 	const { status: deleteEventStatus, execute: runDeleteEvent } = useAction(
 		deleteEventAction,
 		{
@@ -26,6 +29,8 @@ export default function DeleteEventDialog({
 				setOpen(false);
 				toast.dismiss();
 				toast.success(`"${name}"Event deleted.`);
+				refresh();
+				console.log("refreshed")
 			},
 			onError: () => {
 				setOpen(false);

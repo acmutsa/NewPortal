@@ -36,6 +36,7 @@ import {
 } from "@/lib/constants/semesters";
 import { DatePickerWithRange } from "@/components/ui/date-time-picker/date-picker-with-range";
 import { addDays } from "date-fns";
+import { useRouter } from "next/navigation";
 
 export default function CreateSemesterDialogue() {
 	const [open, setOpen] = useState(false);
@@ -49,7 +50,7 @@ export default function CreateSemesterDialogue() {
 			pointsRequired: 0,
 		},
 	});
-
+	const { refresh } = useRouter();
 	const { execute: runCreateSemester, status } = useAction(
 		createNewSemester,
 		{
@@ -67,8 +68,18 @@ export default function CreateSemesterDialogue() {
 				form.reset();
 				setOpen(false);
 				toast.success("Semester created successfully");
+				refresh();
 			},
-			onError: () => {
+			onError: (err) => {
+				if (
+					err.error.validationErrors?._errors?.[0] ===
+					"Unauthorized (Not a super admin)"
+				) {
+					return toast.error(
+						"You need super admin permissions to create semesters",
+					);
+				}
+				console.log("error: ", err);
 				toast.dismiss();
 				toast.error("Failed to create semester");
 			},
@@ -76,8 +87,8 @@ export default function CreateSemesterDialogue() {
 	);
 
 	useEffect(() => {
-		console.log(form.formState.errors);
-		console.log(form.getValues());
+		console.log("create semester form errors", form.formState.errors);
+		console.log("create semester form values", form.getValues());
 	}, [form.formState.errors]);
 
 	const isLoading = status === "executing";

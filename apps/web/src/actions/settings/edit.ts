@@ -4,7 +4,7 @@ import { userAction } from "@/lib/safe-action";
 import { db, eq } from "db";
 import { data, users } from "db/schema";
 import { revalidatePath } from "next/cache";
-import { del } from "@vercel/blob";
+import { del } from "@/lib/server/file-upload";
 import {
 	editAccountSettingsSchema,
 	editAcademicSettingsSchema,
@@ -39,7 +39,7 @@ export const editAccountSettings = userAction
 				};
 			}
 
-			revalidatePath("/settings");
+			// revalidatePath("/settings");
 			return { success: true };
 		},
 	);
@@ -74,7 +74,7 @@ export const editAcademicSettings = userAction
 				};
 			}
 
-			revalidatePath("/settings");
+			// revalidatePath("/settings");
 			return { success: true };
 		},
 	);
@@ -90,7 +90,7 @@ export const editResumeUrl = userAction
 
 			if (oldResume) await del(oldResume);
 
-			revalidatePath("/settings");
+			// revalidatePath("/settings");
 			return { success: true };
 		} catch (error) {
 			// Failed to update user data to new resume.  Delete the new resume from the blob and make the user try again.
@@ -120,7 +120,7 @@ export const editClubSettings = userAction
 				};
 			}
 
-			revalidatePath("/settings");
+			// revalidatePath("/settings");
 			return { success: true };
 		},
 	);

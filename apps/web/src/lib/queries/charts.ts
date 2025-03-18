@@ -4,7 +4,7 @@ import { data, users, checkins } from "db/schema";
 export async function getRegistrationsByMonth() {
 	const monthlyRegistrations = await db
 		.select({
-			month: sql`EXTRACT(MONTH FROM ${users.joinDate})`.mapWith(Number),
+			month: sql`strftime('%m', ${users.joinDate})`.mapWith(Number),
 			count: count(),
 		})
 		.from(users)

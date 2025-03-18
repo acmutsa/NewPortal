@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/select";
 import c from "config";
 import z from "zod";
+import { useRouter } from "next/navigation";
 
 type Props = {
 	eventList: { id: string; name: string }[];
@@ -49,11 +50,13 @@ function AddCheckinDialogue({ eventList, ...props }: Props) {
 	const form = useForm<AdminCheckinProps>({
 		resolver: zodResolver(adminCheckinSchema),
 		defaultValues: {
-			eventID: props.default?.eventID || eventList[0].id,
+			eventID:
+				props.default?.eventID ||
+				(eventList.length > 0 ? eventList[0].id : ""),
 			universityIDs: props.default?.universityIDs || "",
 		},
 	});
-
+	const {refresh} = useRouter();
 	const {
 		execute: runAddCheckin,
 		status: actionStatus,
@@ -91,6 +94,7 @@ function AddCheckinDialogue({ eventList, ...props }: Props) {
 			}
 			toast.success("Checkins Successfully Added!");
 			resetAction();
+			refresh();
 		},
 		onError: async (error) => {
 			toast.dismiss();
@@ -181,10 +185,13 @@ function AddCheckinDialogue({ eventList, ...props }: Props) {
 									disabled={
 										actionStatus == "executing" ||
 										(actionStatus == "hasSucceeded" &&
-											actionResult.data?.success)
+											actionResult.data?.success) ||
+										eventList.length < 1
 									}
 								>
-									Submit
+									{eventList.length < 1
+										? "No Events"
+										: "Submit"}
 								</Button>
 							</DialogFooter>
 						</form>

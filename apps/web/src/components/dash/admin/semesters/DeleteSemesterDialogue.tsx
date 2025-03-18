@@ -11,6 +11,7 @@ import {
 	AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function DeleteSemesterDialogue({
 	semesterID,
@@ -19,12 +20,22 @@ export default function DeleteSemesterDialogue({
 	semesterID: number;
 	name: string;
 }) {
+	const { refresh } = useRouter();
 	const { status, execute: runDeleteSemester } = useAction(deleteSemester, {
 		onSuccess: () => {
 			toast.dismiss();
 			toast.success("Semester deleted successfully");
+			refresh();
 		},
-		onError: () => {
+		onError: (err) => {
+			if (
+				err.error.validationErrors?._errors?.[0] ===
+				"Unauthorized (Not a super admin)"
+			) {
+				return toast.error(
+					"You need super admin permissions to update roles",
+				);
+			}
 			toast.dismiss();
 			toast.error("Failed to delete semester");
 		},

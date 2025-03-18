@@ -38,11 +38,11 @@ import { z } from "zod";
 import { insertEventSchemaFormified } from "db/zod";
 import { FormGroupWrapper } from "@/components/shared/form-group-wrapper";
 import { DateTimePicker } from "@/components/ui/date-time-picker/date-time-picker";
-import c from "config";
+import c, { staticUploads } from "config";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
-import { upload } from "@vercel/blob/client";
+import { put } from "@/lib/client/file-upload";
 import { createEvent } from "@/actions/events/createNewEvent";
 import { ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
 import { bucketEventThumbnailBaseUrl } from "config";
@@ -104,16 +104,7 @@ export default function NewEventForm({
 			setThumbnail(null);
 			return false;
 		}
-		if (
-			![
-				"image/jpeg",
-				"image/png",
-				"image/gif",
-				"image/webp",
-				"image/svg+xml",
-				"image/bmp",
-			].includes(file.type)
-		) {
+		if (!c.thumbnails.acceptedFiles.includes(file.type as any)) {
 			form.setError("thumbnailUrl", {
 				message:
 					"Invalid image format. Only jpeg, png, gif, webp, svg+xml, bmp.",
@@ -188,17 +179,16 @@ export default function NewEventForm({
 			: values.end;
 		// Come back and make cleaner
 		if (thumbnail) {
-			const thumbnailBlob = await upload(
-				`${bucketEventThumbnailBaseUrl}/${thumbnail.name}`,
+			const thumbnailBlob = await put(
+				staticUploads.bucketEventThumbnailBaseUrl,
 				thumbnail,
 				{
-					access: "public",
-					handleUploadUrl: "/api/upload/thumbnail",
+					presignHandlerUrl: "/api/upload/thumbnail",
 				},
 			);
 			runCreateEvent({
 				...values,
-				thumbnailUrl: thumbnailBlob.url,
+				thumbnailUrl: thumbnailBlob,
 				checkinStart,
 				checkinEnd,
 				categories: values.categories.map(
@@ -279,7 +269,9 @@ export default function NewEventForm({
 											<Input
 												{...fieldProps}
 												type="file"
-												accept="image"
+												accept={`${c.thumbnails.acceptedFiles.join(
+													",",
+												)}`}
 												onChange={(event) => {
 													const success =
 														validateAndSetThumbnail(

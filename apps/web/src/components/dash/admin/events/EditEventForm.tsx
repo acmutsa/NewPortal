@@ -46,7 +46,7 @@ import c from "config";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
-import { upload } from "@vercel/blob/client";
+import { put } from "@/lib/client/file-upload";
 import { updateEvent } from "@/actions/events/update";
 import { iEvent, uEvent } from "@/lib/types/events";
 import { bucketEventThumbnailBaseUrl } from "config";
@@ -58,6 +58,7 @@ import {
 	SelectItem,
 } from "@/components/ui/select";
 import { Semester } from "db/types";
+import { staticUploads } from "config";
 
 type EditEventFormProps = {
 	eventID: string;
@@ -197,12 +198,11 @@ export default function EditEventForm({
 		);
 
 		if (thumbnail) {
-			const thumbnailBlob = await upload(
-				`${bucketEventThumbnailBaseUrl}/${thumbnail.name}`,
+			const thumbnailUrl = await put(
+				staticUploads.bucketEventThumbnailBaseUrl,
 				thumbnail,
 				{
-					access: "public",
-					handleUploadUrl: "/api/upload/thumbnail",
+					presignHandlerUrl: "/api/upload/thumbnail",
 				},
 			);
 			runUpdateEvent({
@@ -210,7 +210,7 @@ export default function EditEventForm({
 				eventID,
 				categories,
 				oldCategories,
-				thumbnailUrl: thumbnailBlob.url,
+				thumbnailUrl,
 				checkinStart,
 				checkinEnd,
 			});
@@ -292,7 +292,9 @@ export default function EditEventForm({
 											<Input
 												{...fieldProps}
 												type="file"
-												accept="image"
+												accept={`${c.thumbnails.acceptedFiles.join(
+													",",
+												)}`}
 												onChange={(event) => {
 													const success =
 														validateAndSetThumbnail(

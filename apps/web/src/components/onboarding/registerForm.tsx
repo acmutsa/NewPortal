@@ -1,5 +1,5 @@
 "use client";
-import c, { majors } from "config";
+import c, { majors, staticUploads } from "config";
 import { Button } from "@/components/ui/button";
 import { insertUserWithDataSchemaFormified } from "db/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -70,7 +70,7 @@ import { useAction } from "next-safe-action/hooks";
 import { createRegistration } from "@/actions/register/new";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { upload } from "@vercel/blob/client";
+import { put } from "@/lib/client/file-upload";
 import FormDisplayName from "../shared/FormDisplayName";
 import { bucketBaseUrl } from "config";
 import { ClassificationType, MajorType } from "@/lib/types/shared";
@@ -170,15 +170,15 @@ export default function RegisterForm({ defaultEmail }: RegisterFormProps) {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		toast.loading("Creating Registration...");
 		if (resume) {
-			const resumeBlob = await upload(
-				`${bucketBaseUrl}/resume/${resume.name}`,
+			const resumeBlob = await put(
+				staticUploads.bucketResumeBaseUploadUrl,
 				resume,
 				{
-					access: "public",
-					handleUploadUrl: "/api/upload/resume",
+					presignHandlerUrl: "/api/upload/resume",
 				},
 			);
-			values.data.resume = resumeBlob.url;
+			console.log("resumeBlob: ", resumeBlob);
+			values.data.resume = resumeBlob;
 		}
 		runCreateRegistration(values);
 	}
