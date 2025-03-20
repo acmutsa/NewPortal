@@ -9,6 +9,7 @@ import EventStatsSheet from "@/components/dash/admin/events/EventStatsSheet";
 import { Button } from "@/components/ui/button";
 import AdminCheckinLog from "@/components/dash/shared/AdminCheckinLog";
 import { unstable_noStore as noStore } from "next/cache";
+import { TableSkeleton } from "@/components/ui/skeleton-loaders";
 
 async function Page() {
 	noStore();
@@ -20,9 +21,9 @@ async function Page() {
 					Events
 				</h1>
 			</div>
-			<div className="mx-5 flex items-center justify-between rounded-lg border p-2">
+			<div className="mx-5 flex items-center justify-between">
 				<Suspense
-					fallback={<div>Grabbing event stats. One sec...</div>}
+					fallback={<div className="w-full">Loading stats...</div>}
 				>
 					<EventStatsSheet />
 				</Suspense>

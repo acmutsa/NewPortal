@@ -1,4 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+	Table,
+	TableHeader,
+	TableBody,
+	TableRow,
+	TableHead,
+	TableCell,
+} from "@/components/ui/table";
 
 // Basic content skeleton for general use
 export function ContentSkeleton() {
@@ -29,31 +37,26 @@ export function CardSkeleton() {
 // Table skeleton for data tables
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
 	return (
-		<div className="w-full space-y-4">
-			<div className="flex w-full items-center space-x-4">
-				{Array(4)
-					.fill(0)
-					.map((_, i) => (
-						<Skeleton key={i} className="h-8 flex-1" />
-					))}
-			</div>
-			<div className="space-y-2">
+		<Table>
+			<TableHeader>
+				<TableRow>
+					<TableHead colSpan={4}>
+						<Skeleton className="h-8 w-full" />
+					</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
 				{Array(rows)
 					.fill(0)
 					.map((_, i) => (
-						<div
-							key={i}
-							className="flex w-full items-center space-x-4"
-						>
-							{Array(4)
-								.fill(0)
-								.map((_, j) => (
-									<Skeleton key={j} className="h-6 flex-1" />
-								))}
-						</div>
+						<TableRow key={i}>
+							<TableCell colSpan={4}>
+								<Skeleton className="h-12 w-full" />
+							</TableCell>
+						</TableRow>
 					))}
-			</div>
-		</div>
+			</TableBody>
+		</Table>
 	);
 }
 
