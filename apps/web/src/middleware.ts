@@ -1,8 +1,4 @@
-import {
-	clerkMiddleware,
-	createRouteMatcher,
-	clerkClient,
-} from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { getAdminUser } from "./lib/queries/users";
 import { NextResponse } from "next/server";
 import { redirect } from "next/navigation";
@@ -22,7 +18,7 @@ export default clerkMiddleware(async (auth, req) => {
 	const { protect, userId } = auth();
 
 	if (isProtectedRoute(req)) {
-		protect();
+		await auth.protect();
 	}
 	// protect admin api routes
 	if (isAdminAPIRoute(req)) {

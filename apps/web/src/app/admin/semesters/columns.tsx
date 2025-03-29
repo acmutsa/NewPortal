@@ -35,6 +35,7 @@ import { formatInTimeZone } from "date-fns-tz";
 import { getClientTimeZone } from "@/lib/utils";
 import DeleteSemesterDialogue from "@/components/dash/admin/semesters/DeleteSemesterDialogue";
 import UpdateSemesterDialogue from "@/components/dash/admin/semesters/UpdateSemesterDialogue";
+import { useRouter } from "next/navigation";
 
 export const semesterColumns: ColumnDef<Semester>[] = [
 	{
@@ -88,6 +89,7 @@ export const semesterColumns: ColumnDef<Semester>[] = [
 		},
 		cell: ({ row }) => {
 			const { isCurrent, semesterID } = row.original;
+			const { refresh } = useRouter();
 			const {
 				execute: runToggleSemester,
 				result,
@@ -108,6 +110,9 @@ export const semesterColumns: ColumnDef<Semester>[] = [
 					toast.success("Semester toggled.", {
 						duration: 1500,
 					});
+				},
+				onSuccess: () => {
+					refresh();
 				},
 			});
 			return (

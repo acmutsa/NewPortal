@@ -36,6 +36,7 @@ import {
 } from "@/lib/constants/semesters";
 import { DatePickerWithRange } from "@/components/ui/date-time-picker/date-picker-with-range";
 import { addDays } from "date-fns";
+import { useRouter } from "next/navigation";
 
 export default function CreateSemesterDialogue() {
 	const [open, setOpen] = useState(false);
@@ -49,7 +50,7 @@ export default function CreateSemesterDialogue() {
 			pointsRequired: 0,
 		},
 	});
-
+	const { refresh } = useRouter();
 	const { execute: runCreateSemester, status } = useAction(
 		createNewSemester,
 		{
@@ -67,6 +68,7 @@ export default function CreateSemesterDialogue() {
 				form.reset();
 				setOpen(false);
 				toast.success("Semester created successfully");
+				refresh();
 			},
 			onError: (err) => {
 				if (

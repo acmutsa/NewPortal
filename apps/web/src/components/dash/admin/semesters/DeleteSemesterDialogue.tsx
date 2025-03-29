@@ -11,6 +11,7 @@ import {
 	AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function DeleteSemesterDialogue({
 	semesterID,
@@ -19,10 +20,12 @@ export default function DeleteSemesterDialogue({
 	semesterID: number;
 	name: string;
 }) {
+	const { refresh } = useRouter();
 	const { status, execute: runDeleteSemester } = useAction(deleteSemester, {
 		onSuccess: () => {
 			toast.dismiss();
 			toast.success("Semester deleted successfully");
+			refresh();
 		},
 		onError: (err) => {
 			if (

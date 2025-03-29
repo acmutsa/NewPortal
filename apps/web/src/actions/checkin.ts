@@ -43,7 +43,7 @@ export const adminCheckin = adminAction
 			const idList = universityIDSplitter.parse(universityIDs);
 			const failedIDs = await checkInUserList(eventID, idList, adminID);
 
-			revalidatePath(currentPath);
+			// revalidatePath(currentPath);
 			if (failedIDs.length == 0) {
 				return {
 					success: true,

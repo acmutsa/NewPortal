@@ -7,8 +7,6 @@ import c from "config";
 import { RadialChartProgress } from "@/components/shared/circular-progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
-import { getClientTimeZone } from "@/lib/utils";
 import { headers } from "next/headers";
 import {
 	Card,
@@ -95,10 +93,6 @@ export default async function UserDash({
 		userEvents = userEventsParseResult.data;
 	}
 
-	const clientHeaderTimezoneValue = headers().get(
-		VERCEL_IP_TIMEZONE_HEADER_KEY,
-	);
-
 	const joinedDate = formatInTimeZone(
 		user.joinDate,
 		clientTimeZone,
@@ -149,6 +143,7 @@ export default async function UserDash({
 							<p className="text-balance mt-2 flex items-center text-base text-muted-foreground">
 								{`Member since ${joinedDate}`}
 							</p>
+							{/* come back and configure wrangler json */}
 						</div>
 					</CardContent>
 				</Card>

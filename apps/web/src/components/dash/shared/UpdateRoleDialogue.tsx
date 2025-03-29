@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { MemberType } from "@/lib/types/shared";
+import { useRouter } from "next/navigation";
 
 export default function UpdateRoleDialogue({
 	userID,
@@ -31,6 +32,7 @@ export default function UpdateRoleDialogue({
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
 	const [role, setRole] = useState(currentRole);
+	const { refresh } = useRouter();
 	const { execute: runUpdateMemberRole, status } = useAction(
 		updateMemberRole,
 		{
@@ -38,6 +40,7 @@ export default function UpdateRoleDialogue({
 				setOpen(false);
 				toast.dismiss();
 				toast.success("Role updated");
+				refresh();
 			},
 			onError: (err) => {
 				toast.dismiss();

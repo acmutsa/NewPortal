@@ -3,12 +3,12 @@ import c from "config";
 import { NextRequest, NextResponse } from "next/server";
 import { ExportNames } from "@/lib/types/shared";
 import { getClientTimeZone } from "@/lib/utils";
-import { VERCEL_IP_TIMEZONE_HEADER_KEY } from "@/lib/constants";
 import { formatInTimeZone } from "date-fns-tz";
 import { getEventsWithCheckins } from "@/lib/queries/events";
 import { getCheckinLog } from "@/lib/queries/checkins";
 import { getAllCategories } from "@/lib/queries/categories";
 import { getAllSemesters } from "@/lib/queries/semesters";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 const basicDateFormatterString = "eeee, MMMM dd yyyy HH:mm a";
 
@@ -44,6 +44,7 @@ function jsonToCSV(json: any[]): string {
 async function hanldExportRequest(
 	exportName: ExportNames,
 	tz: string,
+	request: NextRequest,
 ): Promise<any[]> {
 	switch (exportName as ExportNames) {
 		case "members":
@@ -112,8 +113,7 @@ async function hanldExportRequest(
 			});
 		case "categories":
 			return getAllCategories();
-		case "checkins":
-			// need to come back and flatten this one
+		case "all checkins":
 			return (await getCheckinLog()).map((checkin) => {
 				return {
 					event_name: checkin.event.name,
@@ -126,7 +126,27 @@ async function hanldExportRequest(
 						tz,
 						basicDateFormatterString,
 					),
-					rating: checkin.rating ?? "No rating",
+					rating: checkin.rating ?? "unrated",
+					feedback: checkin.feedback || "",
+				};
+			});
+		case "event checkins":
+			const eventID = request.nextUrl.searchParams.get("event_id");
+			if (!eventID) {
+				return [];
+			}
+			return (await getCheckinLog(eventID)).map((checkin) => {
+				return {
+					user:
+						checkin.author.firstName +
+						" " +
+						checkin.author.lastName,
+					checkin_time: formatInTimeZone(
+						checkin.time,
+						tz,
+						basicDateFormatterString,
+					),
+					rating: checkin.rating ?? "unrated",
 					feedback: checkin.feedback || "",
 				};
 			});
@@ -145,12 +165,14 @@ export async function GET(request: NextRequest) {
 			{ status: 400 },
 		);
 	}
-	const clientTimeZone = getClientTimeZone(
-		request.headers.get(VERCEL_IP_TIMEZONE_HEADER_KEY),
-	);
+	const {
+		cf: { timezone },
+	} = getRequestContext();
+	const clientTimeZone = getClientTimeZone(timezone);
 	const flattendedResults = await hanldExportRequest(
 		exportName as ExportNames,
 		clientTimeZone,
+		request,
 	);
 	const csv = jsonToCSV(flattendedResults);
 

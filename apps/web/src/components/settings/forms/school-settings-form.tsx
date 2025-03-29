@@ -24,6 +24,7 @@ import { PopoverCommand } from "@/components/shared/popover-command";
 import { PopoverSelect } from "@/components/shared/popover-select";
 import { MajorType, ClassificationType } from "@/lib/types/shared";
 import c from "config";
+import { useRouter } from "next/navigation";
 
 interface SchoolSettingsFormProps {
 	major: MajorType;
@@ -54,7 +55,7 @@ export function SchoolSettingsForm({
 	major,
 }: SchoolSettingsFormProps) {
 	const [submitting, setSubmitting] = useState(false);
-
+	const { refresh } = useRouter();
 	const form = useForm<z.infer<typeof editAcademicSettingsSchema>>({
 		resolver: zodResolver(editAcademicSettingsSchema),
 		defaultValues: {
@@ -71,6 +72,7 @@ export function SchoolSettingsForm({
 		onSuccess: () => {
 			toast.success("Academic information updated successfully");
 			form.reset(form.getValues());
+			refresh();
 		},
 		onError: (error) => {
 			toast.error("Failed to update academic information");

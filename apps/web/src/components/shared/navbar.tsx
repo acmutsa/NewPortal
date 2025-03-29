@@ -24,7 +24,7 @@ type NavbarProps = {
 };
 
 export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
-	const clerkAuth = auth();
+	const clerkAuth = await auth();
 	const clerkUser = await currentUser();
 	const userId = clerkAuth.userId;
 	const user = userId
@@ -128,6 +128,13 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 					<SheetContent className="flex max-w-[40%] flex-col-reverse items-center justify-center gap-y-1">
 						{userId ? (
 							<>
+								{registrationComplete && (
+									<Link href="/settings">
+										<Button variant="ghost">
+											Settings
+										</Button>
+									</Link>
+								)}
 								<Link
 									href={
 										registrationComplete

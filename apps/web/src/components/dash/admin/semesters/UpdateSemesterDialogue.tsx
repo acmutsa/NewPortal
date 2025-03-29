@@ -37,6 +37,7 @@ import { DatePickerWithRange } from "@/components/ui/date-time-picker/date-picke
 import { addDays } from "date-fns";
 import { SEMESTER_DAYS_OFFSET } from "@/lib/constants/semesters";
 import { Semester } from "db/types";
+import { useRouter } from "next/navigation";
 
 type UpdateSemesterProps = {
 	semesterData: Semester;
@@ -52,7 +53,7 @@ export default function UpdateSemesterDialogue(props: UpdateSemesterProps) {
 			...semesterProps,
 		},
 	});
-
+	const { refresh } = useRouter();
 	const { execute: runUpdateSemester, status } = useAction(updateSemester, {
 		onSuccess: ({ data }) => {
 			toast.dismiss();
@@ -68,6 +69,7 @@ export default function UpdateSemesterDialogue(props: UpdateSemesterProps) {
 			setOpen(false);
 			form.reset();
 			toast.success("Semester updated successfully");
+			refresh();
 		},
 		onError: (err) => {
 			if (

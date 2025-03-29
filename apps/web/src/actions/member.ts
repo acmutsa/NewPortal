@@ -25,7 +25,7 @@ export const updateMemberRole = executiveAction
 			.where(eq(users.userID, userID));
 
 		// check if we need to do this
-		revalidatePath(link);
+		// revalidatePath(link);
 
 		return {
 			success: true,
