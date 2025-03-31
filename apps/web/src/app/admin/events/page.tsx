@@ -7,7 +7,6 @@ import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import EventStatsSheet from "@/components/dash/admin/events/EventStatsSheet";
 import { Button } from "@/components/ui/button";
-import AdminCheckinLog from "@/components/dash/shared/AdminCheckinLog";
 import { unstable_noStore as noStore } from "next/cache";
 import { TableSkeleton } from "@/components/ui/skeleton-loaders";
 
@@ -40,8 +39,9 @@ async function Page() {
 				<DataTable
 					columns={columns}
 					data={events}
-					tableName="events"
-					viewRoute={undefined}
+					options={{
+						tableName: "events",
+					}}
 				/>
 			</div>
 		</div>

@@ -27,7 +27,9 @@ export default async function AdminSemesterView() {
 				<DataTable
 					data={semesters}
 					columns={semesterColumns}
-					tableName="semesters"
+					options={{
+						tableName: "semesters",
+					}}
 				/>
 			</div>
 		</>

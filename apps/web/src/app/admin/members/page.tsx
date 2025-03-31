@@ -15,13 +15,13 @@ async function Page() {
 			<div className="px-5">
 				<MemberStatsSheet />
 			</div>
-			{/* <div className="border-muted">{events?.[0].name}</div> */}
 			<div className="rounded-xl p-5">
 				<DataTable
 					columns={columns}
 					data={members}
-					tableName="members"
-					// viewRoute="/member/"
+					options={{
+						tableName: "members",
+					}}
 				/>
 			</div>
 		</div>

@@ -6,8 +6,8 @@ import PageError from "@/components/shared/PageError";
 import { getUserCheckin } from "@/lib/queries/users";
 import { getUTCDate } from "@/lib/utils";
 
-export default function Page({ params }: { params: { slug: string } }) {
-	const { userId: clerkId } = auth();
+export default async function Page({ params }: { params: { slug: string } }) {
+	const { userId: clerkId } = await auth();
 	if (!clerkId) {
 		redirect("/sign-in");
 	}
