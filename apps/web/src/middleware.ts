@@ -15,8 +15,7 @@ export default clerkMiddleware(async (auth, req) => {
 	if (req.url.includes("register")) {
 		return NextResponse.redirect(new URL("/onboarding", req.url));
 	}
-	const { protect, userId } = auth();
-
+	const { userId } = await auth();
 	if (isProtectedRoute(req)) {
 		await auth.protect();
 	}
