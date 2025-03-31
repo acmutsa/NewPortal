@@ -1,5 +1,5 @@
 const c = {
-	clubName: "ClubKit",
+	clubName: "ACM UTSA",
 	universityName: "UTSA",
 	universityID: {
 		name: "ABC123",
@@ -85,6 +85,7 @@ const c = {
 	maxEventPoints: 100,
 	icon: {
 		svg: "/img/logos/acm.svg",
+		ico: "/img/logos/acm.ico",
 	},
 	thumbnails: {
 		default: "/img/thumbnails/default.png",

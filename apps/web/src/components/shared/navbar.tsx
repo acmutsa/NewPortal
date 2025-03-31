@@ -26,7 +26,7 @@ type NavbarProps = {
 export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 	const clerkAuth = auth();
 	const clerkUser = await currentUser();
-	const { userId } = clerkAuth;
+	const userId = clerkAuth.userId;
 	const user = userId
 		? await db.query.users.findFirst({
 				where: eq(users.clerkID, userId),
@@ -34,7 +34,7 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 			})
 		: null;
 
-	const registrationComplete = user != null;
+	const registrationComplete = user;
 	return (
 		<div
 			className={
@@ -64,10 +64,12 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 
 			{/* Large screen navbar */}
 			<div className="my-2 hidden items-center justify-end gap-x-2 md:flex">
-				{user ? (
+				{userId ? (
 					<>
 						<Link
-							href={registrationComplete ? "/dash" : "/sign-up"}
+							href={
+								registrationComplete ? "/dash" : "/onboarding"
+							}
 						>
 							<Button
 								variant={
@@ -82,17 +84,18 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 						<Link href={"/events"}>
 							<Button variant={"outline"}>Events</Button>
 						</Link>
-						{(user.role === "admin" ||
-							user.role === "super_admin") && (
-							<Link href={"/admin"}>
-								<Button
-									variant={"outline"}
-									className="text-blue-400"
-								>
-									Admin
-								</Button>
-							</Link>
-						)}
+						{user &&
+							(user.role === "admin" ||
+								user.role === "super_admin") && (
+								<Link href={"/admin"}>
+									<Button
+										variant={"outline"}
+										className="text-blue-400"
+									>
+										Admin
+									</Button>
+								</Link>
+							)}
 						<ProfileButton
 							clerkUser={clerkUser}
 							clerkAuth={clerkAuth}
@@ -123,7 +126,7 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 						<Menu />
 					</SheetTrigger>
 					<SheetContent className="flex max-w-[40%] flex-col-reverse items-center justify-center gap-y-1">
-						{user ? (
+						{userId ? (
 							<>
 								{registrationComplete && (
 									<Link href="/settings">
@@ -151,15 +154,25 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 											: "Complete Registration"}
 									</Button>
 								</Link>
+								{registrationComplete && (
+									<Link href={"/settings"}>
+										<Button variant={"ghost"}>
+											Settings
+										</Button>
+									</Link>
+								)}
 								<Link href={"/events"}>
 									<Button variant={"ghost"}>Events</Button>
 								</Link>
-								{(user.role === "admin" ||
-									user.role === "super_admin") && (
-									<Link href={"/admin"}>
-										<Button variant={"ghost"}>Admin</Button>
-									</Link>
-								)}
+								{user &&
+									(user.role === "admin" ||
+										user.role === "super_admin") && (
+										<Link href={"/admin"}>
+											<Button variant={"ghost"}>
+												Admin
+											</Button>
+										</Link>
+									)}
 								<div className="px-4">
 									<ProfileButton
 										clerkUser={clerkUser}

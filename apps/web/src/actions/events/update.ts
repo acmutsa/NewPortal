@@ -4,6 +4,7 @@ import { and, db, eq, inArray, sql } from "db";
 import { updateEventSchema } from "db/zod";
 import { adminAction } from "@/lib/safe-action";
 import { events, eventsToCategories } from "db/schema";
+import { revalidatePath } from "next/cache";
 
 export const updateEvent = adminAction
 	.schema(updateEventSchema)
@@ -47,20 +48,24 @@ export const updateEvent = adminAction
 				await tx.insert(eventsToCategories).values(insertVal);
 			}
 
-			await tx
-				.delete(eventsToCategories)
-				.where(
-					and(
-						inArray(
-							eventsToCategories.categoryID,
-							deletingCategories,
+			if (deletingCategories.length != 0) {
+				await tx
+					.delete(eventsToCategories)
+					.where(
+						and(
+							inArray(
+								eventsToCategories.categoryID,
+								deletingCategories,
+							),
+							eq(eventsToCategories.eventID, eventID),
 						),
-						eq(eventsToCategories.eventID, eventID),
-					),
-				);
+					);
+			}
 		});
 		// VACUUM is handled by Libsql according to: https://discord.com/channels/933071162680958986/1200296371484368956
 		// await db.run(sql`PRAGMA VACUUM`);
+		// revalidatePath("/admin/events");
+		// revalidatePath("/events");
 
 		return res;
 	});

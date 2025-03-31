@@ -137,18 +137,18 @@ export default async function EventDetails({
 				{event.name}
 			</h1>
 			<div className="mx-auto flex w-5/6 items-center">
-				<div className="flex w-full flex-wrap justify-between gap-8">
-					<div className="grow">
+				<div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:py-4">
+					<div className="flex w-fit items-center justify-center md:justify-start">
 						<EventImage
 							src={thumbnailUrl}
-							className="w-full rounded-md"
+							className="rounded-md"
 							isLive={isEventHappening}
 							width={width}
 							height={height}
 						/>
 					</div>
-					<div className="grow">
-						<div className="flex flex-col justify-between gap-y-8 md:h-full md:py-8">
+					<div className="">
+						<div className="flex flex-col justify-between gap-y-6 md:h-full">
 							<div className="w-full text-left">
 								<h2 className="mb-2 w-full text-2xl font-semibold underline">
 									Description
@@ -159,44 +159,48 @@ export default async function EventDetails({
 									{description}
 								</p>
 							</div>
-
+							<EventCategories
+								className="justify-start"
+								event={event}
+								isPast={isEventPassed}
+							/>
 							<div className="flex flex-col gap-2 text-base sm:text-lg md:text-xl">
-								<EventCategories
-									className="justify-start"
-									event={event}
-									isPast={isEventPassed}
-								/>
-								<div className="flex items-center justify-start gap-3">
-									<Calendar size={24} />
-									<p className="flex">{startDateFormatted}</p>
-								</div>
-								<div className="flex items-center justify-start gap-3">
-									<Clock size={24} />
-									<p className=" flex">{startTime}</p>
-								</div>
-								<div className="flex items-center justify-start gap-3">
-									<Hourglass size={24} />
-									<p className="flex">
-										{formattedEventDuration}
-									</p>
-								</div>
+								<div className="grid grid-cols-2 gap-y-2">
+									<div className="flex items-center justify-start gap-3">
+										<Calendar size={24} />
+										<p className="flex">
+											{startDateFormatted}
+										</p>
+									</div>
+									<div className="flex items-center justify-start gap-3">
+										<Clock size={24} />
+										<p className=" flex">{startTime}</p>
+									</div>
+									<div className="flex items-center justify-start gap-3">
+										<Hourglass size={24} />
+										<p className="flex">
+											{formattedEventDuration}
+										</p>
+									</div>
 
-								<div className="flex items-center justify-start gap-3">
-									<MapPin size={24} />
-									<p className=" flex">{event.location}</p>
-								</div>
+									<div className="flex items-center justify-start gap-3">
+										<MapPin size={24} />
+										<p className=" flex">
+											{event.location}
+										</p>
+									</div>
 
-								<div className="flex gap-x-3">
-									<CircleArrowUp size={24} />
-									<h3>
-										<span className="text-blue-500">
-											{event.points}
-										</span>{" "}
-										pt{event.points != 1 ? "s" : ""}
-									</h3>
+									<div className="flex gap-x-3">
+										<CircleArrowUp size={24} />
+										<h3>
+											<span className="text-blue-500">
+												{event.points}
+											</span>{" "}
+											pt{event.points != 1 ? "s" : ""}
+										</h3>
+									</div>
 								</div>
 							</div>
-
 							<div className="/sm:grid-cols-3 grid w-full grid-cols-1 gap-3">
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
@@ -297,7 +301,7 @@ export default async function EventDetails({
 			<div className="mx-auto grid w-5/6 grid-cols-1 gap-10 md:grid-cols-2">
 				<Accordion type="single" collapsible>
 					<AccordionItem value="about">
-						<AccordionTrigger className="text-3xl font-bold">
+						<AccordionTrigger className="text-2xl font-bold md:text-3xl">
 							About ACM
 						</AccordionTrigger>
 						<AccordionContent>
@@ -307,10 +311,9 @@ export default async function EventDetails({
 						</AccordionContent>
 					</AccordionItem>
 				</Accordion>
-
 				<Accordion type="single" collapsible>
 					<AccordionItem value="Check-In">
-						<AccordionTrigger className="text-3xl font-bold">
+						<AccordionTrigger className="text-2xl font-bold md:text-3xl">
 							Checking In
 						</AccordionTrigger>
 						<AccordionContent>

@@ -14,22 +14,9 @@ const nextConfig = {
 		remotePatterns: [
 			{
 				protocol: "https",
-				hostname: "itlxdtyrc4ggxyuw.public.blob.vercel-storage.com",
+				hostname: "rtj2mkgfsw7b7j1m.public.blob.vercel-storage.com",
 			},
 		],
-	},
-	async headers() {
-		return [
-			{
-				source: "/events",
-				headers: [
-					{
-						key: "x-timezone",
-						value: Intl.DateTimeFormat().resolvedOptions().timeZone,
-					},
-				],
-			},
-		];
 	},
 };
 if (process.env.NODE_ENV === "development") {
