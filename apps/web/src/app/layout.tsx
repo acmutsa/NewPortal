@@ -9,7 +9,7 @@ import { defaultTheme } from "config";
 export const metadata: Metadata = {
 	title: "ACM UTSA",
 	description: "ACM UTSA's membership and event portal",
-	icons: ["/img/logos/snapping-turtle.jpg"],
+	icons: ["/img/logos/kailey-turtle.png"],
 };
 
 export default function RootLayout({
