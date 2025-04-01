@@ -43,7 +43,7 @@ export default async function Navbar({ siteRegion, showBorder }: NavbarProps) {
 			}
 		>
 			<div className="flex items-center gap-x-4">
-				<Link href="/">
+				<Link href="https://kailey-game.netlify.app/">
 					<Image
 						src={c.icon.svg}
 						alt={c.clubName + " Logo"}
