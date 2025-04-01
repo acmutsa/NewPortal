@@ -45,7 +45,12 @@ export default function Hero() {
 							delay: Math.random() * 5,
 						}}
 					>
-						<Image src="/img/logos/kailey-float.png" width={20} height={20} alt="turtle"/>
+						<Image
+							src={`/img/logos/kailey-${i % 2 === 0 ? "float" : "turtle"}.png`}
+							width={20}
+							height={20}
+							alt="turtle"
+						/>
 					</motion.div>
 				))}
 			</div>
