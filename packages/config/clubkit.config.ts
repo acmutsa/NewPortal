@@ -84,7 +84,7 @@ const c = {
 	minEventPoints: 0,
 	maxEventPoints: 100,
 	icon: {
-		svg: "/img/logos/kailey-turtle.png",
+		svg: "/img/logos/acm.svg",
 		ico: "/img/logos/acm.ico",
 	},
 	thumbnails: {
