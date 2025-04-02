@@ -14,7 +14,7 @@ export default clerkMiddleware(async (auth, req) => {
 	const { userId } = await auth();
 
 	if (isProtectedRoute(req)) {
-		await auth.protect();
+		await auth().protect();
 	}
 	// protect admin api routes
 	if (isAdminAPIRoute(req)) {
