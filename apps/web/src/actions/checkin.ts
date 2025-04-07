@@ -6,14 +6,43 @@ import { UNIQUE_KEY_CONSTRAINT_VIOLATION_CODE } from "@/lib/constants/";
 import { checkInUserClient, checkInUserList } from "@/lib/queries/checkins";
 import { adminCheckinSchema, universityIDSplitter } from "db/zod";
 import { CheckinResult } from "@/lib/types/events";
-import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { getEventById } from "@/lib/queries/events";
+import { returnValidationErrors } from "next-safe-action";
+import z from "zod";
+import { isWithinInterval } from "date-fns";
 
-const { ALREADY_CHECKED_IN, SUCCESS, FAILED, SOME_FAILED } = CheckinResult;
+const {
+	ALREADY_CHECKED_IN,
+	SUCCESS,
+	FAILED,
+	SOME_FAILED,
+	EVENT_NOT_FOUND,
+	CHECKIN_NOT_AVAILABLE,
+} = CheckinResult;
 
 export const checkInUserAction = userAction
 	.schema(userCheckinSchemaFormified)
 	.action(async ({ parsedInput }) => {
+		const { eventID } = parsedInput;
+		const event = await getEventById(eventID);
+		if (!event) {
+			returnValidationErrors(z.null(), {
+				_errors: [EVENT_NOT_FOUND],
+			});
+		}
+
+		const currentDateUTC = new Date();
+		const isCheckinAvailable = isWithinInterval(currentDateUTC, {
+			start: event.checkinStart,
+			end: event.checkinEnd,
+		});
+		if (!isCheckinAvailable) {
+			returnValidationErrors(z.null(), {
+				_errors: [CHECKIN_NOT_AVAILABLE],
+			});
+		}
+
 		try {
 			await checkInUserClient(parsedInput);
 		} catch (e) {
