@@ -101,7 +101,6 @@ export default async function EventDetails({
 	const { thumbnailUrl, location, description, points } = event;
 	const width = 500;
 	const height = 500;
-
 	return (
 		<div className="mt-2 flex flex-1 flex-col space-y-4 pb-20">
 			<h1 className="px-2 py-4 text-center text-2xl font-black sm:text-2xl md:px-8 md:text-3xl lg:text-5xl">
@@ -125,7 +124,7 @@ export default async function EventDetails({
 									Description
 								</h2>
 								<p
-									className={`text-pretty w-full text-lg 2xl:text-2xl `}
+									className={`w-full text-pretty text-lg 2xl:text-2xl `}
 								>
 									{description}
 								</p>
@@ -154,144 +153,147 @@ export default async function EventDetails({
 										</p>
 									</div>
 
-								<div className="flex items-center justify-start gap-3">
-									<MapPin size={24} />
-									<p className=" flex">{location}</p>
+									<div className="flex items-center justify-start gap-3">
+										<MapPin size={24} />
+										<p className=" flex">{location}</p>
+									</div>
+
+									<div className="flex gap-x-3">
+										<CircleArrowUp size={24} />
+										<h3>
+											<span className="text-blue-500">
+												{points}
+											</span>{" "}
+											pt{points != 1 ? "s" : ""}
+										</h3>
+									</div>
 								</div>
 
-								<div className="flex gap-x-3">
-									<CircleArrowUp size={24} />
-									<h3>
-										<span className="text-blue-500">
-											{points}
-										</span>{" "}
-										pt{points != 1 ? "s" : ""}
-									</h3>
-								</div>
-							</div>
-
-							<div className="/sm:grid-cols-3 grid w-full grid-cols-1 gap-3">
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
-										<Button
-											variant="default"
-											className="text-lg font-normal"
-										>
-											<div className="flex items-center justify-start gap-1">
-												<MonitorPlay size={16} />
-												<p>Watch Live</p>
-											</div>
-										</Button>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-										{streamingLinks.map((link) => (
-											<StreamingLink
-												title={link.title}
-												href={link.href}
-												key={link.title}
-											/>
-										))}
-									</DropdownMenuContent>
-								</DropdownMenu>
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
+								<div className="/sm:grid-cols-3 grid w-full grid-cols-1 gap-3">
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button
+												variant="default"
+												className="text-lg font-normal"
+											>
+												<div className="flex items-center justify-start gap-1">
+													<MonitorPlay size={16} />
+													<p>Watch Live</p>
+												</div>
+											</Button>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
+											{streamingLinks.map((link) => (
+												<StreamingLink
+													title={link.title}
+													href={link.href}
+													key={link.title}
+												/>
+											))}
+										</DropdownMenuContent>
+									</DropdownMenu>
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button
+												variant="default"
+												className="text-lg font-normal"
+											>
+												<div className="flex items-center justify-start gap-3">
+													<BellRing size={16} />
+													<p>Remind Me</p>
+												</div>
+											</Button>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
+											{calendarLinks.map((cal) => (
+												<CalendarLink
+													calendarName={cal}
+													calendarDetails={
+														eventCalendarLink
+													}
+													key={cal.title}
+												/>
+											))}
+											{isBroswerSafari ? (
+												<Link
+													href={ics(
+														eventCalendarLink,
+													)}
+													target="_blank"
+													className="flex w-auto justify-between gap-3 rounded-md px-3 py-2 text-primary-foreground md:max-w-[7.5rem] lg:max-w-none"
+												>
+													<Image
+														src={iCalIcon}
+														alt="Calendar Icon"
+														height={25}
+														width={25}
+													/>
+													<p className="text-primary md:text-base lg:text-lg 2xl:text-2xl">
+														{"iCal"}
+													</p>
+												</Link>
+											) : (
+												<a
+													href={`/api/ics-calendar?event_id=${id}`}
+													target="_blank"
+													className="flex w-auto justify-between gap-3 rounded-md px-3 py-2 text-primary-foreground md:max-w-[7.5rem] lg:max-w-none"
+													download={`event_${id}.ics`}
+												>
+													<Image
+														src={iCalIcon}
+														alt="Calendar Icon"
+														height={25}
+														width={25}
+													/>
+													<p className="text-primary md:text-base lg:text-lg 2xl:text-2xl">
+														{"iCal"}
+													</p>
+												</a>
+											)}
+										</DropdownMenuContent>
+									</DropdownMenu>
+									<Link href={checkInUrl} legacyBehavior>
 										<Button
 											variant="default"
 											className="text-lg font-normal"
 										>
 											<div className="flex items-center justify-start gap-3">
-												<BellRing size={16} />
-												<p>Remind Me</p>
+												<UserRoundCheck size={16} />
+												<p>Check In</p>
 											</div>
 										</Button>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-										{calendarLinks.map((cal) => (
-											<CalendarLink
-												calendarName={cal}
-												calendarDetails={
-													eventCalendarLink
-												}
-												key={cal.title}
-											/>
-										))}
-										{isBroswerSafari ? (
-											<Link
-												href={ics(eventCalendarLink)}
-												target="_blank"
-												className="flex w-auto justify-between gap-3 rounded-md px-3 py-2 text-primary-foreground md:max-w-[7.5rem] lg:max-w-none"
-											>
-												<Image
-													src={iCalIcon}
-													alt="Calendar Icon"
-													height={25}
-													width={25}
-												/>
-												<p className="text-primary md:text-base lg:text-lg 2xl:text-2xl">
-													{"iCal"}
-												</p>
-											</Link>
-										) : (
-											<a
-												href={`/api/ics-calendar?event_id=${id}`}
-												target="_blank"
-												className="flex w-auto justify-between gap-3 rounded-md px-3 py-2 text-primary-foreground md:max-w-[7.5rem] lg:max-w-none"
-												download={`event_${id}.ics`}
-											>
-												<Image
-													src={iCalIcon}
-													alt="Calendar Icon"
-													height={25}
-													width={25}
-												/>
-												<p className="text-primary md:text-base lg:text-lg 2xl:text-2xl">
-													{"iCal"}
-												</p>
-											</a>
-										)}
-									</DropdownMenuContent>
-								</DropdownMenu>
-								<Link href={checkInUrl} legacyBehavior>
-									<Button
-										variant="default"
-										className="text-lg font-normal"
-									>
-										<div className="flex items-center justify-start gap-3">
-											<UserRoundCheck size={16} />
-											<p>Check In</p>
-										</div>
-									</Button>
-								</Link>
+									</Link>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div className="mx-auto grid w-5/6 grid-cols-1 gap-10 md:grid-cols-2">
-				<Accordion type="single" collapsible>
-					<AccordionItem value="about">
-						<AccordionTrigger className="text-2xl font-bold md:text-3xl">
-							About ACM
-						</AccordionTrigger>
-						<AccordionContent>
-							<p className="border-t border-muted-foreground pl-2 text-xl 2xl:text-2xl">
-								{aboutOrg}
-							</p>
-						</AccordionContent>
-					</AccordionItem>
-				</Accordion>
-				<Accordion type="single" collapsible>
-					<AccordionItem value="Check-In">
-						<AccordionTrigger className="text-2xl font-bold md:text-3xl">
-							Checking In
-						</AccordionTrigger>
-						<AccordionContent>
-							<p className="border-t border-muted-foreground text-xl 2xl:text-2xl">
-								{checkingInInfo}
-							</p>
-						</AccordionContent>
-					</AccordionItem>
-				</Accordion>
+				<div className="mx-auto grid w-5/6 grid-cols-1 gap-10 md:grid-cols-2">
+					<Accordion type="single" collapsible>
+						<AccordionItem value="about">
+							<AccordionTrigger className="text-2xl font-bold md:text-3xl">
+								About ACM
+							</AccordionTrigger>
+							<AccordionContent>
+								<p className="border-t border-muted-foreground pl-2 text-xl 2xl:text-2xl">
+									{aboutOrg}
+								</p>
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
+					<Accordion type="single" collapsible>
+						<AccordionItem value="Check-In">
+							<AccordionTrigger className="text-2xl font-bold md:text-3xl">
+								Checking In
+							</AccordionTrigger>
+							<AccordionContent>
+								<p className="border-t border-muted-foreground text-xl 2xl:text-2xl">
+									{checkingInInfo}
+								</p>
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
+				</div>
 			</div>
 		</div>
 	);
