@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { Separator } from "@/components/ui/separator";
 import StatItem, { StatItemProps } from "./StatItem";
 

@@ -1,21 +1,15 @@
 import { getEventDetails } from "@/lib/queries/events";
 import PageError from "../../shared/PageError";
 import EventImage from "../shared/EventImage";
-import { headers } from "next/headers";
 import { TWENTY_FOUR_HOURS, ONE_HOUR_IN_MILLISECONDS } from "@/lib/constants";
 import c from "config";
-import {
-	getClientTimeZone,
-	getUTCDate,
-	isEventCurrentlyHappening,
-} from "@/lib/utils";
-import { differenceInHours, isAfter } from "date-fns";
+import { getClientTimeZone, getUTCDate } from "@/lib/utils";
+import { isAfter, isWithinInterval } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import {
 	EVENT_DATE_FORMAT_STRING,
 	EVENT_TIME_FORMAT_STRING,
 } from "@/lib/constants/events";
-import EventDetailsLiveIndicator from "../shared/EventDetailsLiveIndicator";
 import EventCategories from "../EventCategories";
 import {
 	BellRing,
@@ -66,14 +60,13 @@ export default async function EventDetails({
 	if (!event) {
 		return <PageError message="Event Not Found" href="/events" />;
 	}
-	const { start, end, checkinStart, checkinEnd } = event;
+	const { start, end } = event;
 	const currentDateUTC = getUTCDate();
 	const isEventPassed = isAfter(currentDateUTC, end);
-	const isEventHappening = isEventCurrentlyHappening(
-		currentDateUTC,
-		start,
-		end,
-	);
+	const isEventHappening = isWithinInterval(currentDateUTC, {
+		start: start,
+		end: end,
+	});
 
 	const startTime = formatInTimeZone(
 		start,
@@ -97,15 +90,6 @@ export default async function EventDetails({
 
 	const checkInUrl = `/events/${event.id}/checkin`;
 
-	const isCheckinAvailable =
-		checkinStart <= currentDateUTC && currentDateUTC <= checkinEnd;
-
-	const checkInMessage = isCheckinAvailable
-		? "Ready to check-in? Click here!"
-		: isEventPassed
-			? "Check-in is closed"
-			: `Check-in starts on ${formatInTimeZone(start, clientTimeZone, `${EVENT_TIME_FORMAT_STRING} @${EVENT_DATE_FORMAT_STRING}`)}`;
-
 	const eventCalendarLink = {
 		title: event.name,
 		description: event.description,
@@ -114,23 +98,9 @@ export default async function EventDetails({
 		location: event.location,
 	};
 
-	const detailsProps = {
-		event,
-		startTime,
-		startDate: startDateFormatted,
-		formattedEventDuration,
-		checkInUrl,
-		checkInMessage,
-		eventCalendarLink,
-		isEventPassed,
-		isCheckinAvailable,
-		isEventHappening,
-	};
-
 	const { thumbnailUrl, location, description, points } = event;
 	const width = 500;
 	const height = 500;
-
 	return (
 		<div className="mt-2 flex flex-1 flex-col space-y-4 pb-20">
 			<h1 className="px-2 py-4 text-center text-2xl font-black sm:text-2xl md:px-8 md:text-3xl lg:text-5xl">
@@ -185,144 +155,145 @@ export default async function EventDetails({
 
 									<div className="flex items-center justify-start gap-3">
 										<MapPin size={24} />
-										<p className=" flex">
-											{event.location}
-										</p>
+										<p className=" flex">{location}</p>
 									</div>
 
 									<div className="flex gap-x-3">
 										<CircleArrowUp size={24} />
 										<h3>
 											<span className="text-blue-500">
-												{event.points}
+												{points}
 											</span>{" "}
-											pt{event.points != 1 ? "s" : ""}
+											pt{points != 1 ? "s" : ""}
 										</h3>
 									</div>
 								</div>
-							</div>
-							<div className="/sm:grid-cols-3 grid w-full grid-cols-1 gap-3">
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
-										<Button
-											variant="default"
-											className="text-lg font-normal"
-										>
-											<div className="flex items-center justify-start gap-1">
-												<MonitorPlay size={16} />
-												<p>Watch Live</p>
-											</div>
-										</Button>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-										{streamingLinks.map((link) => (
-											<StreamingLink
-												title={link.title}
-												href={link.href}
-												key={link.title}
-											/>
-										))}
-									</DropdownMenuContent>
-								</DropdownMenu>
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
+
+								<div className="/sm:grid-cols-3 grid w-full grid-cols-1 gap-3">
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button
+												variant="default"
+												className="text-lg font-normal"
+											>
+												<div className="flex items-center justify-start gap-1">
+													<MonitorPlay size={16} />
+													<p>Watch Live</p>
+												</div>
+											</Button>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
+											{streamingLinks.map((link) => (
+												<StreamingLink
+													title={link.title}
+													href={link.href}
+													key={link.title}
+												/>
+											))}
+										</DropdownMenuContent>
+									</DropdownMenu>
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button
+												variant="default"
+												className="text-lg font-normal"
+											>
+												<div className="flex items-center justify-start gap-3">
+													<BellRing size={16} />
+													<p>Remind Me</p>
+												</div>
+											</Button>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
+											{calendarLinks.map((cal) => (
+												<CalendarLink
+													calendarName={cal}
+													calendarDetails={
+														eventCalendarLink
+													}
+													key={cal.title}
+												/>
+											))}
+											{isBroswerSafari ? (
+												<Link
+													href={ics(
+														eventCalendarLink,
+													)}
+													target="_blank"
+													className="flex w-auto justify-between gap-3 rounded-md px-3 py-2 text-primary-foreground md:max-w-[7.5rem] lg:max-w-none"
+												>
+													<Image
+														src={iCalIcon}
+														alt="Calendar Icon"
+														height={25}
+														width={25}
+													/>
+													<p className="text-primary md:text-base lg:text-lg 2xl:text-2xl">
+														{"iCal"}
+													</p>
+												</Link>
+											) : (
+												<a
+													href={`/api/ics-calendar?event_id=${id}`}
+													target="_blank"
+													className="flex w-auto justify-between gap-3 rounded-md px-3 py-2 text-primary-foreground md:max-w-[7.5rem] lg:max-w-none"
+													download={`event_${id}.ics`}
+												>
+													<Image
+														src={iCalIcon}
+														alt="Calendar Icon"
+														height={25}
+														width={25}
+													/>
+													<p className="text-primary md:text-base lg:text-lg 2xl:text-2xl">
+														{"iCal"}
+													</p>
+												</a>
+											)}
+										</DropdownMenuContent>
+									</DropdownMenu>
+									<Link href={checkInUrl} legacyBehavior>
 										<Button
 											variant="default"
 											className="text-lg font-normal"
 										>
 											<div className="flex items-center justify-start gap-3">
-												<BellRing size={16} />
-												<p>Remind Me</p>
+												<UserRoundCheck size={16} />
+												<p>Check In</p>
 											</div>
 										</Button>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
-										{calendarLinks.map((cal) => (
-											<CalendarLink
-												calendarName={cal}
-												calendarDetails={
-													eventCalendarLink
-												}
-												key={cal.title}
-											/>
-										))}
-										{isBroswerSafari ? (
-											<Link
-												href={ics(eventCalendarLink)}
-												target="_blank"
-												className="flex w-auto justify-between gap-3 rounded-md px-3 py-2 text-primary-foreground md:max-w-[7.5rem] lg:max-w-none"
-											>
-												<Image
-													src={iCalIcon}
-													alt="Calendar Icon"
-													height={25}
-													width={25}
-												/>
-												<p className="text-primary md:text-base lg:text-lg 2xl:text-2xl">
-													{"iCal"}
-												</p>
-											</Link>
-										) : (
-											<a
-												href={`/api/ics-calendar?event_id=${id}`}
-												target="_blank"
-												className="flex w-auto justify-between gap-3 rounded-md px-3 py-2 text-primary-foreground md:max-w-[7.5rem] lg:max-w-none"
-												download={`event_${event.id}.ics`}
-											>
-												<Image
-													src={iCalIcon}
-													alt="Calendar Icon"
-													height={25}
-													width={25}
-												/>
-												<p className="text-primary md:text-base lg:text-lg 2xl:text-2xl">
-													{"iCal"}
-												</p>
-											</a>
-										)}
-									</DropdownMenuContent>
-								</DropdownMenu>
-								<Link href={checkInUrl} legacyBehavior>
-									<Button
-										variant="default"
-										className="text-lg font-normal"
-									>
-										<div className="flex items-center justify-start gap-3">
-											<UserRoundCheck size={16} />
-											<p>Check In</p>
-										</div>
-									</Button>
-								</Link>
+									</Link>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div className="mx-auto grid w-5/6 grid-cols-1 gap-10 md:grid-cols-2">
-				<Accordion type="single" collapsible>
-					<AccordionItem value="about">
-						<AccordionTrigger className="text-2xl font-bold md:text-3xl">
-							About ACM
-						</AccordionTrigger>
-						<AccordionContent>
-							<p className="border-t border-muted-foreground pl-2 text-xl 2xl:text-2xl">
-								{aboutOrg}
-							</p>
-						</AccordionContent>
-					</AccordionItem>
-				</Accordion>
-				<Accordion type="single" collapsible>
-					<AccordionItem value="Check-In">
-						<AccordionTrigger className="text-2xl font-bold md:text-3xl">
-							Checking In
-						</AccordionTrigger>
-						<AccordionContent>
-							<p className="border-t border-muted-foreground text-xl 2xl:text-2xl">
-								{checkingInInfo}
-							</p>
-						</AccordionContent>
-					</AccordionItem>
-				</Accordion>
+				<div className="mx-auto grid w-5/6 grid-cols-1 gap-10 md:grid-cols-2">
+					<Accordion type="single" collapsible>
+						<AccordionItem value="about">
+							<AccordionTrigger className="text-2xl font-bold md:text-3xl">
+								About ACM
+							</AccordionTrigger>
+							<AccordionContent>
+								<p className="border-t border-muted-foreground pl-2 text-xl 2xl:text-2xl">
+									{aboutOrg}
+								</p>
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
+					<Accordion type="single" collapsible>
+						<AccordionItem value="Check-In">
+							<AccordionTrigger className="text-2xl font-bold md:text-3xl">
+								Checking In
+							</AccordionTrigger>
+							<AccordionContent>
+								<p className="border-t border-muted-foreground text-xl 2xl:text-2xl">
+									{checkingInInfo}
+								</p>
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
+				</div>
 			</div>
 		</div>
 	);
