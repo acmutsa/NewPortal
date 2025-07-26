@@ -10,8 +10,6 @@ export default async function OnboardingLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	// TODO: protect stuffs from re-registration
-
 	const { userId } = await auth();
 
 	if (!userId) return redirect("/sign-up");
