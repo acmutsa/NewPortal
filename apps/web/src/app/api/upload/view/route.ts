@@ -1,37 +1,74 @@
-import { getPresignedViewingUrl } from "@/lib/server/s3";
-import { redirect } from "next/navigation";
-import { staticUploads } from "config";
 import { auth } from "@clerk/nextjs/server";
-import { headers } from "next/headers";
+import { staticUploads } from "config";
+import { getPresignedViewingUrl } from "@/lib/server/s3";
+
+const PUBLIC_EVENT_THUMBNAIL_PREFIX =
+	"ACM UTSA-UTSA/event-thumbnails/";
 
 export async function GET(request: Request) {
-	const { userId } = await auth();
-	const referPath = headers().get("referer") ?? "";
-	if (!userId && !referPath.includes("events")) {
-		return new Response("You must be logged in to access this resource", {
-			status: 401,
-		});
-	}
-
 	const key = new URL(request.url).searchParams.get("key");
+
+	console.log("Upload view request:", {
+		key,
+		bucketName: staticUploads.bucketName,
+	});
+
 	if (!key) {
 		return new Response(
 			"Request must have a query parameter 'key' associated with it",
-			{
-				status: 400,
-			},
+			{ status: 400 },
 		);
 	}
 
-	const decodedKey = decodeURIComponent(key);
-
-	// Presign the url and return redirect to it.
-	const presignedViewingUrl = await getPresignedViewingUrl(
-		staticUploads.bucketName,
-		decodedKey,
+	const isPublicEventThumbnail = key.startsWith(
+		PUBLIC_EVENT_THUMBNAIL_PREFIX,
 	);
 
-	return redirect(presignedViewingUrl);
+	console.log("Thumbnail access check:", {
+		isPublicEventThumbnail,
+	});
+
+	if (!isPublicEventThumbnail) {
+		const { userId } = await auth();
+
+		if (!userId) {
+			return new Response(
+				"You must be logged in to access this resource",
+				{ status: 401 },
+			);
+		}
+	}
+
+	try {
+		console.log("Creating presigned URL...");
+
+		const presignedViewingUrl = await getPresignedViewingUrl(
+			staticUploads.bucketName,
+			key,
+		);
+
+		console.log("Presigned URL created:", Boolean(presignedViewingUrl));
+
+		return new Response(null, {
+			status: 307,
+			headers: {
+				Location: presignedViewingUrl,
+			},
+		});
+	} catch (error) {
+		console.error("Presigned URL generation failed:", error);
+
+		return Response.json(
+			{
+				error: "Failed to retrieve uploaded file",
+				details:
+					error instanceof Error
+						? error.message
+						: String(error),
+			},
+			{ status: 500 },
+		);
+	}
 }
 
 export const runtime = "edge";
